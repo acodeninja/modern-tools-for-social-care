@@ -12,7 +12,18 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: '14'
-      - run: npm install
+      - run: npm ci
         working-directory: src/services/search
       - run: npm test
+        working-directory: src/services/search
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - run: npm ci
+        working-directory: src/services/search
+      - run: npm run build
         working-directory: src/services/search
