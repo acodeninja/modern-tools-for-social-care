@@ -16,6 +16,7 @@ jobs:
         working-directory: src/services/search
       - run: npm test
         working-directory: src/services/search
+
   build:
     runs-on: ubuntu-latest
     steps:
