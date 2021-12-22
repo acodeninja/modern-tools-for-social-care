@@ -1,0 +1,24 @@
+on:
+  push:
+    paths:
+      - src/infrastructure/**
+      - src/**/**/infrastructure/account/**
+  pull_request:
+    paths:
+      - src/infrastructure/**
+      - src/**/**/infrastructure/account/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init
+        working-directory: src/infrastructure
+      - uses: reviewdog/action-tflint@v1
+        with:
+          github_token: ${{ secrets.github_token }}
+          working_directory: src/infrastructure
+          fail_on_error: true
+          flags: --module
