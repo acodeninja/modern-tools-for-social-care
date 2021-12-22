@@ -1,3 +1,5 @@
+name: 'Services: Search'
+
 on:
   push:
     paths:
