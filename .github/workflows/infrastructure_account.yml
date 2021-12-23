@@ -27,6 +27,7 @@ jobs:
           working_directory: src/infrastructure
           fail_on_error: true
           filter_mode: nofilter
+          tflint_rulesets: aws
           flags: --module
 
   deploy-testing:
