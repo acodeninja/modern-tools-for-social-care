@@ -19,12 +19,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
+      - run: terraform fmt -recursive -check
       - run: terraform init
         working-directory: src/infrastructure
-      - uses: terraform-linters/setup-tflint@v1
-      - run: terraform fmt -recursive -check
-      - run: tflint --init && tflint -f compact
-        working-directory: src/infrastructure
+      - uses: reviewdog/action-tflint@v1
+        with:
+          working_directory: src/infrastructure
+          fail_on_error: true
+          filter_mode: nofilter
+          flags: --module
 
   deploy-testing:
     runs-on: ubuntu-latest
