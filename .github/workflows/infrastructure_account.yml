@@ -2,6 +2,9 @@ name: 'Infrastructure: Account'
 
 on:
   push:
+    branches:
+      - main
+      - dev
     paths:
       - src/infrastructure/**
       - src/**/**/infrastructure/account/**
