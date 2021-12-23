@@ -1,0 +1,36 @@
+name: 'Infrastructure: Account'
+
+on:
+  push:
+    paths:
+      - src/infrastructure/**
+      - src/**/**/infrastructure/account/**
+  pull_request:
+    paths:
+      - src/infrastructure/**
+      - src/**/**/infrastructure/account/**
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init
+        working-directory: src/infrastructure
+      - uses: terraform-linters/setup-tflint@v1
+      - run: terraform fmt -recursive -check
+      - run: tflint --init && tflint -f compact
+        working-directory: src/infrastructure
+
+  deploy-testing:
+    runs-on: ubuntu-latest
+    environment: Testing
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+      - run: terraform init
+        working-directory: src/infrastructure
+      - run: terraform apply
+        working-directory: src/infrastructure
