@@ -8,6 +8,11 @@ resource "aws_elasticsearch_domain" "search" {
     zone_awareness_enabled = false
   }
 
+  ebs_options {
+    ebs_enabled = true
+    volume_size = var.aws_elasticsearch_instance_volume_size
+  }
+
   tags = {
     Domain = local.domain-name
   }
