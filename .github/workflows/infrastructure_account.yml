@@ -33,7 +33,7 @@ jobs:
   deploy-testing:
     runs-on: ubuntu-latest
     environment: Testing
-    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+#    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
     needs:
       - lint
     env:
