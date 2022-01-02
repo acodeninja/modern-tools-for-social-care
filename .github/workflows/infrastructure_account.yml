@@ -32,6 +32,8 @@ jobs:
     runs-on: ubuntu-latest
     environment: Testing
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    needs:
+      - lint
     env:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
