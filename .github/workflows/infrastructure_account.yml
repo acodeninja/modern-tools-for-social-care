@@ -16,11 +16,15 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    environment: Testing
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
       - run: terraform fmt -recursive -check
-      - run: terraform init
+      - run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=${{ secrets.TF_STATE_KEY }}"
         working-directory: src/infrastructure
       - uses: reviewdog/action-tflint@v1
         with:
@@ -38,7 +42,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
-      - run: terraform init
+      - run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=${{ secrets.TF_STATE_KEY }}"
         working-directory: src/infrastructure
       - run: terraform apply
         working-directory: src/infrastructure
