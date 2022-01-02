@@ -1,6 +1,6 @@
 resource "aws_elasticsearch_domain" "search" {
   domain_name           = local.service-name
-  elasticsearch_version = "1.0"
+  elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
     instance_type          = var.aws_elasticsearch_instance_type
