@@ -16,6 +16,9 @@ module.exports = ({rootDir}) => async (env) => (await Promise.all(
 
           r({type, entries});
         })
+        .catch(e => {
+          r({type, entries: []});
+        });
     })),
 )).map(entrySet => entrySet.entries.map(entry => ({
   entry,
