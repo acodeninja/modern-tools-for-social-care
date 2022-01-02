@@ -41,5 +41,8 @@ jobs:
             -backend-config="key=${{ secrets.TF_STATE_KEY }}" \
             -backend-config="region=${{ secrets.AWS_DEFAULT_REGION }}"
         working-directory: src/infrastructure
-      - run: terraform apply
+      - run: |
+          TF_VAR_environment=${{ secrets.ENVIRONMENT }} \
+          TF_VAR_system=${{ secrets.SYSTEM }} \
+          terraform apply
         working-directory: src/infrastructure
