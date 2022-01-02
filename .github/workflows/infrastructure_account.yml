@@ -16,7 +16,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    environment: Testing
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
