@@ -24,6 +24,9 @@ module.exports = ({rootDir}) => async (env) => (await Promise.all(
   entry,
   target: 'node',
   devtool: 'source-map',
+  externals: {
+    'aws-crt': 'aws-crt',
+  },
   module: {
     rules: [
       {test: /\.ts$/, use: 'ts-loader'},
