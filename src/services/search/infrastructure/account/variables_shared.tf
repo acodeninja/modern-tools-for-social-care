@@ -18,6 +18,16 @@ variable "environment" {
   }
 }
 
+variable "manifests_bucket" {
+  description = "The AWS bucket containing account service manifests"
+  type        = string
+
+  validation {
+    condition     = can(regex("^[a-z][0-9a-z\\-]+$", var.manifests_bucket))
+    error_message = "An S3 bucket name must be lower case alpha numeric with hyphen separators."
+  }
+}
+
 locals {
   service-name = "${var.system}-${var.environment}-search"
   domain-name  = "${upper(var.system)}_${upper(var.environment)}"
