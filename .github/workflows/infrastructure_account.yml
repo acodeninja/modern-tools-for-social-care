@@ -44,5 +44,5 @@ jobs:
       - run: |
           TF_VAR_environment=${{ secrets.ENVIRONMENT }} \
           TF_VAR_system=${{ secrets.SYSTEM }} \
-          terraform apply
+          terraform apply -auto-approve
         working-directory: src/infrastructure
