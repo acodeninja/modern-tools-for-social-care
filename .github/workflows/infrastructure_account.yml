@@ -38,7 +38,8 @@ jobs:
       - run: |
           terraform init \
             -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
-            -backend-config="key=${{ secrets.TF_STATE_KEY }}"
+            -backend-config="key=${{ secrets.TF_STATE_KEY }}" \
+            -backend-config="region=${{ secrets.AWS_DEFAULT_REGION }}"
         working-directory: src/infrastructure
       - run: terraform apply
         working-directory: src/infrastructure
