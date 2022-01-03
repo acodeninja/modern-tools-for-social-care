@@ -18,17 +18,27 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    environment: Testing
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
       - run: terraform fmt -recursive -check
-      - uses: reviewdog/action-tflint@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          working_directory: src/infrastructure
-          fail_on_error: true
-          filter_mode: nofilter
-          tflint_rulesets: aws
+        working-directory: src/infrastructure
+      - run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=${{ secrets.TF_STATE_KEY }}" \
+            -backend-config="region=${{ secrets.AWS_DEFAULT_REGION }}"
+        working-directory: src/infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - uses: terraform-linters/setup-tflint@v1
+      - run: |
+          tflint --init
+          tflint -f compact
+
 
   deploy-testing:
     runs-on: ubuntu-latest
