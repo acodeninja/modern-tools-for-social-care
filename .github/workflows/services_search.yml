@@ -53,10 +53,6 @@ jobs:
     needs:
       - test
       - build
-    env:
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -70,8 +66,16 @@ jobs:
             -backend-config="key=${{ secrets.TF_STATE_KEY }}/service-search.tfstate" \
             -backend-config="region=${{ secrets.AWS_DEFAULT_REGION }}"
         working-directory: src/services/search/infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - run: |
           TF_VAR_environment=${{ secrets.ENVIRONMENT }} \
           TF_VAR_system=${{ secrets.SYSTEM }} \
           terraform apply -auto-approve
         working-directory: src/services/search/infrastructure
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
