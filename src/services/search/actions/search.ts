@@ -1,6 +1,7 @@
-import {SearchResult} from "../domains";
 import {ActionPayload, ActionResponse} from "../../../shared/service/types";
-import {APIGatewayProxyHandlerV2} from "aws-lambda";
+import {search} from "../lib/opensearch";
+import {SearchResult} from "../domains";
+import {LambdifyHandler} from "../lib/lambda";
 
 export const Name = 'search';
 
@@ -13,18 +14,13 @@ export class Response implements ActionResponse {
 }
 
 export const Handler = async (payload: Payload) => {
-  return new Response();
+  const searchResponse = await search(payload.terms);
+
+  console.log(searchResponse);
+
+  const response = new Response();
+  response.results = [];
+  return response;
 }
 
-const LambdaHandler: APIGatewayProxyHandlerV2 = async (event) => {
-  const response = await Handler({
-    terms: event.queryStringParameters.terms,
-  });
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify(response),
-  }
-}
-
-export default LambdaHandler;
+export default LambdifyHandler(Handler);
