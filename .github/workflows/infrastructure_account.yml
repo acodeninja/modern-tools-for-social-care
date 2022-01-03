@@ -35,9 +35,8 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - uses: terraform-linters/setup-tflint@v1
-      - run: |
-          tflint --init
-          tflint -f compact --module
+      - run: tflint --init && tflint -f compact --module
+        working-directory: src/infrastructure
 
 
   deploy-testing:
