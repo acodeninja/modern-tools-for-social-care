@@ -8,12 +8,12 @@ on:
     paths:
       - .github/workflow/infrastructure_account.yml
       - src/infrastructure/**
-      - src/**/**/infrastructure/account/**
+      - src/*/*/infrastructure/account/**
   pull_request:
     paths:
       - .github/workflow/infrastructure_account.yml
       - src/infrastructure/**
-      - src/**/**/infrastructure/account/**
+      - src/*/*/infrastructure/account/**
 
 jobs:
   lint:
