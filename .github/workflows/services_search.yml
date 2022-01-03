@@ -63,4 +63,15 @@ jobs:
         with:
           name: build-services-search
           path: src/services/search/build
-      - run: ls -R src/services/search/build
+      - uses: hashicorp/setup-terraform@v1
+      - run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET }}" \
+            -backend-config="key=${{ secrets.TF_STATE_KEY }}/service-search.tfstate" \
+            -backend-config="region=${{ secrets.AWS_DEFAULT_REGION }}"
+        working-directory: src/services/search/infrastructure
+      - run: |
+          TF_VAR_environment=${{ secrets.ENVIRONMENT }} \
+          TF_VAR_system=${{ secrets.SYSTEM }} \
+          terraform apply -auto-approve
+        working-directory: src/services/search/infrastructure
