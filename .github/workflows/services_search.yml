@@ -2,6 +2,9 @@ name: 'Services: Search'
 
 on:
   push:
+    branches:
+      - main
+      - dev
     paths:
       - src/shared/**
       - src/services/search/**
