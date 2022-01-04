@@ -38,5 +38,6 @@ module.exports = ({rootDir}) => async (env) => (await Promise.all(
   output: {
     filename: basename(entry, '.ts') + '.js',
     path: resolve(rootDir, 'build', entrySet.type, basename(entry, '.ts')),
+    libraryTarget: "commonjs",
   }
 }))).flat();
