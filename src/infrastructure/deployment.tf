@@ -1,6 +1,10 @@
 resource "aws_s3_bucket" "deployments" {
   bucket = "${var.system}-${var.environment}-deployment"
   acl    = "private"
+
+  versioning {
+    enabled = true
+  }
 }
 
 resource "aws_s3_bucket_public_access_block" "deployments" {
