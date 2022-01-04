@@ -7,8 +7,8 @@ export interface AddItemInput {
 
 export const put = async (input: AddItemInput) => {
   const body = input.items.map(item => {
-    return JSON.stringify({index: { _index: '' }}) + "\n" + JSON.stringify(item) + "\n";
-  }).join("");
+    return JSON.stringify({index: { _index: input.index }}) + '\n' + JSON.stringify(item);
+  }).join('\n');
 
   return await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
