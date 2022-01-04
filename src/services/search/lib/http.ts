@@ -6,7 +6,7 @@ import {Sha256} from "@aws-crypto/sha256-browser";
 import {HttpResponse} from "@aws-sdk/protocol-http";
 
 export interface SignedRequestInput {
-  body: unknown;
+  body?: unknown;
   url: URL;
   method: 'GET' | 'PUT' | 'PATCH' | 'POST';
   region: string;
@@ -15,23 +15,12 @@ export interface SignedRequestInput {
 
 export const signedRequest =
   async ({
-           body,
+           body = null,
            url,
            method = 'GET',
            region,
            service,
          }: SignedRequestInput): Promise<HttpResponse> => {
-
-    console.log('Sending request', new HttpRequest({
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-        'host': url.host,
-      },
-      hostname: url.host,
-      method,
-      path: url.pathname,
-    }));
 
     const signer = new SignatureV4({
       credentials: defaultProvider(),
@@ -48,6 +37,7 @@ export const signedRequest =
           'host': url.host
         },
         hostname: url.host,
+        query: Object.fromEntries(url.searchParams.entries()),
         method,
         path: url.pathname,
       })) as HttpRequest,
