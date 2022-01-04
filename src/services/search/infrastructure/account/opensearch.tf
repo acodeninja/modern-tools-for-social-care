@@ -13,6 +13,10 @@ resource "aws_elasticsearch_domain" "search" {
     volume_size = var.aws_opensearch_instance_volume_size
   }
 
+  domain_endpoint_options {
+    enforce_https = true
+  }
+
   tags = {
     Domain = local.domain-name
   }
