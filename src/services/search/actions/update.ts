@@ -27,7 +27,7 @@ export const Handler = async (payload: Payload): Promise<Response> => {
     items: payload.items,
   });
 
-  console.log(results.body);
+  console.log(results['body']);
 
   return response;
 }

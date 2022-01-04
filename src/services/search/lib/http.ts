@@ -13,10 +13,6 @@ export interface SignedRequestInput {
   service: string;
 }
 
-export interface SignedRequestOutput {
-
-}
-
 export const signedRequest =
   async ({
            body,
@@ -44,7 +40,7 @@ export const signedRequest =
       sha256: Sha256
     });
 
-    const {response} = await (new NodeHttpHandler()).handle(
+    const response = await (new NodeHttpHandler()).handle(
       await signer.sign(new HttpRequest({
         body: JSON.stringify(body),
         headers: {
@@ -57,5 +53,5 @@ export const signedRequest =
       })) as HttpRequest,
     );
 
-    return response as HttpResponse;
+    return response.response;
   }

@@ -1,11 +1,18 @@
 import {beforeAll, describe, expect, jest, test} from '@jest/globals';
 import {Handler, Payload, Response} from "./update";
+import {HttpResponse} from "@aws-sdk/protocol-http";
 
 import {put} from "../lib/opensearch";
 
 jest.mock('../lib/opensearch');
 
-(put as jest.Mock).mockResolvedValue({});
+(put as jest.Mock).mockResolvedValue({
+  response: new HttpResponse({
+    statusCode: 200,
+    body: "BODY",
+  }),
+});
+
 
 describe('services/search/actions/update', () => {
   describe('adding a new item for indexing', () => {
