@@ -6,12 +6,10 @@ import {put} from "../lib/opensearch";
 
 jest.mock('../lib/opensearch');
 
-(put as jest.Mock).mockResolvedValue({
-  response: new HttpResponse({
-    statusCode: 200,
-    body: "BODY",
-  }),
-});
+(put as jest.Mock).mockResolvedValue(new HttpResponse({
+  statusCode: 200,
+  body: "BODY",
+}));
 
 
 describe('services/search/actions/update', () => {
