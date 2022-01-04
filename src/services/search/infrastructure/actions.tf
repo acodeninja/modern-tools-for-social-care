@@ -13,17 +13,18 @@ data "aws_iam_policy_document" "put_to_open_search" {
 }
 
 module "action-update" {
-  source      = "../../../shared/service/action"
-  system      = var.system
-  environment = var.environment
-  service     = "search"
-  action      = "update"
-  handler     = "update.LambdaHandler"
-  artefacts   = "${path.root}/../build/actions/update"
-  runtime     = "nodejs14.x"
-  policy      = data.aws_iam_policy_document.put_to_open_search.json
-  api_id      = aws_apigatewayv2_api.api.id
-  api_route   = "PUT /"
+  source            = "../../../shared/service/action"
+  system            = var.system
+  environment       = var.environment
+  service           = "search"
+  action            = "update"
+  handler           = "update.LambdaHandler"
+  artefacts         = "${path.root}/../build/actions/update"
+  runtime           = "nodejs14.x"
+  policy            = data.aws_iam_policy_document.put_to_open_search.json
+  api_id            = aws_apigatewayv2_api.api.id
+  api_route         = "PUT /"
+  api_execution_arn = aws_apigatewayv2_api.api.execution_arn
   environment_variables = {
     ENVIRONMENT             = var.environment
     SYSTEM                  = var.system
@@ -46,17 +47,18 @@ data "aws_iam_policy_document" "get_to_open_search" {
 }
 
 module "action-search" {
-  source      = "../../../shared/service/action"
-  system      = var.system
-  environment = var.environment
-  service     = "search"
-  action      = "search"
-  handler     = "search.LambdaHandler"
-  artefacts   = "${path.root}/../build/actions/search"
-  runtime     = "nodejs14.x"
-  policy      = data.aws_iam_policy_document.get_to_open_search.json
-  api_id      = aws_apigatewayv2_api.api.id
-  api_route   = "GET /"
+  source            = "../../../shared/service/action"
+  system            = var.system
+  environment       = var.environment
+  service           = "search"
+  action            = "search"
+  handler           = "search.LambdaHandler"
+  artefacts         = "${path.root}/../build/actions/search"
+  runtime           = "nodejs14.x"
+  policy            = data.aws_iam_policy_document.get_to_open_search.json
+  api_id            = aws_apigatewayv2_api.api.id
+  api_route         = "GET /"
+  api_execution_arn = aws_apigatewayv2_api.api.execution_arn
   environment_variables = {
     ENVIRONMENT             = var.environment
     SYSTEM                  = var.system
