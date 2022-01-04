@@ -27,7 +27,7 @@ data "aws_iam_policy_document" "action_logging" {
     ]
     resources = [
       aws_cloudwatch_log_group.action.arn,
-      "${aws_cloudwatch_log_group.action.arn}/*",
+      "${aws_cloudwatch_log_group.action.arn}:*",
     ]
   }
 }
