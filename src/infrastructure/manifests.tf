@@ -12,7 +12,11 @@ resource "aws_s3_bucket_object" "manifest" {
   bucket         = aws_s3_bucket.manifests.bucket
   key            = "account.json"
   content_type   = "application/json"
-  content_base64 = jsonencode({
+  content_base64 = base64encode(local.account-manifest)
+}
+
+locals {
+  account-manifest = jsonencode({
     deploy = {
       bucket = aws_s3_bucket.deployments.bucket
     }
