@@ -7,7 +7,7 @@ data "aws_iam_policy_document" "put_to_open_search" {
     ]
     resources = [
       local.account-manifest.opensearch.arn,
-      "${local.account-manifest.opensearch.arn}*",
+      "${local.account-manifest.opensearch.arn}/*",
     ]
   }
 }
