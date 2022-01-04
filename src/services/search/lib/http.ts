@@ -53,5 +53,21 @@ export const signedRequest =
       })) as HttpRequest,
     );
 
-    return response.response;
+    let responseBody = '';
+
+    try {
+      for await (const chunk of response.response.body) {
+        responseBody += chunk;
+      }
+
+      responseBody = JSON.stringify(responseBody);
+    } catch (e) {
+      responseBody = response.response.body;
+    }
+
+    return {
+      body: responseBody,
+      headers: response.response.headers,
+      statusCode: response.response.statusCode,
+    };
   }
