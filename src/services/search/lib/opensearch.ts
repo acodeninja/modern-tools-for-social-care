@@ -8,12 +8,12 @@ export interface AddItemInput {
 export const put = async (input: AddItemInput) => {
   const body = input.items.map(item => {
     return JSON.stringify({index: { _index: '' }}) + "\n" + JSON.stringify(item) + "\n";
-  });
+  }).join("");
 
   return await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
     body,
-    method: "PUT",
+    method: "POST",
     service: "es",
     region: process.env.AWS_REGION,
   });
