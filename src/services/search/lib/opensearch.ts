@@ -11,7 +11,7 @@ export const put = async (input: AddItemInput) => {
   });
 
   return await signedRequest({
-    url: new URL(`${process.env.AWS_OPENSEARCH_DOMAIN_URL}/_bulk`),
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
     body,
     method: "PUT",
     service: "es",
@@ -31,7 +31,7 @@ export const search = async (terms: string, results: number = 20) => {
   };
 
   return await signedRequest({
-    url: new URL(`${process.env.AWS_OPENSEARCH_DOMAIN_URL}`),
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}`),
     body: JSON.stringify(query),
     method: "GET",
     service: "es",
