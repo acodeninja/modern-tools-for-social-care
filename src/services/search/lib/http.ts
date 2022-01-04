@@ -25,6 +25,8 @@ export const signedRequest =
            service,
          }): Promise<SignedRequestOutput> => {
 
+    console.log('Sending request', method, url.toString(), body);
+
     const signer = new SignatureV4({
       credentials: defaultProvider(),
       region: region,
