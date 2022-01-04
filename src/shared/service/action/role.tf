@@ -25,7 +25,10 @@ data "aws_iam_policy_document" "action_logging" {
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
-    resources = [aws_cloudwatch_log_group.action.arn]
+    resources = [
+      aws_cloudwatch_log_group.action.arn,
+      "${aws_cloudwatch_log_group.action.arn}/*",
+    ]
   }
 }
 
