@@ -21,6 +21,10 @@ variable "handler" {
   description = "The handler path for this action"
 }
 
+variable "policy" {
+  description = "The JSON policy document that should be applied to this function"
+}
+
 variable "environment_variables" {
   description = "A map of environment variables for the action"
   type        = map(string)
