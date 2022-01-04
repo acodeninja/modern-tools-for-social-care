@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "put_to_open_search" {
     sid = "AllowPuttingToOpenSearch"
     effect = "Allow"
     actions = [
-      "es:ESHttpPut"
+      "es:ESHttpPost"
     ]
     resources = [
       local.account-manifest.opensearch.arn,
