@@ -32,4 +32,4 @@ export const Handler = async (payload: Payload): Promise<Response> => {
   return response;
 }
 
-export default LambdifyHandler(Handler);
+export const LambdaHandler = LambdifyHandler(Handler);

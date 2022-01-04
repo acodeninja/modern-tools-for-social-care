@@ -4,7 +4,7 @@ module "action-update" {
   environment = var.environment
   service     = "search"
   action      = "update"
-  handler     = "update"
+  handler     = "update.LambdaHandler"
   artefacts   = "${path.root}/../build/actions/update"
   runtime     = "nodejs14.x"
   environment_variables = {

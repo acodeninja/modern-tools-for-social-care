@@ -23,4 +23,4 @@ export const Handler = async (payload: Payload) => {
   return response;
 }
 
-export default LambdifyHandler(Handler);
+export const LambdaHandler = LambdifyHandler(Handler);
