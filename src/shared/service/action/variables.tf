@@ -9,8 +9,8 @@ variable "service" {
 }
 
 variable "artefacts" {
-  description = "A list of artefact files to bundle for this action"
-  type        = list(string)
+  description = "The directory containing artefact files to bundle for this action"
+  type        = string
 }
 
 variable "runtime" {
