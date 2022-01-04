@@ -54,13 +54,3 @@ variable "environment" {
     error_message = "The environment value must be one of 'production', 'staging', 'testing'."
   }
 }
-
-variable "api_id" {
-  description = "The APIGateway ID to attach this action to"
-  type        = string
-}
-
-variable "api_route" {
-  description = "The route to attach this action to. Eg GET /"
-  type        = string
-}
