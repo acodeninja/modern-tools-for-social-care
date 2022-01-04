@@ -25,7 +25,16 @@ export const signedRequest =
            service,
          }: SignedRequestInput): Promise<SignedRequestOutput> => {
 
-    console.log('Sending request', method, url.toString(), body);
+    console.log('Sending request', new HttpRequest({
+      body: JSON.stringify(body),
+      headers: {
+        'Content-Type': 'application/json',
+        'host': url.host
+      },
+      hostname: url.host,
+      method,
+      path: url.pathname,
+    }));
 
     const signer = new SignatureV4({
       credentials: defaultProvider(),
