@@ -5,7 +5,7 @@ resource "aws_apigatewayv2_route" "action" {
 
 resource "aws_apigatewayv2_integration" "action" {
   api_id                    = var.api_id
-  integration_type          = "AWS"
+  integration_type          = "AWS_PROXY"
   connection_type           = "INTERNET"
   content_handling_strategy = "CONVERT_TO_TEXT"
   description               = "Search service API"
