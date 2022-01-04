@@ -23,7 +23,7 @@ export const signedRequest =
            method = 'GET',
            region,
            service,
-         }): Promise<SignedRequestOutput> => {
+         }: SignedRequestInput): Promise<SignedRequestOutput> => {
 
     console.log('Sending request', method, url.toString(), body);
 
