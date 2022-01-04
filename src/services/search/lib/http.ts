@@ -43,7 +43,7 @@ export const signedRequest =
         },
         hostname: url.host,
         method,
-        path: url.path,
+        path: url.pathname,
       })) as HttpRequest,
     );
 
