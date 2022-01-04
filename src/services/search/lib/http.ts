@@ -23,7 +23,7 @@ export const signedRequest =
          }: SignedRequestInput): Promise<HttpResponse> => {
 
     console.log('Sending request', new HttpRequest({
-      body: JSON.stringify(body),
+      body,
       headers: {
         'Content-Type': 'application/json',
         'host': url.host,
@@ -42,7 +42,7 @@ export const signedRequest =
 
     const response = await (new NodeHttpHandler()).handle(
       await signer.sign(new HttpRequest({
-        body: JSON.stringify(body),
+        body,
         headers: {
           'Content-Type': 'application/json',
           'host': url.host
