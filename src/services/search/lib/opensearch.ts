@@ -20,19 +20,8 @@ export const put = async (input: AddItemInput) => {
 };
 
 export const search = async (terms: string, results: number = 20) => {
-  const query = {
-    size: results,
-    query: {
-      multi_match: {
-        query: terms,
-        fields: [],
-      }
-    }
-  };
-
   return await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}`),
-    body: JSON.stringify(query),
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search?q=${terms}`),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
