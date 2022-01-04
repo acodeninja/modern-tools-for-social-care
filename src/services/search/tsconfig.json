@@ -6,5 +6,6 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "react"
-  }
+  },
+  "exclude": ["**/*.test.ts"]
 }
