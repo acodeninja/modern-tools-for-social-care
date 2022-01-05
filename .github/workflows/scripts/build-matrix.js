@@ -30,6 +30,9 @@ module.exports = async ({github, context}) => {
       name: codebasePath.replace('./src/', '').replace(/\//, '-'),
       codebasePath,
       commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
+      hasInfrastructure:
+        fs.existsSync(path.resolve(change, 'infrastructure')) ||
+        codebasePath.indexOf('infrastructure') !== -1,
     };
   })
 
