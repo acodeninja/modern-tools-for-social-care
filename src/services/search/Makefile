@@ -10,7 +10,7 @@ lint:
 	@echo "LINTING!"
 
 deploy:
-	@echo "DEPLOY!"
+	terraform apply -auto-approve
 
 build:
 	npm run build
