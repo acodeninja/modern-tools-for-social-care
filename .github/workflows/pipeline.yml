@@ -32,6 +32,20 @@ jobs:
       - run: ${{ matrix.changes.commandPrefix }} test
         working-directory: ${{ matrix.changes.codebasePath }}
 
+  lint:
+    runs-on: ubuntu-latest
+    name: 'Linting: ${{ matrix.changes.name }}'
+    needs: [ compute-changes ]
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.changes) }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - run: ${{ matrix.changes.commandPrefix }} lint
+        working-directory: ${{ matrix.changes.codebasePath }}
+
   build:
     runs-on: ubuntu-latest
     name: 'Build: ${{ matrix.changes.name }}'
