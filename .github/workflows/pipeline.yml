@@ -64,3 +64,16 @@ jobs:
           name: build-${{ matrix.changes.name }}
           path: ${{ matrix.changes.codebasePath }}/build/**
           if-no-files-found: ignore
+
+  deploy-infra-testing:
+    runs-on: ubuntu-latest
+    name: 'Deploy Infrastructure (Testing)'
+    needs: [ test, build, lint ]
+    environment: Testing
+    if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
+      - run: ${{ matrix.changes.commandPrefix }} deploy
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
