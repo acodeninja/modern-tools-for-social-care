@@ -16,8 +16,12 @@ const getActualChanges = async ({github, context}) => {
 }
 
 module.exports = async ({github, context}) => {
-  const possibleChanges = getPossibleChanges();
-  const actualChanges = await getActualChanges({github, context});
+  const possibleRuns = getPossibleChanges();
+  const changedFiles = await getActualChanges({github, context});
 
-  console.log(possibleChanges, actualChanges);
+  const runnableChanges = possibleRuns.filter(change =>
+    changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
+  );
+
+  console.log(runnableChanges, possibleRuns, changedFiles);
 };
