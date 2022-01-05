@@ -19,9 +19,7 @@ module.exports = async ({github, context}) => {
   const possibleRuns = getPossibleChanges();
   const changedFiles = await getActualChanges({github, context});
 
-  const runnableChanges = possibleRuns.filter(change =>
+  return possibleRuns.filter(change =>
     changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
   ).map(change => change.replace(path.resolve(__dirname, '..', '..', '..') + '/', ""));
-
-  console.log(`::set-output name=changes::${runnableChanges.join()}`)
 };
