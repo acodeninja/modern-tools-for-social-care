@@ -21,5 +21,13 @@ module.exports = async ({github, context}) => {
 
   return possibleRuns.filter(change =>
     changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
-  ).map(change => change.replace(path.resolve(__dirname, '..', '..', '..') + '/', ""));
+  ).map(change => {
+      const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
+      const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
+
+      return {
+        path: change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./"),
+        commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
+      };
+    });
 };

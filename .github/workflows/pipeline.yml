@@ -22,5 +22,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     needs: [ compute-changes ]
+    strategy:
+      matrix: ${{ fromJson(needs.compute-changes.outputs.changes) }}
     steps:
-      - run: echo "${{ needs.compute-changes.outputs.changes }}"
+      - uses: actions/checkout@v2
+      - run: ${{ matrix.commandPrefix }} install
+        working-directory: ${{ matrix.path }}
+      - run: ${{ matrix.commandPrefix }} test
+        working-directory: ${{ matrix.path }}
