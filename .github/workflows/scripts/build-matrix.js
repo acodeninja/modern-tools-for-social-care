@@ -11,7 +11,8 @@ const getActualChanges = async ({github, context}) => {
   const [owner, repo] = context.payload.repository.full_name.split('/');
   const pull_number = context.payload.pull_request.number;
 
-  return (await github.rest.pulls.listFiles({owner, repo, pull_number})).data.map(file => file.filename);
+  return (await github.rest.pulls.listFiles({owner, repo, pull_number})).data
+    .map(file => path.resolve(__dirname, '..', '..', '..', file.filename));
 }
 
 module.exports = async ({github, context}) => {
