@@ -29,7 +29,7 @@ export const search = async (terms: string, results: number = 20) => {
 
   return {
     count: response.body?.hits?.total?.value,
-    results: response.body?.hits.map(result => {
+    results: response.body?.hits?.hits?.map(result => {
       return {
         score: result._score,
         data: result._source,
