@@ -50,7 +50,7 @@ export const signedRequest =
         responseBody += chunk;
       }
 
-      responseBody = JSON.stringify(responseBody);
+      responseBody = JSON.parse(responseBody);
     } catch (e) {
       responseBody = response.response.body;
     }

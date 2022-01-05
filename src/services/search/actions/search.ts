@@ -16,10 +16,8 @@ export class Response implements ActionResponse {
 export const Handler = async (payload: Payload) => {
   const searchResponse = await search(payload.terms);
 
-  console.log(searchResponse);
-
   const response = new Response();
-  response.results = [];
+  response.results = <Array<SearchResult>>searchResponse.body;
   return response;
 }
 
