@@ -1,0 +1,16 @@
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    branches: ['*']
+
+jobs:
+  get-changes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/github-script@v5
+        with:
+          script: |
+            require('./.github/workflows/scripts/build-matrix.js')
+            ({github, context});
