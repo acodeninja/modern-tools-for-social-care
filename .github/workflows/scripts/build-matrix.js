@@ -21,7 +21,7 @@ module.exports = async ({github, context}) => {
 
   const runnableChanges = possibleRuns.filter(change =>
     changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
-  );
+  ).map(change => change.replace(path.resolve(__dirname, '..', '..', '..'), ""));
 
   console.log(runnableChanges, possibleRuns, changedFiles);
 };
