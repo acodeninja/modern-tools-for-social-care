@@ -31,3 +31,21 @@ jobs:
         working-directory: ${{ matrix.changes.codebasePath }}
       - run: ${{ matrix.changes.commandPrefix }} test
         working-directory: ${{ matrix.changes.codebasePath }}
+
+  build:
+    runs-on: ubuntu-latest
+    name: 'Build: ${{ matrix.changes.name }}'
+    needs: [ compute-changes ]
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.changes) }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - run: ${{ matrix.changes.commandPrefix }} build
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: build-${{ matrix.changes.name }}
+          path: ${{ matrix.changes.codebasePath }}/build/**
