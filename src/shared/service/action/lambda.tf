@@ -21,5 +21,5 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 locals {
-  api_execution_full = "${var.api_execution_arn}/${var.environment}/${replace(var.api_route, "/\\s\\S+$/", "")}/${replace(var.api_route, "/^([A-Z])+\\s\//", "")}"
+  api_execution_full = "${var.api_execution_arn}/${var.environment}/${replace(var.api_route, "/\\s\\S+$/", "")}/${replace(var.api_route, "/^([A-Z])+\\s\\//", "")}"
 }
