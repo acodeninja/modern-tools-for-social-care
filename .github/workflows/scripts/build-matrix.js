@@ -18,19 +18,23 @@ const getActualChanges = async ({github, context}) => {
 module.exports = async ({github, context}) => {
   const possibleRuns = getPossibleChanges();
   const changedFiles = await getActualChanges({github, context});
-
-  return possibleRuns.filter(change =>
+  const actualChanges = possibleRuns.filter(change =>
     changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
   ).map(change => {
-      const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
-      const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
+    const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
+    const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
 
-      const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
+    const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
 
-      return {
-        name: codebasePath.replace('./src/', '').replace(/\//, '-'),
-        codebasePath,
-        commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
-      };
-    });
+    return {
+      name: codebasePath.replace('./src/', '').replace(/\//, '-'),
+      codebasePath,
+      commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
+    };
+  })
+
+  return {
+    infrastructure: actualChanges.find(change => change.name === 'infrastructure'),
+    all: actualChanges,
+  };
 };

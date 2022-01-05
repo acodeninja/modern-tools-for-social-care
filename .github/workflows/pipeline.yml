@@ -24,7 +24,7 @@ jobs:
     needs: [ compute-changes ]
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes) }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
     steps:
       - uses: actions/checkout@v2
       - run: ${{ matrix.changes.commandPrefix }} install
@@ -38,7 +38,7 @@ jobs:
     needs: [ compute-changes ]
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes) }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
     steps:
       - uses: actions/checkout@v2
       - run: ${{ matrix.changes.commandPrefix }} install
@@ -52,7 +52,7 @@ jobs:
     needs: [ compute-changes ]
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes) }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
     steps:
       - uses: actions/checkout@v2
       - run: ${{ matrix.changes.commandPrefix }} install
