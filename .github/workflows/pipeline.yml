@@ -94,6 +94,5 @@ jobs:
         with:
           name: build-${{ matrix.changes.name }}
           path: ${{ matrix.changes.codebasePath }}/build
-          if-no-files-found: ignore
       - run: ${{ matrix.changes.commandPrefix }} deploy
         working-directory: ${{ matrix.changes.codebasePath }}
