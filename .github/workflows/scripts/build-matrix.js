@@ -9,7 +9,7 @@ module.exports = async ({github, context}) => {
   const [owner, repo] = context.payload.repository.full_name.split('/');
   const pull_number = context.payload.pull_request.number;
 
-  const actualChanges = github.rest.pulls.listFiles({
+  const actualChanges = await github.rest.pulls.listFiles({
     owner,
     repo,
     pull_number,
