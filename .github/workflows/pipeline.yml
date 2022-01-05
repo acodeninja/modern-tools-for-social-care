@@ -20,7 +20,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    name: 'Test: ${{ matrix.changes.path }}'
+    name: 'Tests: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
     strategy:
       matrix:
@@ -28,6 +28,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: ${{ matrix.changes.commandPrefix }} install
-        working-directory: ${{ matrix.changes.path }}
+        working-directory: ${{ matrix.changes.codebasePath }}
       - run: ${{ matrix.changes.commandPrefix }} test
-        working-directory: ${{ matrix.changes.path }}
+        working-directory: ${{ matrix.changes.codebasePath }}

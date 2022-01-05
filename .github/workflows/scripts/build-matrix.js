@@ -25,8 +25,11 @@ module.exports = async ({github, context}) => {
       const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
       const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
 
+      const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
+
       return {
-        path: change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./"),
+        name: codebasePath.replace('./src/', ''),
+        codebasePath,
         commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
       };
     });
