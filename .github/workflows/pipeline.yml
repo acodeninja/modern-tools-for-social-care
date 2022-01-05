@@ -66,16 +66,39 @@ jobs:
           path: ${{ matrix.changes.codebasePath }}/build/**
           if-no-files-found: ignore
 
-  deploy-infra-testing:
+  deploy-infrastructure-testing:
     runs-on: ubuntu-latest
-    name: 'Deploy Infrastructure (Testing)'
+    name: 'Deploy (Testing): Infrastructure'
     needs: [ compute-changes, test, build, lint ]
     environment: Testing
     if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
     steps:
       - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: build-infrastructure
+          path: src/infrastructure/build
+          if-no-files-found: ignore
       - run: echo "${{ fromJson(needs.compute-changes.outputs.changes) }}"
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} install
         working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} deploy
         working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
+
+  deploy-apps-testing:
+    runs-on: ubuntu-latest
+    name: 'Deploy (Testing): ${{ matrix.changes.name }}'
+    needs: [ compute-changes, deploy-infrastructure-testing ]
+    environment: Testing
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.changes).apps }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: build-${{ matrix.changes.name }}
+          path: ${{ matrix.changes.codebasePath }}/build
+          if-no-files-found: ignore
+      - run: ${{ matrix.changes.commandPrefix }} deploy
+        working-directory: ${{ matrix.changes.codebasePath }}
