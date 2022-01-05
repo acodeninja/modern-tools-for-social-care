@@ -104,7 +104,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
-        if: ${{ matrix.changes.hasInfrastructure }}
         with:
           terraform_version: 1.1.2
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} install
