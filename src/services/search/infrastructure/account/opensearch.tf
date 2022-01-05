@@ -20,4 +20,8 @@ resource "aws_elasticsearch_domain" "search" {
   tags = {
     Domain = local.domain-name
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
