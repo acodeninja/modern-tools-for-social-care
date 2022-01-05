@@ -17,5 +17,9 @@ resource "aws_lambda_permission" "lambda_permission" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.action.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn    = "${var.api_execution_arn}/${var.environment}/${replace(var.api_route, " ", "/")}"
+  source_arn    = local.api_execution_full
+}
+
+locals {
+  api_execution_full = "${var.api_execution_arn}/${var.environment}/${replace(var.api_route, "/\\s\\S+$/", "")}/${replace(var.api_route, "/^([A-Z])+\\s\//", "")}"
 }
