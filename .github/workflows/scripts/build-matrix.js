@@ -28,7 +28,7 @@ module.exports = async ({github, context}) => {
       const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
 
       return {
-        name: codebasePath.replace('./src/', '').replaceAll('/', '-'),
+        name: codebasePath.replace('./src/', '').replace(/\//, '-'),
         codebasePath,
         commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
       };
