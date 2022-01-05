@@ -4,8 +4,9 @@ resource "aws_apigatewayv2_api" "api" {
 }
 
 resource "aws_apigatewayv2_stage" "api" {
-  api_id = aws_apigatewayv2_api.api.id
-  name   = var.environment
+  api_id        = aws_apigatewayv2_api.api.id
+  name          = var.environment
+  deployment_id = aws_apigatewayv2_deployment.api.id
 }
 
 resource "aws_apigatewayv2_deployment" "api" {
