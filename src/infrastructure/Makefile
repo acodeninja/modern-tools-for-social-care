@@ -2,9 +2,9 @@
 
 install:
 	terraform init \
-		-backend-config="bucket=$TF_STATE_BUCKET" \
-		-backend-config="key=$TF_STATE_KEY" \
-		-backend-config="region=$AWS_DEFAULT_REGION"
+		-backend-config="bucket=$$TF_STATE_BUCKET" \
+		-backend-config="key=$$TF_STATE_KEY" \
+		-backend-config="region=$$AWS_DEFAULT_REGION"
 
 test:
 	@echo "test"
