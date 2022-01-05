@@ -14,7 +14,7 @@ lint:
 	tflint -f compact --module
 
 deploy:
-	@echo "DEPLOY!"
+	 TF_VAR_environment=$$ENVIRONMENT TF_VAR_system=$$SYSTEM terraform apply -auto-approve
 
 build:
 	@echo "build"

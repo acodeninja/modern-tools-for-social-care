@@ -153,3 +153,5 @@ jobs:
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
           TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+          SYSTEM: ${{ secrets.ENVIRONMENT }}
