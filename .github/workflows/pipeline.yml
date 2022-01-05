@@ -73,7 +73,7 @@ jobs:
     if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
     steps:
       - uses: actions/checkout@v2
-      - run: echo "${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}"
+      - run: echo "${{ fromJson(needs.compute-changes.outputs.changes) }}"
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} install
         working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} deploy
