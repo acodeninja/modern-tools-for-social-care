@@ -12,3 +12,10 @@ resource "aws_lambda_function" "action" {
     variables = var.environment_variables
   }
 }
+
+resource "aws_lambda_permission" "lambda_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.action.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${var.api_execution_arn}/${var.environment}/${replce(var.api_route, " ", "/")}"
+}

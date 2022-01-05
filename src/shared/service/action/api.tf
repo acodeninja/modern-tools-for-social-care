@@ -27,10 +27,3 @@ resource "aws_apigatewayv2_integration" "action" {
   integration_uri           = aws_lambda_function.action.invoke_arn
   passthrough_behavior      = "WHEN_NO_MATCH"
 }
-
-resource "aws_lambda_permission" "lambda_permission" {
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.action.function_name
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${var.api_execution_arn}/*/*/*"
-}
