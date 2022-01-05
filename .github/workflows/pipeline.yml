@@ -68,7 +68,7 @@ jobs:
   deploy-infra-testing:
     runs-on: ubuntu-latest
     name: 'Deploy Infrastructure (Testing)'
-    needs: [ test, build, lint ]
+    needs: [ compute-changes, test, build, lint ]
     environment: Testing
     if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
     steps:
