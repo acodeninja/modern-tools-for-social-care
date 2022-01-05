@@ -23,5 +23,5 @@ module.exports = async ({github, context}) => {
     changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
   ).map(change => change.replace(path.resolve(__dirname, '..', '..', '..') + '/', ""));
 
-  console.log(runnableChanges, possibleRuns, changedFiles);
+  console.log(`::set-output name=changes::${runnableChanges.join()}`)
 };
