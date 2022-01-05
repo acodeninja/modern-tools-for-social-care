@@ -10,15 +10,14 @@ export class Payload implements ActionPayload {
 }
 
 export class Response implements ActionResponse {
+  count: number;
   results: Array<SearchResult> = [];
 }
 
 export const Handler = async (payload: Payload) => {
   const searchResponse = await search(payload.terms);
 
-  const response = new Response();
-  response.results = <Array<SearchResult>>searchResponse.body;
-  return response;
+  return Object.assign(new Response(), searchResponse);
 }
 
 export const LambdaHandler = LambdifyHandler(Handler);

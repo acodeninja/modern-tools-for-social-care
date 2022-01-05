@@ -20,10 +20,20 @@ export const put = async (input: AddItemInput) => {
 };
 
 export const search = async (terms: string, results: number = 20) => {
-  return await signedRequest({
+  const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search?q=${terms}`),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
   });
+
+  return {
+    count: response.body?.hits?.total?.value,
+    results: response.body?.hits.map(result => {
+      return {
+        score: result._score,
+        data: result._source,
+      }
+    }),
+  }
 }

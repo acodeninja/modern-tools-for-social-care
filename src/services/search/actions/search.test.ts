@@ -1,11 +1,14 @@
-import {beforeAll, describe, expect, test} from '@jest/globals';
+import {beforeAll, describe, expect, jest, test} from '@jest/globals';
 import {Handler, Payload, Response} from "./search";
 
 import {search} from "../lib/opensearch";
 
 jest.mock('../lib/opensearch');
 
-(search as jest.Mock).mockResolvedValue({});
+(search as jest.Mock).mockResolvedValue({
+  count: 0,
+  results: [],
+});
 
 describe('services/search/actions/search', () => {
   describe('searching for a single term', () => {
