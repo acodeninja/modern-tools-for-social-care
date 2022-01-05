@@ -46,7 +46,7 @@ jobs:
       - run: ${{ matrix.changes.commandPrefix }} build
         working-directory: ${{ matrix.changes.codebasePath }}
       - uses: actions/upload-artifact@v2
-        if: hashFiles('${{ matrix.changes.codebasePath }}/build/**') != ''
         with:
           name: build-${{ matrix.changes.name }}
           path: ${{ matrix.changes.codebasePath }}/build/**
+          if-no-files-found: ignore
