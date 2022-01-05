@@ -74,11 +74,6 @@ jobs:
     if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/download-artifact@v2
-        with:
-          name: build-infrastructure
-          path: src/infrastructure/build
-          if-no-files-found: ignore
       - run: echo "${{ fromJson(needs.compute-changes.outputs.changes) }}"
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} install
         working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
