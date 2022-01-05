@@ -131,7 +131,6 @@ jobs:
     name: 'Deploy (Testing): ${{ matrix.changes.name }}'
     needs: [ compute-changes, deploy-infrastructure-testing ]
     environment: Testing
-    if: ${{ matrix.changes.hasInfrastructure }}
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.changes).apps }}
