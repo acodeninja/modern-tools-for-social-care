@@ -1,4 +1,4 @@
-.PHONY: install test build lint
+.PHONY: install test build lint deploy
 
 install:
 	npm ci
@@ -8,6 +8,9 @@ test:
 
 lint:
 	@echo "LINTING!"
+
+deploy:
+	@echo "DEPLOY!"
 
 build:
 	npm run build

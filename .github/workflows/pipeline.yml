@@ -17,6 +17,7 @@ jobs:
         id: changes
         with:
           script: return await require('./.github/workflows/scripts/build-matrix.js')({github, context});
+      - run: echo "${{ steps.changes.outputs.result }}"
 
   test:
     runs-on: ubuntu-latest

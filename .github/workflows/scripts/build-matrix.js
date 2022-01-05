@@ -35,6 +35,7 @@ module.exports = async ({github, context}) => {
 
   return {
     infrastructure: actualChanges.find(change => change.name === 'infrastructure'),
+    apps: actualChanges.filter(change => change.name !== 'infrastructure'),
     all: actualChanges,
   };
 };
