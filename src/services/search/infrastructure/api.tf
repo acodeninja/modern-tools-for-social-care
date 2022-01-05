@@ -7,3 +7,12 @@ resource "aws_apigatewayv2_stage" "api" {
   api_id = aws_apigatewayv2_api.api.id
   name   = var.environment
 }
+
+resource "aws_apigatewayv2_deployment" "api" {
+  api_id      = aws_apigatewayv2_api.api.id
+  description = "Latest ${var.environment} deployment"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
