@@ -1,11 +1,36 @@
 const path = require('path');
 const fs = require('fs');
 
-const getPossibleChanges = () => [
-  path.resolve(__dirname, '..', '..', '..', 'src', 'infrastructure'),
+const getPossibleAppChanges = (changedFiles) =>
   fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
-    .map(service => path.resolve(__dirname, '..', '..', '..', 'src', 'services', service)),
-].flat();
+    .map(service => path.resolve(__dirname, '..', '..', '..', 'src', 'services', service))
+    .filter(change =>
+      changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
+    ).map(change => {
+    const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
+    const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
+
+    const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
+
+    return {
+      name: codebasePath.replace('./src/', '').replace(/\//, '-'),
+      codebasePath,
+      commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
+      hasInfrastructure: fs.existsSync(path.resolve(change, 'infrastructure')),
+      hasNodeJS: npmRunner,
+    };
+  });
+
+const shouldRunInfrastructure = (changedFiles) => {
+  return changedFiles
+    .filter(
+      changedFile =>
+        changedFile.indexOf(
+          path.resolve(__dirname, '..', '..', '..', 'src', 'infrastructure')
+        ) === 0 ||
+        changedFile.indexOf(`infrastructure${path.sep}account`) !== -1
+    ).length > 0
+};
 
 const getActualChanges = async ({github, context}) => {
   const [owner, repo] = context.payload.repository.full_name.split('/');
@@ -16,29 +41,18 @@ const getActualChanges = async ({github, context}) => {
 }
 
 module.exports = async ({github, context}) => {
-  const possibleRuns = getPossibleChanges();
   const changedFiles = await getActualChanges({github, context});
-  const actualChanges = possibleRuns.filter(change =>
-    changedFiles.filter(changedFile => changedFile.indexOf(change) === 0).length > 0
-  ).map(change => {
-    const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
-    const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
-
-    const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
-
-    return {
-      name: codebasePath.replace('./src/', '').replace(/\//, '-'),
-      codebasePath,
-      commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
-      hasInfrastructure:
-        fs.existsSync(path.resolve(change, 'infrastructure')) ||
-        codebasePath.indexOf('infrastructure') !== -1,
-    };
-  })
+  const possibleAppRuns = getPossibleAppChanges(changedFiles);
+  const infrastructure = shouldRunInfrastructure(changedFiles) ? {
+    name: 'infrastructure',
+    codebasePath: path.resolve(__dirname, '..', '..', '..', 'src/infrastructure'),
+    commandPrefix: 'make',
+    hasInfrastructure: true,
+  } : undefined;
 
   return {
-    infrastructure: actualChanges.find(change => change.name === 'infrastructure'),
-    apps: actualChanges.filter(change => change.name !== 'infrastructure'),
-    all: actualChanges,
+    infrastructure,
+    apps: possibleAppRuns.filter(change => change.name !== 'infrastructure'),
+    all: infrastructure ? possibleAppRuns.concat([infrastructure]) : possibleAppRuns,
   };
 };

@@ -13,6 +13,13 @@ jobs:
       changes: ${{ steps.changes.outputs.result }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+      - run: npm ci
+      - run: npm test
       - uses: actions/github-script@v5
         id: changes
         with:
@@ -28,6 +35,14 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
       - run: ${{ matrix.changes.commandPrefix }} install
         working-directory: ${{ matrix.changes.codebasePath }}
         env:
@@ -50,6 +65,14 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
       - uses: hashicorp/setup-terraform@v1
         if: ${{ matrix.changes.hasInfrastructure }}
         with:
@@ -78,6 +101,14 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
       - run: ${{ matrix.changes.commandPrefix }} install
         working-directory: ${{ matrix.changes.codebasePath }}
         env:
@@ -138,6 +169,14 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.changes).apps }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
       - uses: hashicorp/setup-terraform@v1
         if: ${{ matrix.changes.hasInfrastructure }}
         with:
