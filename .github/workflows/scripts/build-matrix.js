@@ -31,10 +31,12 @@ const shouldRunInfrastructure = (changedFiles) => {
     ).length > 0
 };
 
-const getTarget = (context) =>
-  context.pull_request?.base?.ref ||
-  context.push?.ref?.split('/').slice(-1)[0] ||
-  null;
+const getTarget = (context) => {
+  if (context.pull_request) return context.pull_request.base.ref;
+  if (context.push) return context.push.ref.split('/').slice(-1)[0];
+
+  return null;
+};
 
 module.exports = async ({context, changes}) => {
   const target = getTarget(context);
