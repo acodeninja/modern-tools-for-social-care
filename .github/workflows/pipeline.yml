@@ -51,7 +51,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
-          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - run: ${{ matrix.changes.commandPrefix }} test
         working-directory: ${{ matrix.changes.codebasePath }}
@@ -87,7 +87,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
-          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - run: ${{ matrix.changes.commandPrefix }} lint
         working-directory: ${{ matrix.changes.codebasePath }}
@@ -117,7 +117,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
-          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - run: ${{ matrix.changes.commandPrefix }} build
         working-directory: ${{ matrix.changes.codebasePath }}
@@ -127,7 +127,7 @@ jobs:
           path: ${{ matrix.changes.codebasePath }}/build/**
           if-no-files-found: ignore
 
-  deploy-infrastructure-testing:
+  deploy-infrastructure:
     runs-on: ubuntu-latest
     name: 'Deploy (Testing): Infrastructure'
     needs: [ compute-changes, test, build, lint ]
@@ -146,7 +146,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
-          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/infrastructure.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} deploy
         working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
@@ -155,12 +155,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
-          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/infrastructure.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
           TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
           TF_VAR_system: ${{ secrets.SYSTEM }}
 
-  deploy-apps-testing:
+  deploy-apps:
     runs-on: ubuntu-latest
     name: 'Deploy (Testing): ${{ matrix.changes.name }}'
     needs: [ compute-changes, deploy-infrastructure-testing ]
