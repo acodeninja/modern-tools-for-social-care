@@ -23,6 +23,7 @@ describe('a pull request', () => {
         hasInfrastructure: true,
         needsDeployment: false,
         target: 'main',
+        type: 'Plan',
       });
     });
 
@@ -34,6 +35,7 @@ describe('a pull request', () => {
         hasInfrastructure: true,
         needsDeployment: false,
         target: 'main',
+        type: 'Plan',
       }]);
     });
   });
@@ -60,6 +62,7 @@ describe('a pull request', () => {
         hasInfrastructure: true,
         needsDeployment: false,
         target: 'main',
+        type: 'Plan',
       });
     });
 
@@ -71,6 +74,7 @@ describe('a pull request', () => {
         hasInfrastructure: true,
         needsDeployment: false,
         target: 'main',
+        type: 'Plan',
       }]);
     });
   });
@@ -98,6 +102,7 @@ describe('a pull request', () => {
         hasNodeJS: true,
         needsDeployment: false,
         target: 'main',
+        type: 'Plan',
       }]);
     });
 
@@ -110,6 +115,7 @@ describe('a pull request', () => {
         hasNodeJS: true,
         needsDeployment: false,
         target: 'main',
+        type: 'Plan',
       }]);
     });
   });
@@ -136,6 +142,7 @@ describe('a push', () => {
         hasInfrastructure: true,
         needsDeployment: true,
         target: 'main',
+        type: 'Deploy',
       });
     });
 
@@ -147,6 +154,7 @@ describe('a push', () => {
         hasInfrastructure: true,
         needsDeployment: true,
         target: 'main',
+        type: 'Deploy',
       }]);
     });
   });
@@ -173,6 +181,7 @@ describe('a push', () => {
         hasInfrastructure: true,
         needsDeployment: true,
         target: 'main',
+        type: 'Deploy',
       });
     });
 
@@ -184,6 +193,7 @@ describe('a push', () => {
         hasInfrastructure: true,
         needsDeployment: true,
         target: 'main',
+        type: 'Deploy',
       }]);
     });
   });
@@ -211,6 +221,7 @@ describe('a push', () => {
         hasNodeJS: true,
         needsDeployment: true,
         target: 'main',
+        type: 'Deploy',
       }]);
     });
 
@@ -223,6 +234,7 @@ describe('a push', () => {
         hasNodeJS: true,
         needsDeployment: true,
         target: 'main',
+        type: 'Deploy',
       }]);
     });
   });

@@ -42,7 +42,7 @@ module.exports = async ({context, changes}) => {
   const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
   const possibleAppRuns = getPossibleAppChanges(changedFiles)
-    .map(run => ({...run, target, needsDeployment: !!context.push}));
+    .map(run => ({...run, target, needsDeployment: !!context.push, type: !context.push ? 'Plan' : 'Deploy'}));
 
   const infrastructure = shouldRunInfrastructure(changedFiles) ? {
     name: 'infrastructure',
@@ -50,7 +50,8 @@ module.exports = async ({context, changes}) => {
     commandPrefix: 'make',
     hasInfrastructure: true,
     target,
-    needsDeployment: !!context.push
+    needsDeployment: !!context.push,
+    type: !context.push ? 'Plan' : 'Deploy',
   } : undefined;
 
   return {
