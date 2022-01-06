@@ -31,19 +31,29 @@ const shouldRunInfrastructure = (changedFiles) => {
     ).length > 0
 };
 
-module.exports = async ({changes}) => {
+const getTarget = (context) =>
+  context.pull_request?.base?.ref ||
+  context.push?.ref?.split('/').slice(-1)[0] ||
+  null;
+
+module.exports = async ({context, changes}) => {
+  const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
-  const possibleAppRuns = getPossibleAppChanges(changedFiles);
+  const possibleAppRuns = getPossibleAppChanges(changedFiles)
+    .map(run => ({...run, target, needsDeployment: !!context.push}));
+
   const infrastructure = shouldRunInfrastructure(changedFiles) ? {
     name: 'infrastructure',
     codebasePath: path.resolve(__dirname, '..', '..', '..', 'src/infrastructure'),
     commandPrefix: 'make',
     hasInfrastructure: true,
+    target,
+    needsDeployment: !!context.push
   } : undefined;
 
   return {
     infrastructure,
-    apps: possibleAppRuns.filter(change => change.name !== 'infrastructure'),
+    apps: possibleAppRuns,
     all: infrastructure ? possibleAppRuns.concat([infrastructure]) : possibleAppRuns,
   };
 };

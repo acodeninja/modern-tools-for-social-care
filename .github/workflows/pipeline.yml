@@ -12,7 +12,7 @@ jobs:
     name: Compute Changes
     runs-on: ubuntu-latest
     outputs:
-      changes: ${{ steps.changes.outputs.result }}
+      runs: ${{ steps.runs.outputs.result }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -27,11 +27,11 @@ jobs:
         with:
           format: json
       - uses: actions/github-script@v5
-        id: changes
+        id: runs
         with:
           script: |
             return await require('./.github/workflows/scripts/build-matrix.js')
-              ({changes: JSON.parse('${{ steps.files.outputs.all }}')});
+              ({context, changes: JSON.parse('${{ steps.files.outputs.all }}')});
 
   test:
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
     environment: Testing
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -70,7 +70,7 @@ jobs:
     environment: Testing
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -106,7 +106,7 @@ jobs:
     environment: Testing
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes).all }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -147,14 +147,14 @@ jobs:
     needs: [ compute-changes, consolidate-pipeline ]
     environment: Testing
     concurrency: Testing
-    if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
+    if: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure }}
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.2
-      - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} install
-        working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
+      - run: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.commandPrefix }} install
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -162,8 +162,9 @@ jobs:
           TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
           TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/infrastructure.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
-      - run: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.commandPrefix }} deploy
-        working-directory: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure.codebasePath }}
+      - run: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.commandPrefix }} deploy
+        if: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.needsDeployment }}
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -181,7 +182,7 @@ jobs:
     environment: Testing
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.changes).apps }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).apps }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -210,6 +211,7 @@ jobs:
           TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
           TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
       - run: ${{ matrix.changes.commandPrefix }} deploy
+        if: ${{ matrix.changes.commandPrefix }}
         working-directory: ${{ matrix.changes.codebasePath }}
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
