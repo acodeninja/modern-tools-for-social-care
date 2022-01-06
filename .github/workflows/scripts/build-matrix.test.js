@@ -2,32 +2,11 @@ const buildMatrix = require('./build-matrix');
 const {describe, test, expect, beforeAll} = require("@jest/globals");
 const path = require("path");
 
-const github = {
-  rest: {
-    pulls: {
-      listFiles: jest.fn(),
-    },
-  },
-};
-
-const context = {
-  payload: {
-    repository: {
-      full_name: "test/repo"
-    },
-    pull_request: {
-      number: "1"
-    },
-  },
-};
-
 describe('when only the account level infrastructure has changed', () => {
-  let output;
   beforeAll(async () => {
-    github.rest.pulls.listFiles.mockResolvedValueOnce({
-      data: [{filename: "src/infrastructure/test.tf"}],
+    output = await buildMatrix({
+      changes: ["src/infrastructure/test.tf"]
     });
-    output = await buildMatrix({github, context});
   });
 
   test('returns no app runs', async () => {
@@ -57,10 +36,9 @@ describe('when only the account module in an apps infrastructure has changed', (
   let output;
 
   beforeAll(async () => {
-    github.rest.pulls.listFiles.mockResolvedValueOnce({
-      data: [{filename: "src/services/app/infrastructure/account/test.tf"}],
+    output = await buildMatrix({
+      changes: ["src/services/app/infrastructure/account/test.tf"]
     });
-    output = await buildMatrix({github, context});
   });
 
   test('returns no app runs', async () => {
@@ -90,10 +68,9 @@ describe('when only a single app has changed', () => {
   let output;
 
   beforeAll(async () => {
-    github.rest.pulls.listFiles.mockResolvedValueOnce({
-      data: [{filename: "src/services/search/somefile.js"}],
+    output = await buildMatrix({
+      changes: ["src/services/search/somefile.js"]
     });
-    output = await buildMatrix({github, context});
   });
 
   test('returns no infrastructure runs', async () => {
@@ -120,3 +97,4 @@ describe('when only a single app has changed', () => {
     }]);
   });
 });
+

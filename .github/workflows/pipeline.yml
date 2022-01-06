@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main, dev ]
   pull_request:
+    types: [ opened, synchronize ]
     branches: ['*']
 
 jobs:
@@ -21,10 +22,19 @@ jobs:
           node-version: ${{ steps.node.outputs.version }}
       - run: npm ci
       - run: npm test
+      - uses: jitterbit/get-changed-files@v1
+        id: files
+        with:
+          format: json
       - uses: actions/github-script@v5
         id: changes
         with:
-          script: return await require('./.github/workflows/scripts/build-matrix.js')({github, context});
+          script: |
+            return await require('./.github/workflows/scripts/build-matrix.js')
+              ({github, context, action: "${{ github.event_name }}", changes: JSON.parse("${{ steps.files.outputs.all }}")});
+      - run: |
+          echo "QUITTING ON PURPOSE!"
+          exit 1
 
   test:
     runs-on: ubuntu-latest
