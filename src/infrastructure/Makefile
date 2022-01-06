@@ -14,7 +14,10 @@ lint:
 	tflint -f compact --module
 
 deploy:
-	 terraform apply -auto-approve
+	 terraform apply plan.tfplan
+
+plan-deploy:
+	 terraform plan -out plan.tfplan
 
 build:
 	@echo "build"

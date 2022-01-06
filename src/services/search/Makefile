@@ -14,7 +14,10 @@ lint:
 	@echo "LINTING!"
 
 deploy:
-	cd infrastructure && terraform apply -auto-approve
+	cd infrastructure && terraform apply plan.tfplan
+
+plan-deploy:
+	cd infrastructure && terraform plan -out plan.tfplan
 
 build:
 	npm run build
