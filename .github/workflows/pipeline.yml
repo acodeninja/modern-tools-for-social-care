@@ -32,9 +32,6 @@ jobs:
           script: |
             return await require('./.github/workflows/scripts/build-matrix.js')
               ({changes: JSON.parse('${{ steps.files.outputs.all }}')});
-      - run: |
-          echo "QUITTING ON PURPOSE!"
-          exit 1
 
   test:
     runs-on: ubuntu-latest
