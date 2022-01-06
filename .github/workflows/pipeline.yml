@@ -215,7 +215,7 @@ jobs:
           terraform_version: 1.1.2
       - uses: actions/download-artifact@v2
         with:
-          name: build-${{ matrix.changes.name }}-${{ github.sha }}
+          name: ${{ matrix.changes.name }}-build-${{ github.sha }}
           path: ${{ matrix.changes.codebasePath }}/build
       - run: ${{ matrix.changes.commandPrefix }} install
         working-directory: ${{ matrix.changes.codebasePath }}
