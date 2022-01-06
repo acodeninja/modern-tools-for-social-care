@@ -127,10 +127,15 @@ jobs:
           path: ${{ matrix.changes.codebasePath }}/build/**
           if-no-files-found: ignore
 
+  consolidate-pipeline:
+    runs-on: ubuntu-latest
+    name: Consolidate Pipeline
+    needs: [ test, build, lint ]
+
   deploy-infrastructure:
     runs-on: ubuntu-latest
     name: 'Deploy (Testing): Infrastructure'
-    needs: [ compute-changes, test, build, lint ]
+    needs: [ compute-changes, consolidate-pipeline ]
     environment: Testing
     concurrency: Testing
     if: ${{ fromJson(needs.compute-changes.outputs.changes).infrastructure }}
