@@ -8,6 +8,7 @@ on:
 
 jobs:
   compute-changes:
+    name: Compute Changes
     runs-on: ubuntu-latest
     outputs:
       changes: ${{ steps.changes.outputs.result }}
