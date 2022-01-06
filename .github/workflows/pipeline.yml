@@ -28,7 +28,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    name: 'Tests: ${{ matrix.changes.name }}'
+    name: 'Test: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
     environment: Testing
     strategy:
@@ -58,7 +58,7 @@ jobs:
 
   lint:
     runs-on: ubuntu-latest
-    name: 'Linting: ${{ matrix.changes.name }}'
+    name: 'Lint: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
     environment: Testing
     strategy:
