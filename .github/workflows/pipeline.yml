@@ -131,6 +131,8 @@ jobs:
     runs-on: ubuntu-latest
     name: Consolidate Pipeline
     needs: [ test, build, lint ]
+    steps:
+      - run: date
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
