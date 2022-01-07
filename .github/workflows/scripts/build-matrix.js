@@ -38,11 +38,28 @@ const getTarget = (context) => {
   return null;
 };
 
+const getEnvironments = (context) => {
+  switch (getTarget(context)) {
+    case 'main':
+      return ['Staging', 'Production'];
+    case 'dev':
+      return ['Testing'];
+    case null:
+      return null;
+  }
+};
+
 module.exports = async ({context, changes}) => {
   const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
   const possibleAppRuns = getPossibleAppChanges(changedFiles)
-    .map(run => ({...run, target, needsDeployment: !!context.push, type: !context.push ? 'Plan' : 'Deploy'}));
+    .map(run => ({
+      ...run,
+      target,
+      needsDeployment: !!context.push,
+      type: !context.push ? 'Plan' : 'Deploy',
+      environments: getEnvironments(context),
+    }));
 
   const infrastructure = shouldRunInfrastructure(changedFiles) ? {
     name: 'infrastructure',
@@ -52,6 +69,7 @@ module.exports = async ({context, changes}) => {
     target,
     needsDeployment: !!context.push,
     type: !context.push ? 'Plan' : 'Deploy',
+    environments: getEnvironments(context),
   } : undefined;
 
   return {

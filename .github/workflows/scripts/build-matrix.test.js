@@ -24,6 +24,7 @@ describe('a pull request', () => {
         needsDeployment: false,
         target: 'main',
         type: 'Plan',
+        environments: ['Staging', 'Production'],
       });
     });
 
@@ -36,6 +37,7 @@ describe('a pull request', () => {
         needsDeployment: false,
         target: 'main',
         type: 'Plan',
+        environments: ['Staging', 'Production'],
       }]);
     });
   });
@@ -63,6 +65,7 @@ describe('a pull request', () => {
         needsDeployment: false,
         target: 'main',
         type: 'Plan',
+        environments: ['Staging', 'Production'],
       });
     });
 
@@ -75,6 +78,7 @@ describe('a pull request', () => {
         needsDeployment: false,
         target: 'main',
         type: 'Plan',
+        environments: ['Staging', 'Production'],
       }]);
     });
   });
@@ -103,6 +107,7 @@ describe('a pull request', () => {
         needsDeployment: false,
         target: 'main',
         type: 'Plan',
+        environments: ['Staging', 'Production'],
       }]);
     });
 
@@ -116,6 +121,7 @@ describe('a pull request', () => {
         needsDeployment: false,
         target: 'main',
         type: 'Plan',
+        environments: ['Staging', 'Production'],
       }]);
     });
   });
@@ -143,6 +149,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'main',
         type: 'Deploy',
+        environments: ['Staging', 'Production'],
       });
     });
 
@@ -155,6 +162,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'main',
         type: 'Deploy',
+        environments: ['Staging', 'Production'],
       }]);
     });
   });
@@ -182,6 +190,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'main',
         type: 'Deploy',
+        environments: ['Staging', 'Production'],
       });
     });
 
@@ -194,6 +203,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'main',
         type: 'Deploy',
+        environments: ['Staging', 'Production'],
       }]);
     });
   });
@@ -222,6 +232,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'main',
         type: 'Deploy',
+        environments: ['Staging', 'Production'],
       }]);
     });
 
@@ -235,6 +246,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'main',
         type: 'Deploy',
+        environments: ['Staging', 'Production'],
       }]);
     });
   });
