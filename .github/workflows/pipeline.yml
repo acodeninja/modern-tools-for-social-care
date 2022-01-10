@@ -37,6 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Test: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
+    if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
@@ -63,6 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Lint: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
+    if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
@@ -95,6 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Build: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
+    if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}

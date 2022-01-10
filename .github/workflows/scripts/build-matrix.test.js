@@ -15,6 +15,10 @@ describe('a pull request', () => {
       expect(output).toHaveProperty('apps', []);
     });
 
+    test('returns true for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', true);
+    });
+
     test('returns the infrastructure run', async () => {
       expect(output).toHaveProperty('infrastructure', {
         name: "infrastructure",
@@ -54,6 +58,10 @@ describe('a pull request', () => {
 
     test('returns no app runs', async () => {
       expect(output).toHaveProperty('apps', []);
+    });
+
+    test('returns true for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', true);
     });
 
     test('returns the infrastructure run', async () => {
@@ -97,6 +105,10 @@ describe('a pull request', () => {
       expect(output).toHaveProperty('infrastructure', undefined);
     });
 
+    test('returns true for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', true);
+    });
+
     test('returns an app run as part of apps', async () => {
       expect(output).toHaveProperty('apps', [{
         name: "services-search",
@@ -123,6 +135,33 @@ describe('a pull request', () => {
         type: 'Plan',
         environments: ['Staging', 'Production'],
       }]);
+    });
+  });
+
+  describe('when no apps have changes', () => {
+    let output;
+
+    beforeAll(async () => {
+      output = await buildMatrix({
+        context: {payload: {pull_request: {base: {ref: 'main'}}}},
+        changes: []
+      });
+    });
+
+    test('returns no infrastructure runs', async () => {
+      expect(output).toHaveProperty('infrastructure', undefined);
+    });
+
+    test('returns false for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', false);
+    });
+
+    test('returns no app runs', async () => {
+      expect(output).toHaveProperty('apps', []);
+    });
+
+    test('returns no runs', async () => {
+      expect(output).toHaveProperty('all', []);
     });
   });
 });
@@ -140,6 +179,10 @@ describe('a push', () => {
       expect(output).toHaveProperty('apps', []);
     });
 
+    test('returns true for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', true);
+    });
+
     test('returns the infrastructure run', async () => {
       expect(output).toHaveProperty('infrastructure', {
         name: "infrastructure",
@@ -179,6 +222,10 @@ describe('a push', () => {
 
     test('returns no app runs', async () => {
       expect(output).toHaveProperty('apps', []);
+    });
+
+    test('returns true for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', true);
     });
 
     test('returns the infrastructure run', async () => {
@@ -222,6 +269,10 @@ describe('a push', () => {
       expect(output).toHaveProperty('infrastructure', undefined);
     });
 
+    test('returns true for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', true);
+    });
+
     test('returns an app run as part of apps', async () => {
       expect(output).toHaveProperty('apps', [{
         name: "services-search",
@@ -248,6 +299,33 @@ describe('a push', () => {
         type: 'Deploy',
         environments: ['Staging', 'Production'],
       }]);
+    });
+  });
+
+  describe('when no apps have changes', () => {
+    let output;
+
+    beforeAll(async () => {
+      output = await buildMatrix({
+        context: {payload: {push: {ref: 'refs/head/main'}}},
+        changes: []
+      });
+    });
+
+    test('returns no infrastructure runs', async () => {
+      expect(output).toHaveProperty('infrastructure', undefined);
+    });
+
+    test('returns false for hasRuns', async () => {
+      expect(output).toHaveProperty('hasRuns', false);
+    });
+
+    test('returns no app runs', async () => {
+      expect(output).toHaveProperty('apps', []);
+    });
+
+    test('returns no runs', async () => {
+      expect(output).toHaveProperty('all', []);
     });
   });
 });

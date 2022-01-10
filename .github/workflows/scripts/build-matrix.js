@@ -76,5 +76,6 @@ module.exports = async ({context, changes}) => {
     infrastructure,
     apps: possibleAppRuns,
     all: infrastructure ? possibleAppRuns.concat([infrastructure]) : possibleAppRuns,
+    hasRuns: (infrastructure ? possibleAppRuns.concat([infrastructure]) : possibleAppRuns).length > 0,
   };
 };
