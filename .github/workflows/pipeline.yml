@@ -127,7 +127,7 @@ jobs:
 
   deploy-infrastructure:
     runs-on: ubuntu-latest
-    name: '${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.type }}: infrastructure'
+    name: 'Deploy: infrastructure'
     needs: [ compute-changes, test, build, lint ]
     environment: Testing
     concurrency: Testing
@@ -182,7 +182,7 @@ jobs:
 
   deploy-apps:
     runs-on: ubuntu-latest
-    name: '${{ matrix.changes.type }}: ${{ matrix.changes.name }}'
+    name: 'Deploy Applications'
     needs: [ compute-changes, deploy-infrastructure ]
     environment: Testing
     strategy:
