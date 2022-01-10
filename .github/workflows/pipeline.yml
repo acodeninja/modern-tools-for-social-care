@@ -131,6 +131,7 @@ jobs:
     if: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo '${{ fromJson(needs.compute-changes.outputs.runs).environments }}'
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.2
@@ -186,6 +187,7 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).apps }}
     steps:
       - uses: actions/checkout@v2
+      - run: echo '${{ matrix.changes.environments }}'
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
         id: node
         if: ${{ matrix.changes.hasNodeJS }}
