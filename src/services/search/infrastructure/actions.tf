@@ -13,7 +13,7 @@ data "aws_iam_policy_document" "put_to_open_search" {
 }
 
 module "action-update" {
-  source            = "../../../shared/service/action"
+  source            = "../../../framework/service/action"
   system            = var.system
   environment       = var.environment
   service           = "search"
@@ -47,7 +47,7 @@ data "aws_iam_policy_document" "get_to_open_search" {
 }
 
 module "action-search" {
-  source            = "../../../shared/service/action"
+  source            = "../../../framework/service/action"
   system            = var.system
   environment       = var.environment
   service           = "search"

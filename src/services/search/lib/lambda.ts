@@ -1,5 +1,5 @@
 import {APIGatewayProxyHandlerV2} from "aws-lambda";
-import {ActionManifest} from "../../../shared/service/types";
+import {ActionManifest} from "../../../framework/service/types";
 
 export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayProxyHandlerV2 => async (event) => {
   const response = await Handler(JSON.parse(

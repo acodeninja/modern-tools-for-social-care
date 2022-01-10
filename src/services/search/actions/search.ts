@@ -1,4 +1,4 @@
-import {ActionPayload, ActionResponse} from "../../../shared/service/types";
+import {ActionPayload, ActionResponse} from "../../../framework/service/types";
 import {search} from "../lib/opensearch";
 import {SearchResult} from "../domains";
 import {LambdifyHandler} from "../lib/lambda";
