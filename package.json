@@ -2,8 +2,21 @@
   "name": "modern-tools-for-social-care",
   "version": "1.0.0",
   "description": "An ecosystem of tools for social care management.",
-  "scripts": {},
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "scripts": {
+    "test": "jest"
+  },
+  "license": "ISC",
+  "engines": {
+    "node": "14"
+  },
+  "devDependencies": {
+    "@jest/globals": "^27.4.6",
+    "jest": "^27.4.5",
+    "lambda-local": "^2.0.1"
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/src/"
+    ]
+  }
 }

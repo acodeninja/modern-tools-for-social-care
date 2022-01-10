@@ -1,0 +1,247 @@
+name: Pipeline
+
+on:
+  push:
+    branches: [ main, dev ]
+  pull_request:
+    types: [ opened, synchronize ]
+    branches: ['*']
+
+jobs:
+  compute-changes:
+    name: Compute Changes
+    runs-on: ubuntu-latest
+    outputs:
+      runs: ${{ steps.runs.outputs.result }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+      - run: npm ci
+      - run: npm test
+      - uses: jitterbit/get-changed-files@v1
+        id: files
+        with:
+          format: json
+      - uses: actions/github-script@v5
+        id: runs
+        with:
+          script: |
+            return await require('./.github/workflows/scripts/build-matrix.js')
+              ({context, changes: JSON.parse('${{ steps.files.outputs.all }}')});
+
+  test:
+    runs-on: ubuntu-latest
+    name: 'Test: ${{ matrix.changes.name }}'
+    needs: [ compute-changes ]
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ matrix.changes.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - run: ${{ matrix.changes.commandPrefix }} test
+        working-directory: ${{ matrix.changes.codebasePath }}
+
+  lint:
+    runs-on: ubuntu-latest
+    name: 'Lint: ${{ matrix.changes.name }}'
+    needs: [ compute-changes ]
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+      - uses: hashicorp/setup-terraform@v1
+        if: ${{ matrix.changes.hasInfrastructure }}
+        with:
+          terraform_version: 1.1.2
+      - uses: terraform-linters/setup-tflint@v1
+        if: ${{ matrix.changes.hasInfrastructure }}
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ matrix.changes.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - run: ${{ matrix.changes.commandPrefix }} lint
+        working-directory: ${{ matrix.changes.codebasePath }}
+
+  build:
+    runs-on: ubuntu-latest
+    name: 'Build: ${{ matrix.changes.name }}'
+    needs: [ compute-changes ]
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ matrix.changes.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - run: ${{ matrix.changes.commandPrefix }} build
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: ${{ matrix.changes.name }}-build-${{ github.sha }}
+          path: ${{ matrix.changes.codebasePath }}/build/**
+          if-no-files-found: ignore
+
+  deploy-infrastructure:
+    runs-on: ubuntu-latest
+    name: '${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.type }}: infrastructure'
+    needs: [ compute-changes, test, build, lint ]
+    environment: Testing
+    concurrency: Testing
+    if: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo '${{ toJson(fromJson(needs.compute-changes.outputs.runs).infrastructure) }}'
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.2
+      - run: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.commandPrefix }} install
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - run: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.commandPrefix }} plan-deploy
+        if: ${{ !fromJson(needs.compute-changes.outputs.runs).infrastructure.needsDeployment }}
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
+          TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
+          TF_VAR_system: ${{ secrets.SYSTEM }}
+      - uses: actions/upload-artifact@v2
+        if: ${{ !fromJson(needs.compute-changes.outputs.runs).infrastructure.needsDeployment }}
+        with:
+          name: infrastrcuture-deploy-plan-${{ github.sha }}
+          path: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}/plan.tfplan
+          if-no-files-found: ignore
+      - uses: actions/download-artifact@v2
+        if: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.needsDeployment }}
+        with:
+          name: infrastrcuture-deploy-plan-${{ github.sha }}
+          path: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}/plan.tfplan
+      - run: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.commandPrefix }} deploy
+        if: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.needsDeployment }}
+        working-directory: ${{ fromJson(needs.compute-changes.outputs.runs).infrastructure.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
+          TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
+          TF_VAR_system: ${{ secrets.SYSTEM }}
+
+  deploy-apps:
+    runs-on: ubuntu-latest
+    name: '${{ matrix.changes.type }}: ${{ matrix.changes.name }}'
+    needs: [ compute-changes, deploy-infrastructure ]
+    environment: Testing
+    strategy:
+      matrix:
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).apps }}
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo '${{ toJson(matrix.changes) }}'
+      - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
+        id: node
+        if: ${{ matrix.changes.hasNodeJS }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.changes.hasNodeJS }}
+        with:
+          node-version: ${{ steps.node.outputs.version }}
+      - uses: hashicorp/setup-terraform@v1
+        if: ${{ matrix.changes.hasInfrastructure }}
+        with:
+          terraform_version: 1.1.2
+      - uses: actions/download-artifact@v2
+        with:
+          name: ${{ matrix.changes.name }}-build-${{ github.sha }}
+          path: ${{ matrix.changes.codebasePath }}/build
+      - run: ${{ matrix.changes.commandPrefix }} install
+        working-directory: ${{ matrix.changes.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+      - run: ${{ matrix.changes.commandPrefix }} plan-deploy
+        if: ${{ !matrix.changes.needsDeployment }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
+          TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
+          TF_VAR_system: ${{ secrets.SYSTEM }}
+      - uses: actions/upload-artifact@v2
+        if: ${{ !matrix.changes.needsDeployment }}
+        with:
+          name: ${{ matrix.changes.name }}-deploy-plan-${{ github.sha }}
+          path: ${{ matrix.changes.codebasePath }}/infrastructure/plan.tfplan
+          if-no-files-found: ignore
+      - uses: actions/download-artifact@v2
+        if: ${{ matrix.changes.needsDeployment }}
+        with:
+          name: ${{ matrix.changes.name }}-deploy-plan-${{ github.sha }}
+          path: ${{ matrix.changes.codebasePath }}/infrastructure/plan.tfplan
+      - run: ${{ matrix.changes.commandPrefix }} deploy
+        if: ${{ matrix.changes.needsDeployment }}
+        working-directory: ${{ matrix.changes.codebasePath }}
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_STATE_BUCKET: ${{ secrets.TF_STATE_BUCKET }}
+          TF_STATE_KEY: ${{ secrets.TF_STATE_KEY }}/${{ matrix.changes.name }}.tfstate
+          TF_STATE_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+          TF_VAR_environment: ${{ secrets.ENVIRONMENT }}
+          TF_VAR_system: ${{ secrets.SYSTEM }}

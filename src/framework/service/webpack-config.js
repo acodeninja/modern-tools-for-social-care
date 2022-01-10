@@ -16,11 +16,17 @@ module.exports = ({rootDir}) => async (env) => (await Promise.all(
 
           r({type, entries});
         })
+        .catch(e => {
+          r({type, entries: []});
+        });
     })),
 )).map(entrySet => entrySet.entries.map(entry => ({
   entry,
   target: 'node',
   devtool: 'source-map',
+  externals: {
+    'aws-crt': 'aws-crt',
+  },
   module: {
     rules: [
       {test: /\.ts$/, use: 'ts-loader'},
@@ -31,6 +37,7 @@ module.exports = ({rootDir}) => async (env) => (await Promise.all(
   },
   output: {
     filename: basename(entry, '.ts') + '.js',
-    path: resolve(rootDir, 'build', entrySet.type),
+    path: resolve(rootDir, 'build', entrySet.type, basename(entry, '.ts')),
+    libraryTarget: "commonjs",
   }
 }))).flat();

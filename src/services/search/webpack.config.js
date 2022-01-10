@@ -1,2 +1,2 @@
 module.exports =
-  require('../../shared/service/webpack-config')({rootDir: __dirname});
+  require('../../framework/service/webpack-config')({rootDir: __dirname});
