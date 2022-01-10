@@ -6,7 +6,7 @@ describe('a pull request', () => {
   describe('when only the account level infrastructure has changed', () => {
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {pull_request: {base: {ref: 'main'}}},
+        context: {payload: {pull_request: {base: {ref: 'main'}}}},
         changes: ["src/infrastructure/test.tf"]
       });
     });
@@ -47,7 +47,7 @@ describe('a pull request', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {pull_request: {base: {ref: 'main'}}},
+        context: {payload: {pull_request: {base: {ref: 'main'}}}},
         changes: ["src/services/app/infrastructure/account/test.tf"]
       });
     });
@@ -88,7 +88,7 @@ describe('a pull request', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {pull_request: {base: {ref: 'main'}}},
+        context: {payload: {pull_request: {base: {ref: 'main'}}}},
         changes: ["src/services/search/somefile.js"]
       });
     });
@@ -131,7 +131,7 @@ describe('a push', () => {
   describe('when only the account level infrastructure has changed', () => {
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {push: {ref: 'refs/head/main'}},
+        context: {payload: {push: {ref: 'refs/head/main'}}},
         changes: ["src/infrastructure/test.tf"]
       });
     });
@@ -172,7 +172,7 @@ describe('a push', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {push: {ref: 'refs/head/main'}},
+        context: {payload: {push: {ref: 'refs/head/main'}}},
         changes: ["src/services/app/infrastructure/account/test.tf"]
       });
     });
@@ -213,7 +213,7 @@ describe('a push', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {push: {ref: 'refs/head/main'}},
+        context: {payload: {push: {ref: 'refs/head/main'}}},
         changes: ["src/services/search/somefile.js"]
       });
     });

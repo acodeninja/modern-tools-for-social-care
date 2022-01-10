@@ -32,8 +32,8 @@ const shouldRunInfrastructure = (changedFiles) => {
 };
 
 const getTarget = (context) => {
-  if (context.pull_request) return context.pull_request.base.ref;
-  if (context.push) return context.push.ref.split('/').slice(-1)[0];
+  if (context.payload.pull_request) return context.payload.pull_request.base.ref;
+  if (context.payload.push) return context.payload.push.ref.split('/').slice(-1)[0];
 
   return null;
 };
@@ -56,8 +56,8 @@ module.exports = async ({context, changes}) => {
     .map(run => ({
       ...run,
       target,
-      needsDeployment: !!context.push,
-      type: !context.push ? 'Plan' : 'Deploy',
+      needsDeployment: !!context.payload.push,
+      type: !context.payload.push ? 'Plan' : 'Deploy',
       environments: getEnvironments(context),
     }));
 
@@ -67,8 +67,8 @@ module.exports = async ({context, changes}) => {
     commandPrefix: 'make',
     hasInfrastructure: true,
     target,
-    needsDeployment: !!context.push,
-    type: !context.push ? 'Plan' : 'Deploy',
+    needsDeployment: !!context.payload.push,
+    type: !context.payload.push ? 'Plan' : 'Deploy',
     environments: getEnvironments(context),
   } : undefined;
 
