@@ -37,7 +37,6 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Test: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
-    environment: Testing
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
@@ -67,7 +66,6 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Lint: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
-    environment: Testing
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
@@ -103,7 +101,6 @@ jobs:
     runs-on: ubuntu-latest
     name: 'Build: ${{ matrix.changes.name }}'
     needs: [ compute-changes ]
-    environment: Testing
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
