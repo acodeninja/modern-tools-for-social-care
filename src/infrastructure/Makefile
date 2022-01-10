@@ -1,10 +1,7 @@
 .PHONY: install test build lint deploy
 
 install:
-	terraform init \
-		-backend-config="bucket=$$TF_STATE_BUCKET" \
-		-backend-config="key=$$TF_STATE_KEY" \
-		-backend-config="region=$$AWS_REGION"
+	terraform init -backend=false
 
 test:
 	@echo "test"
@@ -14,10 +11,18 @@ lint:
 	tflint -f compact --module
 
 deploy:
-	 terraform apply plan.tfplan
+	terraform init \
+		-backend-config="bucket=$$TF_STATE_BUCKET" \
+		-backend-config="key=$$TF_STATE_KEY" \
+		-backend-config="region=$$AWS_REGION"
+	terraform apply plan.tfplan
 
 plan-deploy:
-	 terraform plan -out plan.tfplan
+	terraform init \
+		-backend-config="bucket=$$TF_STATE_BUCKET" \
+		-backend-config="key=$$TF_STATE_KEY" \
+		-backend-config="region=$$AWS_REGION"
+	terraform plan -out plan.tfplan
 
 build:
 	@echo "build"
