@@ -1,3 +1,8 @@
+terraform {
+  backend "s3" {}
+  required_version = "1.1.2"
+}
+
 variable "system" {
   description = "The name of the system this service is deployed to."
   type        = string
