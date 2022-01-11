@@ -40,7 +40,7 @@ jobs:
     if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).runs }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -67,7 +67,7 @@ jobs:
     if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).runs }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
@@ -100,7 +100,7 @@ jobs:
     if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
-        changes: ${{ fromJson(needs.compute-changes.outputs.runs).all }}
+        changes: ${{ fromJson(needs.compute-changes.outputs.runs).runs }}
     steps:
       - uses: actions/checkout@v2
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
