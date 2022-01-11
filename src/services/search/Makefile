@@ -8,7 +8,8 @@ test:
 	npm run test
 
 lint:
-	@echo "LINTING!"
+	tflint --init
+	tflint -f compact --module
 
 deploy:
 	terraform init \
