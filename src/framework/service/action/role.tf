@@ -18,7 +18,7 @@ data "aws_iam_policy_document" "action_logging" {
   source_policy_documents = [var.policy]
 
   statement {
-    sid = "AllowLoggingToCloudwatch"
+    sid    = "AllowLoggingToCloudwatch"
     effect = "Allow"
     actions = [
       "logs:CreateLogGroup",
@@ -33,9 +33,9 @@ data "aws_iam_policy_document" "action_logging" {
 }
 
 resource "aws_iam_policy" "lambda" {
-  name        = "${var.system}-${var.environment}-${var.service}-actions-${var.action}-policy"
-  path        = "/"
-  policy      = data.aws_iam_policy_document.action_logging.json
+  name   = "${var.system}-${var.environment}-${var.service}-actions-${var.action}-policy"
+  path   = "/"
+  policy = data.aws_iam_policy_document.action_logging.json
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {

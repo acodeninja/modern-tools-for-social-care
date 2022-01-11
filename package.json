@@ -16,7 +16,7 @@
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "/src/"
+      "/src/services"
     ]
   }
 }

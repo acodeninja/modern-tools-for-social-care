@@ -8,28 +8,15 @@ const getPossibleAppChanges = (changedFiles) =>
     .map(change => {
       const npmRunner = fs.existsSync(path.resolve(change, 'package.json'));
       const makeRunner = fs.existsSync(path.resolve(change, 'Makefile'));
-
       const codebasePath = change.replace(path.resolve(__dirname, '..', '..', '..') + '/', "./");
 
       return {
         name: codebasePath.replace('./src/', '').replace(/\//, '-'),
         codebasePath,
         commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
-        hasInfrastructure: fs.existsSync(path.resolve(change, 'infrastructure')),
         hasNodeJS: npmRunner,
       };
     });
-
-const shouldRunInfrastructure = (changedFiles) => {
-  return changedFiles
-    .filter(
-      changedFile =>
-        changedFile.indexOf(
-          path.resolve(__dirname, '..', '..', '..', 'src', 'infrastructure')
-        ) === 0 ||
-        changedFile.indexOf(`infrastructure${path.sep}account`) !== -1
-    ).length > 0
-};
 
 const getTarget = (context) => {
   if (context.payload.pull_request) return context.payload.pull_request.base.ref;
@@ -61,21 +48,8 @@ module.exports = async ({context, changes}) => {
       environments: getEnvironments(context),
     }));
 
-  const infrastructure = shouldRunInfrastructure(changedFiles) ? {
-    name: 'infrastructure',
-    codebasePath: path.resolve(__dirname, '..', '..', '..', 'src/infrastructure'),
-    commandPrefix: 'make',
-    hasInfrastructure: true,
-    target,
-    needsDeployment: !!context.payload.push,
-    type: !context.payload.push ? 'Plan' : 'Deploy',
-    environments: getEnvironments(context),
-  } : undefined;
-
   return {
-    infrastructure,
-    apps: possibleAppRuns,
-    all: infrastructure ? possibleAppRuns.concat([infrastructure]) : possibleAppRuns,
-    hasRuns: (infrastructure ? possibleAppRuns.concat([infrastructure]) : possibleAppRuns).length > 0,
+    runs: possibleAppRuns,
+    hasRuns: possibleAppRuns.length > 0,
   };
 };
