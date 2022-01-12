@@ -46,7 +46,6 @@ const without = (source, key) => {
 
 module.exports = async ({context, changes}) => {
   console.log(`Building change list for target ${getTarget(context)} on ${getEnvironments(context)}`);
-  console.log(JSON.stringify(context));
 
   const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
