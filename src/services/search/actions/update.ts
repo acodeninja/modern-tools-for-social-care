@@ -20,6 +20,7 @@ export class Response implements ActionResponse {
 }
 
 export const Handler = async (payload: Payload): Promise<Response> => {
+  console.log(`Running update with payload ${JSON.stringify(payload)}`);
   const response = new Response();
 
   const results = await put({

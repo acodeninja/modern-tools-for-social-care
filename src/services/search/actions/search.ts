@@ -15,6 +15,7 @@ export class Response implements ActionResponse {
 }
 
 export const Handler = async (payload: Payload) => {
+  console.log(`Running search with payload ${JSON.stringify(payload)}`);
   const searchResponse = await search(payload.terms);
 
   return Object.assign(new Response(), searchResponse);
