@@ -93,7 +93,7 @@ data "aws_iam_policy_document" "get_to_open_search" {
     sid    = "AllowGettingFromOpenSearch"
     effect = "Allow"
     actions = [
-      "es:ESHttpGet"
+      "es:ESHttpPost"
     ]
     resources = [
       aws_elasticsearch_domain.search.arn,
