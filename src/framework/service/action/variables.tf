@@ -8,7 +8,7 @@ variable "service" {
   type        = string
 }
 
-variable "artefacts" {
+variable "build_directory" {
   description = "The directory containing artefact files to bundle for this action"
   type        = string
 }

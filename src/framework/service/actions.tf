@@ -6,7 +6,7 @@ module "actions" {
   service               = "search"
   action                = "search"
   handler               = each.value.handler
-  artefacts             = "${path.root}/../build/actions/search"
+  build_directory       = each.value.build_directory
   runtime               = "nodejs14.x"
   policy                = each.value.policy
   api_id                = aws_apigatewayv2_api.api.id
