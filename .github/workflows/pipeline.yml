@@ -130,6 +130,7 @@ jobs:
     name: 'deploy: infrastructure (${{ matrix.environments }})'
     environment: ${{ matrix.environments }}
     needs: [ compute-changes, test, build, lint ]
+    concurrency: infrastructure-${{ matrix.environments }}
     strategy:
       matrix:
         environments: ${{ fromJson(needs.compute-changes.outputs.runs).environments }}
@@ -183,6 +184,7 @@ jobs:
     name: 'deploy: ${{ matrix.changes.name }} (${{ matrix.environments }})'
     needs: [ compute-changes, deploy-infrastructure ]
     environment: ${{ matrix.environments }}
+    concurrency: ${{ matrix.changes.name }}-${{ matrix.environments }}
     if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
