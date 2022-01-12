@@ -39,6 +39,19 @@ export const put = async (input: AddItemInput) => {
 };
 
 export const search = async (terms: string, results: number = 20) => {
+  await signedRequest({
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices`),
+    method: "GET",
+    service:"es",
+    region: process.env.AWS_REGION,
+  })
+  await signedRequest({
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/residents/_mapping`),
+    method: "GET",
+    service:"es",
+    region: process.env.AWS_REGION,
+  })
+
   const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
     method: "POST",
