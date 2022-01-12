@@ -1,5 +1,5 @@
 module "actions" {
-  for_each              = var.config.actions
+  for_each              = {for action in var.config.actions : action.name => action}
   source                = "./action"
   system                = var.system
   environment           = var.environment
