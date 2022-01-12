@@ -225,13 +225,13 @@ jobs:
       - uses: actions/upload-artifact@v2
         if: ${{ !fromJson(needs.compute-changes.outputs.runs).needsDeployment }}
         with:
-          name: ${{ matrix.changes.name }}-deploy-plan-${{ github.sha }}
+          name: ${{ matrix.changes.name }}-deploy-plan-${{ matrix.environments }}-${{ github.sha }}
           path: ${{ matrix.changes.codebasePath }}/plan.tfplan
           if-no-files-found: ignore
       - uses: actions/download-artifact@v2
         if: ${{ fromJson(needs.compute-changes.outputs.runs).needsDeployment }}
         with:
-          name: ${{ matrix.changes.name }}-deploy-plan-${{ github.sha }}
+          name: ${{ matrix.changes.name }}-deploy-plan-${{ matrix.environments }}-${{ github.sha }}
           path: ${{ matrix.changes.codebasePath }}/plan.tfplan
       - run: ${{ matrix.changes.commandPrefix }} deploy
         if: ${{ fromJson(needs.compute-changes.outputs.runs).needsDeployment }}
