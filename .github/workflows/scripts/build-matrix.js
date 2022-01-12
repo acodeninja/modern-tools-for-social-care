@@ -45,6 +45,8 @@ const without = (source, key) => {
 }
 
 module.exports = async ({context, changes}) => {
+  console.log(`Building change list for target ${getTarget(context)} on ${getEnvironments(context)}`);
+
   const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
   const possibleAppRuns = getPossibleAppChanges(changedFiles)
@@ -54,13 +56,13 @@ module.exports = async ({context, changes}) => {
       environments: getEnvironments(context),
     }));
 
-  console.log(possibleAppRuns);
-
   return {
     test: possibleAppRuns,
     lint: possibleAppRuns,
     build: possibleAppRuns,
-    deploy: possibleAppRuns.map(run => run.environments.map(environment => ({...without(run, 'environments'), environment}))).flat(),
+    deploy: possibleAppRuns.map(run =>
+      run.environments.map(environment => ({...without(run, 'environments'), environment}))
+    ).flat(),
     target,
     needsDeployment: !!context.payload.push,
     environments: getEnvironments(context),
