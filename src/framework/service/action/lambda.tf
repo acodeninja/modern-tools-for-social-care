@@ -11,6 +11,8 @@ resource "aws_lambda_function" "action" {
   environment {
     variables = var.environment_variables
   }
+
+  depends_on = [aws_s3_bucket_object.artefact]
 }
 
 resource "aws_lambda_permission" "lambda_permission" {
