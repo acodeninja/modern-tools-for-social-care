@@ -127,7 +127,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    name: 'deploy: ${{ matrix.changes.name }}'
+    name: 'deploy: ${{ matrix.changes.name }} (${{ matrix.environments }})'
     needs: [ compute-changes, test, build, lint ]
     environment: ${{ matrix.environments }}
     if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
