@@ -54,6 +54,8 @@ module.exports = async ({context, changes}) => {
       environments: getEnvironments(context),
     }));
 
+  console.log(possibleAppRuns);
+
   return {
     test: possibleAppRuns,
     lint: possibleAppRuns,
