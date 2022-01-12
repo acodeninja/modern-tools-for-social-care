@@ -4,7 +4,7 @@ module "actions" {
   system                = var.system
   environment           = var.environment
   service               = "search"
-  action                = "search"
+  action                = each.value.name
   handler               = each.value.handler
   build_directory       = each.value.build_directory
   runtime               = "nodejs14.x"
