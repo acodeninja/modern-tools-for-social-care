@@ -22,6 +22,7 @@ export const put = async (input: AddItemInput) => {
       delete item._meta;
       meta.compound = Object.values(item).join(' ');
       item._meta = meta;
+      return item;
     })
     .map(item => {
       return JSON.stringify({index: {_index: input.index}}) + '\n' + JSON.stringify(item);
