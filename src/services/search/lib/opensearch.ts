@@ -20,7 +20,7 @@ export const put = async (input: AddItemInput) => {
     .map(item => {
       const meta = Object.assign(item._meta);
       delete item._meta;
-      meta.compound = JSON.stringify(Object.values(item).join('  '));
+      meta.compound = Object.values(item).join(' ');
       item._meta = meta;
     })
     .map(item => {
