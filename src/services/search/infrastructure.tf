@@ -104,7 +104,7 @@ module "service" {
       {
         name            = "search"
         handler         = "search.LambdaHandler"
-        build_directory = "${path.root}/build/actions/search"
+        build_directory = abspath("${path.root}/build/actions/search")
         route           = "GET /"
         policy          = data.aws_iam_policy_document.get_to_open_search.json
         environment_variables = {
@@ -116,7 +116,7 @@ module "service" {
       {
         name            = "update"
         handler         = "update.LambdaHandler"
-        build_directory = "${path.root}/build/actions/update"
+        build_directory = abspath("${path.root}/build/actions/update")
         route           = "PUT /"
         policy          = data.aws_iam_policy_document.put_to_open_search.json
         environment_variables = {
