@@ -125,7 +125,7 @@ jobs:
           path: ${{ matrix.changes.codebasePath }}/build/**
           if-no-files-found: ignore
 
-  deploy:
+  deploy-services:
     runs-on: ubuntu-latest
     name: 'deploy: ${{ matrix.changes.name }} (${{ matrix.environments }})'
     needs: [ compute-changes, test, build, lint ]
