@@ -55,6 +55,12 @@ export const signedRequest =
       responseBody = response.response.body;
     }
 
+    console.log(`http response: ${JSON.stringify({
+      body: responseBody,
+      headers: response.response.headers,
+      statusCode: response.response.statusCode,
+    })}`);
+
     return {
       body: responseBody,
       headers: response.response.headers,

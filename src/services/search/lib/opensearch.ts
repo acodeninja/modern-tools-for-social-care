@@ -59,8 +59,6 @@ export const search = async (terms: string, results: number = 20) => {
     // }),
   });
 
-  console.log(JSON.stringify(response));
-
   return {
     count: response.body?.hits?.total?.value,
     results: response.body?.hits?.hits?.map(result => {
