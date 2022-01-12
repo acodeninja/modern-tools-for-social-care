@@ -3,50 +3,213 @@ const {describe, test, expect, beforeAll} = require("@jest/globals");
 const path = require("path");
 
 describe('a pull request', () => {
-  describe('when at least one application has updates to deploy', () => {
-    let output;
+  describe('targeting dev branch', () => {
+    describe('when at least one application has updates to deploy', () => {
+      let output;
 
-    beforeAll(async () => {
-      output = await buildMatrix({
-        context: {payload: {pull_request: {base: {ref: 'main'}}}},
-        changes: ["src/services/search/somefile.js"]
+      beforeAll(async () => {
+        output = await buildMatrix({
+          context: {payload: {pull_request: {base: {ref: 'dev'}}}},
+          changes: ["src/services/search/somefile.js"]
+        });
+      });
+
+      test('returns true for hasRuns', async () => {
+        expect(output).toHaveProperty('hasRuns', true);
+      });
+
+      test(`returns the application in the list of tests`, async () => {
+        expect(output).toHaveProperty('test', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'dev',
+          type: 'Plan',
+          environments: ['Testing'],
+        }]);
+      });
+
+      test(`returns the application in the list of lints`, async () => {
+        expect(output).toHaveProperty('lint', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'dev',
+          type: 'Plan',
+          environments: ['Testing'],
+        }]);
+      });
+
+      test(`returns the application in the list of builds`, async () => {
+        expect(output).toHaveProperty('build', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'dev',
+          type: 'Plan',
+          environments: ['Testing'],
+        }]);
+      });
+
+      test(`returns the application in the list of deploys`, async () => {
+        expect(output).toHaveProperty('deploy', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'dev',
+          type: 'Plan',
+          environment: 'Testing',
+        }]);
       });
     });
 
-    test('returns the application in the list of runs', async () => {
-      expect(output).toHaveProperty('runs', [{
-        name: "services-search",
-        codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
-        commandPrefix: "make",
-        hasNodeJS: true,
-        needsDeployment: false,
-        target: 'main',
-        type: 'Plan',
-        environments: ['Staging', 'Production'],
-      }]);
-    });
+    describe('when no apps have changes', () => {
+      let output;
 
-    test('returns true for hasRuns', async () => {
-      expect(output).toHaveProperty('hasRuns', true);
+      beforeAll(async () => {
+        output = await buildMatrix({
+          context: {payload: {pull_request: {base: {ref: 'dev'}}}},
+          changes: []
+        });
+      });
+
+      test('returns false for hasRuns', async () => {
+        expect(output).toHaveProperty('hasRuns', false);
+      });
+
+      test(`returns an empty list of tests`, async () => {
+        expect(output).toHaveProperty('test', []);
+      });
+
+      test(`returns an empty list of lints`, async () => {
+        expect(output).toHaveProperty('lint', []);
+      });
+
+      test(`returns an empty list of builds`, async () => {
+        expect(output).toHaveProperty('build', []);
+      });
+
+      test(`returns an empty list of deploys`, async () => {
+        expect(output).toHaveProperty('deploy', []);
+      });
     });
   });
 
-  describe('when no apps have changes', () => {
-    let output;
+  describe('targeting main branch', () => {
+    describe('when at least one application has updates to deploy', () => {
+      let output;
 
-    beforeAll(async () => {
-      output = await buildMatrix({
-        context: {payload: {pull_request: {base: {ref: 'main'}}}},
-        changes: []
+      beforeAll(async () => {
+        output = await buildMatrix({
+          context: {payload: {pull_request: {base: {ref: 'main'}}}},
+          changes: ["src/services/search/somefile.js"]
+        });
+      });
+
+      test('returns true for hasRuns', async () => {
+        expect(output).toHaveProperty('hasRuns', true);
+      });
+
+
+      test(`returns the application in the list of tests`, async () => {
+        expect(output).toHaveProperty('test', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'main',
+          type: 'Plan',
+          environments: ["Staging", "Production"],
+        }]);
+      });
+
+      test(`returns the application in the list of lints`, async () => {
+        expect(output).toHaveProperty('lint', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'main',
+          type: 'Plan',
+          environments: ["Staging", "Production"],
+        }]);
+      });
+
+      test(`returns the application in the list of builds`, async () => {
+        expect(output).toHaveProperty('build', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'main',
+          type: 'Plan',
+          environments: ["Staging", "Production"],
+        }]);
+      });
+
+      test(`returns the application in the list of deploys`, async () => {
+        expect(output).toHaveProperty('deploy', [{
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'main',
+          type: 'Plan',
+          environment: 'Staging',
+        }, {
+          name: "services-search",
+          codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+          commandPrefix: "make",
+          hasNodeJS: true,
+          needsDeployment: false,
+          target: 'main',
+          type: 'Plan',
+          environment: 'Production',
+        }]);
       });
     });
 
-    test('returns false for hasRuns', async () => {
-      expect(output).toHaveProperty('hasRuns', false);
-    });
+    describe('when no apps have changes', () => {
+      let output;
 
-    test('returns no runs', async () => {
-      expect(output).toHaveProperty('runs', []);
+      beforeAll(async () => {
+        output = await buildMatrix({
+          context: {payload: {pull_request: {base: {ref: 'main'}}}},
+          changes: []
+        });
+      });
+
+      test('returns false for hasRuns', async () => {
+        expect(output).toHaveProperty('hasRuns', false);
+      });
+
+      test(`returns an empty list of tests`, async () => {
+        expect(output).toHaveProperty('test', []);
+      });
+
+      test(`returns an empty list of lints`, async () => {
+        expect(output).toHaveProperty('lint', []);
+      });
+
+      test(`returns an empty list of builds`, async () => {
+        expect(output).toHaveProperty('build', []);
+      });
+
+      test(`returns an empty list of deploys`, async () => {
+        expect(output).toHaveProperty('deploy', []);
+      });
     });
   });
 });
@@ -57,7 +220,7 @@ describe('a push', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {payload: {push: {ref: 'refs/head/main'}}},
+        context: {payload: {push: {ref: 'refs/head/dev'}}},
         changes: ["src/services/search/somefile.js"]
       });
     });
@@ -66,16 +229,56 @@ describe('a push', () => {
       expect(output).toHaveProperty('hasRuns', true);
     });
 
-    test('returns an app run as part of apps', async () => {
-      expect(output).toHaveProperty('runs', [{
+
+    test(`returns the application in the list of tests`, async () => {
+      expect(output).toHaveProperty('test', [{
         name: "services-search",
         codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
         commandPrefix: "make",
         hasNodeJS: true,
         needsDeployment: true,
-        target: 'main',
+        target: 'dev',
         type: 'Deploy',
-        environments: ['Staging', 'Production'],
+        environments: ["Testing"],
+      }]);
+    });
+
+    test(`returns the application in the list of lints`, async () => {
+      expect(output).toHaveProperty('lint', [{
+        name: "services-search",
+        codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+        commandPrefix: "make",
+        hasNodeJS: true,
+        needsDeployment: true,
+        target: 'dev',
+        type: 'Deploy',
+        environments: ["Testing"],
+      }]);
+    });
+
+    test(`returns the application in the list of builds`, async () => {
+      expect(output).toHaveProperty('build', [{
+        name: "services-search",
+        codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+        commandPrefix: "make",
+        hasNodeJS: true,
+        needsDeployment: true,
+        target: 'dev',
+        type: 'Deploy',
+        environments: ["Testing"],
+      }]);
+    });
+
+    test(`returns the application in the list of deploys`, async () => {
+      expect(output).toHaveProperty('deploy', [{
+        name: "services-search",
+        codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
+        commandPrefix: "make",
+        hasNodeJS: true,
+        needsDeployment: true,
+        target: 'dev',
+        type: 'Deploy',
+        environment: 'Testing',
       }]);
     });
   });
@@ -85,8 +288,8 @@ describe('a push', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {payload: {push: {ref: 'refs/head/main'}}},
-        changes: []
+        context: {payload: {push: {ref: 'refs/head/dev'}}},
+        changes: [],
       });
     });
 
@@ -94,8 +297,20 @@ describe('a push', () => {
       expect(output).toHaveProperty('hasRuns', false);
     });
 
-    test('returns no runs', async () => {
-      expect(output).toHaveProperty('runs', []);
+    test(`returns an empty list of tests`, async () => {
+      expect(output).toHaveProperty('test', []);
+    });
+
+    test(`returns an empty list of lints`, async () => {
+      expect(output).toHaveProperty('lint', []);
+    });
+
+    test(`returns an empty list of builds`, async () => {
+      expect(output).toHaveProperty('build', []);
+    });
+
+    test(`returns an empty list of deploys`, async () => {
+      expect(output).toHaveProperty('deploy', []);
     });
   });
 });

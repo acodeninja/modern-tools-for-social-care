@@ -36,6 +36,12 @@ const getEnvironments = (context) => {
   }
 };
 
+const without = (source, key) => {
+  const destination = Object.assign({}, source);
+  delete destination[key];
+  return destination;
+}
+
 module.exports = async ({context, changes}) => {
   const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
@@ -49,7 +55,10 @@ module.exports = async ({context, changes}) => {
     }));
 
   return {
-    runs: possibleAppRuns,
+    test: possibleAppRuns,
+    lint: possibleAppRuns,
+    build: possibleAppRuns,
+    deploy: possibleAppRuns.map(run => run.environments.map(environment => ({...without(run, 'environments'), environment}))).flat(),
     hasRuns: possibleAppRuns.length > 0,
   };
 };
