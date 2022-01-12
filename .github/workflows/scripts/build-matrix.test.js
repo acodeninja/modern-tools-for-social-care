@@ -9,7 +9,7 @@ describe('a pull request', () => {
 
       beforeAll(async () => {
         output = await buildMatrix({
-          context: {payload: {pull_request: {base: {ref: 'dev'}}}},
+          context: {payload: {pull_request: {base: {ref: 'dev'}}}, eventName: 'pull_request'},
           changes: ["src/services/search/somefile.js"]
         });
       });
@@ -84,7 +84,7 @@ describe('a pull request', () => {
 
       beforeAll(async () => {
         output = await buildMatrix({
-          context: {payload: {pull_request: {base: {ref: 'dev'}}}},
+          context: {payload: {pull_request: {base: {ref: 'dev'}}}, eventName: 'pull_request'},
           changes: []
         });
       });
@@ -117,7 +117,7 @@ describe('a pull request', () => {
 
       beforeAll(async () => {
         output = await buildMatrix({
-          context: {payload: {pull_request: {base: {ref: 'main'}}}},
+          context: {payload: {pull_request: {base: {ref: 'main'}}}, eventName: 'pull_request'},
           changes: ["src/services/search/somefile.js"]
         });
       });
@@ -234,7 +234,7 @@ describe('a push', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {payload: {push: {ref: 'refs/head/dev'}}},
+        context: {eventName: 'push', ref: 'refs/head/dev'},
         changes: ["src/services/search/somefile.js"]
       });
     });
@@ -309,7 +309,7 @@ describe('a push', () => {
 
     beforeAll(async () => {
       output = await buildMatrix({
-        context: {payload: {push: {ref: 'refs/head/dev'}}},
+        context: {eventName: 'push', ref: 'refs/head/dev'},
         changes: [],
       });
     });

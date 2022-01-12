@@ -21,8 +21,8 @@ const getPossibleAppChanges = (changedFiles) =>
     });
 
 const getTarget = (context) => {
-  if (context.payload.pull_request) return context.payload.pull_request.base.ref;
-  if (context.payload.push) return context.payload.push.ref.split('/').slice(-1)[0];
+  if (context.eventName === 'pull_request') return context.payload.pull_request.base.ref;
+  if (context.eventName === 'push') return context.ref.split('/').slice(-1)[0];
 
   return null;
 };
@@ -34,7 +34,7 @@ const getEnvironments = (context) => {
     case 'dev':
       return ['Testing'];
     case null:
-      return null;
+      return [];
   }
 };
 
@@ -53,7 +53,7 @@ module.exports = async ({context, changes}) => {
   const possibleAppRuns = getPossibleAppChanges(changedFiles)
     .map(run => ({
       ...run,
-      type: !context.payload.push ? 'Plan' : 'Deploy',
+      type: context.eventName === 'push' ? 'Deploy' : 'Plan',
       environments: getEnvironments(context),
     }));
 
@@ -65,7 +65,7 @@ module.exports = async ({context, changes}) => {
       run.environments.map(environment => ({...without(run, 'environments'), environment}))
     ).flat(),
     target,
-    needsDeployment: !!context.payload.push,
+    needsDeployment: context.eventName === 'push',
     environments: getEnvironments(context),
     hasRuns: possibleAppRuns.length > 0,
   };
