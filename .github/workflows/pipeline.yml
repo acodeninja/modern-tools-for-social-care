@@ -129,13 +129,14 @@ jobs:
     runs-on: ubuntu-latest
     name: 'deploy: ${{ matrix.changes.name }}'
     needs: [ compute-changes, test, build, lint ]
-    environment: ${{ matrix.changes.environment }}
+    environment: ${{ matrix.environments }}
     if: ${{ fromJson(needs.compute-changes.outputs.runs).hasRuns }}
     strategy:
       matrix:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).deploy }}
+        environments: ${{ fromJson(needs.compute-changes.outputs.runs).environments }}
     env:
-      DEPLOY_TARGET: ${{ matrix.changes.environment }}
+      DEPLOY_TARGET: ${{ matrix.environments }}
     steps:
       - uses: actions/checkout@v2
       - run: echo '${{ toJson(matrix.changes) }}'
