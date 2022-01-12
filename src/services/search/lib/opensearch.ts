@@ -44,14 +44,19 @@ export const search = async (terms: string, results: number = 20) => {
     service: "es",
     region: process.env.AWS_REGION,
     body: {
-      "query": {
-        "fuzzy": {
-          "_meta.compound": {
-            "value": terms
-          }
+      query: {
+        fuzzy: {
+          '_meta.compound': {
+            value: terms
+          },
+        },
+      },
+      partial_fields: {
+        excludeCompound: {
+          exclude: "_meta.compound"
         }
       }
-    }
+    },
   });
 
   console.log(JSON.stringify(response.body));
