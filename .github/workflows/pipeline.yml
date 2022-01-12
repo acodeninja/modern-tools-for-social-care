@@ -139,7 +139,6 @@ jobs:
       DEPLOY_TARGET: ${{ matrix.environments }}
     steps:
       - uses: actions/checkout@v2
-      - run: echo '${{ toJson(matrix.changes) }}'
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
         id: node
         if: ${{ matrix.changes.hasNodeJS }}
