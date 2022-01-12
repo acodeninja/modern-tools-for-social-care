@@ -38,7 +38,7 @@ locals {
 }
 
 resource "aws_elasticsearch_domain" "search" {
-  domain_name           = local.domain-name
+  domain_name           = local.service-name
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
