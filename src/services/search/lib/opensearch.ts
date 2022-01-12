@@ -2,12 +2,27 @@ import {signedRequest} from "./http";
 
 export interface AddItemInput {
   index: string;
-  items?: Array<{ [key: string]: unknown }>;
+  items?: Array<{
+    _meta: {
+      location: {
+        api: string;
+        frontend: string;
+      };
+      domain: string;
+      compound?: string;
+    },
+    [key: string]: unknown;
+  }>;
 }
 
 export const put = async (input: AddItemInput) => {
   const body = input.items.map(item => {
-    return JSON.stringify({index: { _index: input.index }}) + '\n' + JSON.stringify(item);
+    const _meta = Object.assign(item._meta);
+    delete item._meta;
+    _meta.compound = JSON.stringify(Object.values(item).join('\n'));
+
+    return JSON.stringify({index: { _index: input.index }}) + '\n' +
+      JSON.stringify({...item, _meta});
   }).join('\n') + '\n';
 
   return await signedRequest({
