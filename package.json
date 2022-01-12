@@ -16,7 +16,10 @@
   },
   "jest": {
     "testPathIgnorePatterns": [
-      "/src/"
+      "/src/services"
     ]
+  },
+  "dependencies": {
+    "fast-glob": "^3.2.10"
   }
 }

@@ -5,12 +5,14 @@ variable "name" {
 
 variable "config" {
   description = "The service configuration"
-  type        = object({
+  type = object({
     actions = list(object({
-      name            = string
-      handler         = string
-      build_directory = string
-      route           = optional(string)
+      name                  = string
+      handler               = string
+      build_directory       = string
+      route                 = optional(string)
+      policy                = optional(string)
+      environment_variables = map(string)
     }))
   })
 }

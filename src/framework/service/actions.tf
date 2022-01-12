@@ -1,20 +1,16 @@
 module "actions" {
-  for_each              = var.config.application.actions
+  for_each              = {for action in var.config.actions : action.name => action}
   source                = "./action"
   system                = var.system
   environment           = var.environment
   service               = "search"
   action                = "search"
   handler               = each.value.handler
-  artefacts             = "${path.root}/../build/actions/search"
+  build_directory       = each.value.build_directory
   runtime               = "nodejs14.x"
-  policy                = data.aws_iam_policy_document.get_to_open_search.json
+  policy                = each.value.policy
   api_id                = aws_apigatewayv2_api.api.id
   api_route             = each.value.route
   api_execution_arn     = aws_apigatewayv2_api.api.execution_arn
-  environment_variables = {
-    ENVIRONMENT             = var.environment
-    SYSTEM                  = var.system
-    AWS_OPENSEARCH_ENDPOINT = local.account-manifest.opensearch.endpoint
-  }
+  environment_variables = each.value.environment_variables
 }

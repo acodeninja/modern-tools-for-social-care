@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "deployments" {
-  bucket = "${var.system}-${var.environment}-deployment"
+  bucket = "${var.system}-${var.environment}-deployments"
   acl    = "private"
 
   versioning {
