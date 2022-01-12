@@ -47,6 +47,13 @@ const without = (source, key) => {
 module.exports = async ({context, changes}) => {
   console.log(`Building change list for target ${getTarget(context)} on ${getEnvironments(context)}`);
 
+  if (changes.filter(change => change.indexOf('src/framework/service') === 0).length > 0) {
+    fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
+      .forEach(service => {
+        changes.push(`src/services/${service}`);
+      });
+  }
+
   const target = getTarget(context);
   const changedFiles = changes.map(change => path.resolve(__dirname, '..', '..', '..', change));
   const possibleAppRuns = getPossibleAppChanges(changedFiles)
