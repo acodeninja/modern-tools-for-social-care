@@ -15,10 +15,7 @@ deploy:
 		-backend-config="bucket=$$TF_STATE_BUCKET" \
 		-backend-config="key=$$TF_STATE_KEY/infrastructure.tfstate" \
 		-backend-config="region=$$AWS_REGION"
-	terraform apply \
-		-var-file ../../environments/config.tfvars \
-		-var-file "../../environments/$$DEPLOY_TARGET/config.tfvars" \
-		plan.tfplan
+	terraform apply plan.tfplan
 
 plan-deploy:
 	terraform init \
