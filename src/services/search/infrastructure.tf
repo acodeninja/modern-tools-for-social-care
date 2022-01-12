@@ -23,19 +23,13 @@ variable "environment" {
   }
 }
 
-variable "aws_opensearch_instance_type" {
-  description = "The instance class of the opensearch domain."
-  type        = string
-}
-
-variable "aws_opensearch_instance_count" {
-  description = "The number of instances for the opensearch domain."
-  type        = number
-}
-
-variable "aws_opensearch_instance_volume_size" {
-  description = "The number GB of storage available on each node."
-  type        = number
+variable "service-config-search" {
+  description = "The configuration object for this service."
+  type = object({
+    aws_opensearch_instance_type        = string
+    aws_opensearch_instance_count       = number
+    aws_opensearch_instance_volume_size = number
+  })
 }
 
 locals {
@@ -48,14 +42,14 @@ resource "aws_elasticsearch_domain" "search" {
   elasticsearch_version = "OpenSearch_1.0"
 
   cluster_config {
-    instance_type          = var.aws_opensearch_instance_type
-    instance_count         = var.aws_opensearch_instance_count
+    instance_type          = var.service-config-search.aws_opensearch_instance_type
+    instance_count         = var.service-config-search.aws_opensearch_instance_count
     zone_awareness_enabled = false
   }
 
   ebs_options {
     ebs_enabled = true
-    volume_size = var.aws_opensearch_instance_volume_size
+    volume_size = var.service-config-search.aws_opensearch_instance_volume_size
   }
 
   domain_endpoint_options {
