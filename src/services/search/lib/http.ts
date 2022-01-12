@@ -24,7 +24,7 @@ export const signedRequest =
 
     const signer = new SignatureV4({
       credentials: defaultProvider(),
-      region: region,
+      region,
       service,
       sha256: Sha256
     });

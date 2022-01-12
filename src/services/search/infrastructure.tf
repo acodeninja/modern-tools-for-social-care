@@ -118,6 +118,7 @@ module "service" {
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
+          AWS_REGION              = "eu-west-2"
           AWS_OPENSEARCH_ENDPOINT = aws_elasticsearch_domain.search.endpoint
         }
       },
@@ -130,6 +131,7 @@ module "service" {
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
+          AWS_REGION              = "eu-west-2"
           AWS_OPENSEARCH_ENDPOINT = aws_elasticsearch_domain.search.endpoint
         }
       },
