@@ -22,6 +22,10 @@ describe('a pull request', () => {
         expect(output).toHaveProperty('target', 'dev');
       });
 
+      test('returns the expected value for needsDeployment', () => {
+        expect(output).toHaveProperty('needsDeployment', false);
+      });
+
       test('returns the expected environments', () => {
         expect(output).toHaveProperty('environments', ['Testing']);
       });
@@ -32,7 +36,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environments: ['Testing'],
@@ -45,7 +48,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environments: ['Testing'],
@@ -58,7 +60,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environments: ['Testing'],
@@ -71,7 +72,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environment: 'Testing',
@@ -130,6 +130,10 @@ describe('a pull request', () => {
         expect(output).toHaveProperty('target', 'main');
       });
 
+      test('returns the expected value for needsDeployment', () => {
+        expect(output).toHaveProperty('needsDeployment', false);
+      });
+
       test('returns the expected environments', () => {
         expect(output).toHaveProperty('environments', ['Staging', 'Production']);
       });
@@ -140,7 +144,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environments: ["Staging", "Production"],
@@ -153,7 +156,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environments: ["Staging", "Production"],
@@ -166,7 +168,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environments: ["Staging", "Production"],
@@ -179,7 +180,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environment: 'Staging',
@@ -188,7 +188,6 @@ describe('a pull request', () => {
           codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
           commandPrefix: "make",
           hasNodeJS: true,
-          needsDeployment: false,
           type: 'Plan',
           hasInfrastructure: true,
           environment: 'Production',
@@ -248,6 +247,10 @@ describe('a push', () => {
       expect(output).toHaveProperty('target', 'dev');
     });
 
+    test('returns the expected value for needsDeployment', () => {
+      expect(output).toHaveProperty('needsDeployment', true);
+    });
+
     test('returns the expected environments', () => {
       expect(output).toHaveProperty('environments', ['Testing']);
     });
@@ -258,7 +261,6 @@ describe('a push', () => {
         codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
         commandPrefix: "make",
         hasNodeJS: true,
-        needsDeployment: true,
         type: 'Deploy',
         hasInfrastructure: true,
         environments: ["Testing"],
@@ -271,7 +273,6 @@ describe('a push', () => {
         codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
         commandPrefix: "make",
         hasNodeJS: true,
-        needsDeployment: true,
         type: 'Deploy',
         hasInfrastructure: true,
         environments: ["Testing"],
@@ -284,7 +285,6 @@ describe('a push', () => {
         codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
         commandPrefix: "make",
         hasNodeJS: true,
-        needsDeployment: true,
         type: 'Deploy',
         hasInfrastructure: true,
         environments: ["Testing"],
@@ -297,7 +297,6 @@ describe('a push', () => {
         codebasePath: expect.stringContaining(`src${path.sep}services${path.sep}search`),
         commandPrefix: "make",
         hasNodeJS: true,
-        needsDeployment: true,
         type: 'Deploy',
         hasInfrastructure: true,
         environment: 'Testing',
