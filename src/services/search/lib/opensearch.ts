@@ -16,14 +16,17 @@ export interface AddItemInput {
 }
 
 export const put = async (input: AddItemInput) => {
-  const body = input.items.map(item => {
-    const _meta = Object.assign(item._meta);
-    delete item._meta;
-    _meta.compound = JSON.stringify(Object.values(item).join('\n'));
-
-    return JSON.stringify({index: { _index: input.index }}) + '\n' +
-      JSON.stringify({...item, _meta});
-  }).join('\n') + '\n';
+  const body = input.items
+    .map(item => {
+      const meta = Object.assign(item._meta);
+      delete item._meta;
+      meta.compound = JSON.stringify(Object.values(item).join('  '));
+      item._meta = meta;
+    })
+    .map(item => {
+      return JSON.stringify({index: {_index: input.index}}) + '\n' + JSON.stringify(item);
+    })
+    .join('\n') + '\n';
 
   return await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
@@ -36,11 +39,22 @@ export const put = async (input: AddItemInput) => {
 
 export const search = async (terms: string, results: number = 20) => {
   const response = await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search?q=${terms}`),
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
+    body: {
+      "query": {
+        "fuzzy": {
+          "_meta.compound": {
+            "value": terms
+          }
+        }
+      }
+    }
   });
+
+  console.log(JSON.stringify(response.body));
 
   return {
     count: response.body?.hits?.total?.value,
