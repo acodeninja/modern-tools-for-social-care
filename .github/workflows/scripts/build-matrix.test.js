@@ -27,6 +27,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'dev',
           type: 'Plan',
+          hasInfrastructure: true,
           environments: ['Testing'],
         }]);
       });
@@ -40,6 +41,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'dev',
           type: 'Plan',
+          hasInfrastructure: true,
           environments: ['Testing'],
         }]);
       });
@@ -53,6 +55,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'dev',
           type: 'Plan',
+          hasInfrastructure: true,
           environments: ['Testing'],
         }]);
       });
@@ -66,6 +69,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'dev',
           type: 'Plan',
+          hasInfrastructure: true,
           environment: 'Testing',
         }]);
       });
@@ -128,6 +132,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'main',
           type: 'Plan',
+          hasInfrastructure: true,
           environments: ["Staging", "Production"],
         }]);
       });
@@ -141,6 +146,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'main',
           type: 'Plan',
+          hasInfrastructure: true,
           environments: ["Staging", "Production"],
         }]);
       });
@@ -154,6 +160,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'main',
           type: 'Plan',
+          hasInfrastructure: true,
           environments: ["Staging", "Production"],
         }]);
       });
@@ -167,6 +174,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'main',
           type: 'Plan',
+          hasInfrastructure: true,
           environment: 'Staging',
         }, {
           name: "services-search",
@@ -176,6 +184,7 @@ describe('a pull request', () => {
           needsDeployment: false,
           target: 'main',
           type: 'Plan',
+          hasInfrastructure: true,
           environment: 'Production',
         }]);
       });
@@ -239,6 +248,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'dev',
         type: 'Deploy',
+        hasInfrastructure: true,
         environments: ["Testing"],
       }]);
     });
@@ -252,6 +262,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'dev',
         type: 'Deploy',
+        hasInfrastructure: true,
         environments: ["Testing"],
       }]);
     });
@@ -265,6 +276,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'dev',
         type: 'Deploy',
+        hasInfrastructure: true,
         environments: ["Testing"],
       }]);
     });
@@ -278,6 +290,7 @@ describe('a push', () => {
         needsDeployment: true,
         target: 'dev',
         type: 'Deploy',
+        hasInfrastructure: true,
         environment: 'Testing',
       }]);
     });

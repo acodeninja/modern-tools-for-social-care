@@ -1,3 +1,4 @@
+const fg = require('fast-glob');
 const path = require('path');
 const fs = require('fs');
 
@@ -14,6 +15,7 @@ const getPossibleAppChanges = (changedFiles) =>
         name: codebasePath.replace('./src/', '').replace(/\//, '-'),
         codebasePath,
         commandPrefix: makeRunner ? 'make' : npmRunner ? 'npm' : '',
+        hasInfrastructure: fg.sync([`${codebasePath}/**/*.tf`]).length > 0,
         hasNodeJS: npmRunner,
       };
     });
