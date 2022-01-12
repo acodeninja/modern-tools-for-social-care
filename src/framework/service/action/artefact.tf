@@ -5,7 +5,7 @@ data "archive_file" "action" {
 }
 
 resource "aws_s3_bucket_object" "artefact" {
-  bucket       = "${var.system}-${var.environment}-deployment"
+  bucket       = "${var.system}-${var.environment}-deployments"
   key          = "${var.service}/actions/${var.action}.zip"
   content_type = "application/zip"
   source       = data.archive_file.action.output_path
