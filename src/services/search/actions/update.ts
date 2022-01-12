@@ -40,9 +40,9 @@ const Validate = (payload) => {
   if (!payload.index) throw new RequestError('index must be specified.');
 
   payload.items.map((item, index) => {
-    if (!item._meta?.domain) throw new RequestError(`_meta.domain must be set on item #${index}`);
-    if (!item._meta?.location?.api) throw new RequestError(`_meta.location.api must be set on item #${index}`);
-    if (!item._meta?.location?.frontend) throw new RequestError(`_meta.location.frontend must be set on item #${index}`);
+    if (!item._meta?.domain) throw new RequestError(`_meta.domain must be set on item #${index}.`);
+    if (!item._meta?.location?.api) throw new RequestError(`_meta.location.api must be set on item #${index}.`);
+    if (!item._meta?.location?.frontend) throw new RequestError(`_meta.location.frontend must be set on item #${index}.`);
   });
 };
 
