@@ -43,7 +43,7 @@ export const search = async (terms: string, results: number = 20) => {
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
-    body: {
+    body: JSON.stringify({
       query: {
         fuzzy: {
           '_meta.compound': {
@@ -56,7 +56,7 @@ export const search = async (terms: string, results: number = 20) => {
           exclude: "_meta.compound"
         }
       }
-    },
+    }),
   });
 
   console.log(JSON.stringify(response.body));
