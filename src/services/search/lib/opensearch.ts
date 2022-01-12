@@ -41,7 +41,7 @@ export const put = async (input: AddItemInput) => {
 export const search = async (terms: string, results: number = 20) => {
   const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
-    method: "GET",
+    method: "POST",
     service: "es",
     region: process.env.AWS_REGION,
     body: JSON.stringify({
