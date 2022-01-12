@@ -39,24 +39,24 @@ export const put = async (input: AddItemInput) => {
 
 export const search = async (terms: string, results: number = 20) => {
   const response = await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search?q=${terms}`),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
-    body: JSON.stringify({
-      query: {
-        fuzzy: {
-          '_meta.compound': {
-            value: terms
-          },
-        },
-      },
-      partial_fields: {
-        excludeCompound: {
-          exclude: "_meta.compound"
-        }
-      }
-    }),
+    // body: JSON.stringify({
+    //   query: {
+    //     fuzzy: {
+    //       '_meta.compound': {
+    //         value: terms
+    //       },
+    //     },
+    //   },
+    //   partial_fields: {
+    //     excludeCompound: {
+    //       exclude: "_meta.compound"
+    //     }
+    //   }
+    // }),
   });
 
   console.log(JSON.stringify(response));
