@@ -1,1 +1,1 @@
-system = "modern-tools-for-social-care"
+system = "social-care"
