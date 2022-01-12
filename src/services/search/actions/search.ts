@@ -3,7 +3,7 @@ import {search} from "../lib/opensearch";
 import {SearchResult} from "../domains";
 import {LambdifyHandler} from "../lib/lambda";
 
-export const Name = 'search';
+export const Name = 'Search';
 
 export class Payload implements ActionPayload {
   terms: string;
