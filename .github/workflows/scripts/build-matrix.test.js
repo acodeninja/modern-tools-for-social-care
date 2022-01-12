@@ -18,6 +18,14 @@ describe('a pull request', () => {
         expect(output).toHaveProperty('hasRuns', true);
       });
 
+      test('returns the expected target', () => {
+        expect(output).toHaveProperty('target', 'dev');
+      });
+
+      test('returns the expected environments', () => {
+        expect(output).toHaveProperty('environments', ['Testing']);
+      });
+
       test(`returns the application in the list of tests`, async () => {
         expect(output).toHaveProperty('test', [{
           name: "services-search",
@@ -25,7 +33,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'dev',
           type: 'Plan',
           hasInfrastructure: true,
           environments: ['Testing'],
@@ -39,7 +46,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'dev',
           type: 'Plan',
           hasInfrastructure: true,
           environments: ['Testing'],
@@ -53,7 +59,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'dev',
           type: 'Plan',
           hasInfrastructure: true,
           environments: ['Testing'],
@@ -67,7 +72,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'dev',
           type: 'Plan',
           hasInfrastructure: true,
           environment: 'Testing',
@@ -122,6 +126,13 @@ describe('a pull request', () => {
         expect(output).toHaveProperty('hasRuns', true);
       });
 
+      test('returns the expected target', () => {
+        expect(output).toHaveProperty('target', 'main');
+      });
+
+      test('returns the expected environments', () => {
+        expect(output).toHaveProperty('environments', ['Staging', 'Production']);
+      });
 
       test(`returns the application in the list of tests`, async () => {
         expect(output).toHaveProperty('test', [{
@@ -130,7 +141,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'main',
           type: 'Plan',
           hasInfrastructure: true,
           environments: ["Staging", "Production"],
@@ -144,7 +154,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'main',
           type: 'Plan',
           hasInfrastructure: true,
           environments: ["Staging", "Production"],
@@ -158,7 +167,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'main',
           type: 'Plan',
           hasInfrastructure: true,
           environments: ["Staging", "Production"],
@@ -172,7 +180,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'main',
           type: 'Plan',
           hasInfrastructure: true,
           environment: 'Staging',
@@ -182,7 +189,6 @@ describe('a pull request', () => {
           commandPrefix: "make",
           hasNodeJS: true,
           needsDeployment: false,
-          target: 'main',
           type: 'Plan',
           hasInfrastructure: true,
           environment: 'Production',
@@ -238,6 +244,13 @@ describe('a push', () => {
       expect(output).toHaveProperty('hasRuns', true);
     });
 
+    test('returns the expected target', () => {
+      expect(output).toHaveProperty('target', 'dev');
+    });
+
+    test('returns the expected environments', () => {
+      expect(output).toHaveProperty('environments', ['Testing']);
+    });
 
     test(`returns the application in the list of tests`, async () => {
       expect(output).toHaveProperty('test', [{
@@ -246,7 +259,6 @@ describe('a push', () => {
         commandPrefix: "make",
         hasNodeJS: true,
         needsDeployment: true,
-        target: 'dev',
         type: 'Deploy',
         hasInfrastructure: true,
         environments: ["Testing"],
@@ -260,7 +272,6 @@ describe('a push', () => {
         commandPrefix: "make",
         hasNodeJS: true,
         needsDeployment: true,
-        target: 'dev',
         type: 'Deploy',
         hasInfrastructure: true,
         environments: ["Testing"],
@@ -274,7 +285,6 @@ describe('a push', () => {
         commandPrefix: "make",
         hasNodeJS: true,
         needsDeployment: true,
-        target: 'dev',
         type: 'Deploy',
         hasInfrastructure: true,
         environments: ["Testing"],
@@ -288,7 +298,6 @@ describe('a push', () => {
         commandPrefix: "make",
         hasNodeJS: true,
         needsDeployment: true,
-        target: 'dev',
         type: 'Deploy',
         hasInfrastructure: true,
         environment: 'Testing',

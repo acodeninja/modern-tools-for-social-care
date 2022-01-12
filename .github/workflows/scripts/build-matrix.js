@@ -50,7 +50,6 @@ module.exports = async ({context, changes}) => {
   const possibleAppRuns = getPossibleAppChanges(changedFiles)
     .map(run => ({
       ...run,
-      target,
       needsDeployment: !!context.payload.push,
       type: !context.payload.push ? 'Plan' : 'Deploy',
       environments: getEnvironments(context),
@@ -61,6 +60,8 @@ module.exports = async ({context, changes}) => {
     lint: possibleAppRuns,
     build: possibleAppRuns,
     deploy: possibleAppRuns.map(run => run.environments.map(environment => ({...without(run, 'environments'), environment}))).flat(),
+    target,
+    environments: getEnvironments(context),
     hasRuns: possibleAppRuns.length > 0,
   };
 };
