@@ -52,11 +52,6 @@ export const search = async (terms: string, results: number = 20) => {
           },
         },
       },
-      partial_fields: {
-        excludeCompound: {
-          exclude: "_meta.compound"
-        }
-      }
     }),
   });
 
