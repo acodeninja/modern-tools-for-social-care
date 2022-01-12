@@ -45,6 +45,8 @@ export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayP
       body: JSON.stringify(response),
     };
   } catch (e) {
+    console.log(JSON.stringify(e));
+
     switch (e.constructor) {
       case RequestError:
         return {
