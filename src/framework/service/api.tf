@@ -30,6 +30,8 @@ resource "aws_apigatewayv2_deployment" "api" {
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = [module.actions]
 }
 
 resource "aws_cloudwatch_log_group" "action" {
