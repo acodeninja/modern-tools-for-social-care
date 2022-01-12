@@ -1,4 +1,4 @@
-environment = testing
+environment = "testing"
 service-config-search = {
   aws_opensearch_instance_type        = "t3.small.elasticsearch"
   aws_opensearch_instance_count       = 1
