@@ -16,8 +16,8 @@ deploy:
 		-backend-config="key=$$TF_STATE_KEY" \
 		-backend-config="region=$$AWS_REGION"
 	terraform apply \
-		-var-file ../../../environments/config.tfvars \
-		-var-file "../../../environments/$$DEPLOY_TARGET/config.tfvars" \
+		-var-file ../../environments/config.tfvars \
+		-var-file "../../environments/$$DEPLOY_TARGET/config.tfvars" \
 		plan.tfplan
 
 plan-deploy:
@@ -26,8 +26,8 @@ plan-deploy:
 		-backend-config="key=$$TF_STATE_KEY" \
 		-backend-config="region=$$AWS_REGION"
 	terraform plan \
-		-var-file ../../../environments/config.tfvars \
-		-var-file "../../../environments/Testing/config.tfvars" \
+		-var-file ../../environments/config.tfvars \
+		-var-file "../../environments/$$DEPLOY_TARGET/config.tfvars" \
 		-out plan.tfplan
 
 build:
