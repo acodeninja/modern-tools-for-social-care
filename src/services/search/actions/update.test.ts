@@ -22,7 +22,10 @@ describe('services/search/actions/update', () => {
       payload.index = "test-index";
       payload.items = [{
         _meta: {
-          location: "internal://resident/12249",
+          location: {
+            api: "http://api/resident/12249",
+            frontend: "http://website/resident/12249",
+          },
           domain: "resident"
         },
         mosaicId: 12249,
@@ -63,7 +66,10 @@ describe('services/search/actions/update', () => {
         items: expect.arrayContaining([
           expect.objectContaining({
             _meta: {
-              location: "internal://resident/12249",
+              location: {
+                api: "http://api/resident/12249",
+                frontend: "http://website/resident/12249",
+              },
               domain: "resident"
             },
           }),
