@@ -13,7 +13,7 @@ lint:
 deploy:
 	terraform init \
 		-backend-config="bucket=$$TF_STATE_BUCKET" \
-		-backend-config="key=$$TF_STATE_KEY" \
+		-backend-config="key=$$TF_STATE_KEY/infrastructure.tfstate" \
 		-backend-config="region=$$AWS_REGION"
 	terraform apply \
 		-var-file ../../environments/config.tfvars \
@@ -23,7 +23,7 @@ deploy:
 plan-deploy:
 	terraform init \
 		-backend-config="bucket=$$TF_STATE_BUCKET" \
-		-backend-config="key=$$TF_STATE_KEY" \
+		-backend-config="key=$$TF_STATE_KEY/infrastructure.tfstate" \
 		-backend-config="region=$$AWS_REGION"
 	terraform plan \
 		-var-file ../../environments/config.tfvars \
