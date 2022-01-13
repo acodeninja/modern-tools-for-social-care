@@ -88,6 +88,20 @@ data "aws_iam_policy_document" "put_to_open_search" {
   }
 }
 
+data "aws_iam_policy_document" "delete_to_open_search" {
+  statement {
+    sid    = "AllowDeletingToOpenSearch"
+    effect = "Allow"
+    actions = [
+      "es:ESHttpDelete"
+    ]
+    resources = [
+      aws_elasticsearch_domain.search.arn,
+      "${aws_elasticsearch_domain.search.arn}/*",
+    ]
+  }
+}
+
 data "aws_iam_policy_document" "get_to_open_search" {
   statement {
     sid    = "AllowGettingFromOpenSearch"
@@ -116,6 +130,18 @@ module "service" {
         build_directory = "build/actions/search"
         route           = "GET /"
         policy          = data.aws_iam_policy_document.get_to_open_search.json
+        environment_variables = {
+          ENVIRONMENT             = var.environment
+          SYSTEM                  = var.system
+          AWS_OPENSEARCH_ENDPOINT = aws_elasticsearch_domain.search.endpoint
+        }
+      },
+      {
+        name            = "drop-index"
+        handler         = "drop-index.LambdaHandler"
+        build_directory = "build/actions/drop-index"
+        route           = "DELETE /{index}"
+        policy          = data.aws_iam_policy_document.delete_to_open_search.json
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
