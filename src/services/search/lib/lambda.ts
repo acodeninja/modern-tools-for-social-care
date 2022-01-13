@@ -34,6 +34,11 @@ export const LambdaExtractPayload = (event: APIGatewayProxyEventV2WithRequestCon
   } catch (e) {
   }
 
+  try {
+    payload = Object.assign(payload, event.pathParameters);
+  } catch (e) {
+  }
+
   return payload;
 }
 

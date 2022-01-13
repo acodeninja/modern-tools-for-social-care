@@ -86,4 +86,13 @@ export const search = async (terms: string, results: number = 20) => {
       }
     }),
   }
-}
+};
+
+export const dropIndex = async (index: string) => {
+  const response = await signedRequest({
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}`),
+    method: "DELETE",
+    service: "es",
+    region: process.env.AWS_REGION,
+  });
+};
