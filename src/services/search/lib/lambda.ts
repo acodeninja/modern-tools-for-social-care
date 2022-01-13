@@ -24,6 +24,9 @@ export const LambdaExtractPayload = (event: APIGatewayProxyEventV2WithRequestCon
         event.body
     ));
   } catch (e) {
+    if (event.body.length !== 0) {
+      throw new RequestError('The request body is malformed.');
+    }
   }
 
   try {
