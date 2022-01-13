@@ -54,20 +54,37 @@ export const getIndexes = async () => {
   return response.body.split('\n').filter(index => !!index && index !== 'i' && index.indexOf('kibana') === -1);
 }
 
-export const search = async (terms: string | {[key:string]: string}, index: string = null, results: number = 20) => {
+export const search = async (terms: string | { [key: string]: string }, index: string = null, results: number = 20) => {
   let url = `https://${process.env.AWS_OPENSEARCH_ENDPOINT}`
   if (index) url += `/${index}`;
   url += '/_search';
 
-  await signedRequest({
-    url: new URL(url),
-    method: "GET",
-    service: "es",
-    region: process.env.AWS_REGION,
-  });
+  if (typeof terms !== 'string') {
+    await signedRequest({
+      url: new URL(url),
+      method: "POST",
+      service: "es",
+      region: process.env.AWS_REGION,
+      body: JSON.stringify({
+        query: {
+          bool: {
+            should: Object.entries(terms).map(([field, value]) => ({
+              match: {
+                [field]: {
+                  query: value,
+                  fuzziness: "AUTO",
+                  operator: "and"
+                }
+              }
+            })),
+          }
+        }
+      }),
+    });
+  }
 
   const response = await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
+    url: new URL(url),
     method: "POST",
     service: "es",
     region: process.env.AWS_REGION,
