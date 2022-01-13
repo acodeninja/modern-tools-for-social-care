@@ -54,6 +54,20 @@ export const getIndexes = async () => {
   return response.body.split('\n').filter(index => !!index && index !== 'i' && index.indexOf('kibana') === -1);
 }
 
+export const getTextFieldsForIndex = async (index: string): Promise<Array<string>> => {
+  const response = await signedRequest({
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}/_mapping`),
+    method: "GET",
+    service: "es",
+    region: process.env.AWS_REGION,
+  });
+
+  return Object.entries(response.body[index].mappings.properties).map(([key, info]) => {
+    if (key === '_meta') return null;
+    if (info['type'] === 'text') return key;
+  }).filter(field => !!field);
+}
+
 export const search = async (terms: string | { [key: string]: string }, index: string = null, results: number = 20) => {
   let url = `https://${process.env.AWS_OPENSEARCH_ENDPOINT}`
   if (index) url += `/${index}`;
@@ -64,24 +78,36 @@ export const search = async (terms: string | { [key: string]: string }, index: s
   if (typeof terms === 'string') {
     if (index) {
       const indexes = await getIndexes();
+      if (indexes.includes(index)) {
+        const fields = await getTextFieldsForIndex(index);
 
-      await signedRequest({
-        url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}/_mapping`),
-        method: "GET",
-        service: "es",
-        region: process.env.AWS_REGION,
-      });
-    }
-
-    body = JSON.stringify({
-      query: {
-        fuzzy: {
-          '_meta.compound': {
-            value: terms
+        body = JSON.stringify({
+          query: {
+            bool: {
+              should: fields.map(field => ({
+                match: {
+                  [field]: {
+                    query: terms,
+                    fuzziness: "AUTO",
+                    operator: "and"
+                  }
+                }
+              })),
+            }
+          }
+        });
+      }
+    } else {
+      body = JSON.stringify({
+        query: {
+          fuzzy: {
+            '_meta.compound': {
+              value: terms
+            },
           },
         },
-      },
-    })
+      })
+    }
   } else {
     body = JSON.stringify({
       query: {
