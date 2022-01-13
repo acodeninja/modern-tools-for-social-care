@@ -9,7 +9,7 @@ import {inspect} from "util";
 export interface SignedRequestInput {
   body?: unknown;
   url: URL;
-  method: 'GET' | 'PUT' | 'PATCH' | 'POST';
+  method: 'GET' | 'PUT' | 'PATCH' | 'POST' | 'DELETE';
   region: string;
   service: string;
 }
