@@ -31,6 +31,10 @@ resource "aws_apigatewayv2_deployment" "api" {
     create_before_destroy = true
   }
 
+  triggers = {
+    actions-changed = sha1(jsonencode(var.config.actions))
+  }
+
   depends_on = [module.actions]
 }
 
