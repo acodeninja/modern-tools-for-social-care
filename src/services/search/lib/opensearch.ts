@@ -54,13 +54,13 @@ export const getIndexes = async () => {
   return response.body.split('\n').filter(index => !!index && index !== 'i' && index.indexOf('kibana') === -1);
 }
 
-export const search = async (terms: string, results: number = 20) => {
-  const indexes = await getIndexes();
-
-  console.log(`indexes: ${JSON.stringify(indexes)}`);
+export const search = async (terms: string | {[key:string]: string}, index: string = null, results: number = 20) => {
+  let url = `https://${process.env.AWS_OPENSEARCH_ENDPOINT}`
+  if (index) url += `/${index}`;
+  url += '/_search';
 
   await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/residents/_mapping`),
+    url: new URL(url),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,

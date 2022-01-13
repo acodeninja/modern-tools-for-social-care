@@ -22,7 +22,7 @@ export const Handler = async (payload: Payload) => {
 
   Validate(payload);
 
-  const searchResponse = await search(payload.terms);
+  const searchResponse = await search(payload.terms, payload.index);
 
   return Object.assign(new Response(), searchResponse);
 }

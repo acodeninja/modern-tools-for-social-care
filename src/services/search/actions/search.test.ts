@@ -12,7 +12,7 @@ jest.mock('../lib/opensearch');
 });
 
 describe('services/search/actions/search', () => {
-  describe('searching for a single term', () => {
+  describe('searching without specifying an index', () => {
     let response: Response;
 
     beforeAll(async () => {
@@ -20,6 +20,30 @@ describe('services/search/actions/search', () => {
       payload.terms = "test";
 
       response = await Handler(payload);
+    });
+
+    test('calls the search function with the expected input', () => {
+      expect(search).toHaveBeenCalledWith('test', undefined);
+    });
+
+    test('returns appropriate results for the search', () => {
+      expect(response).toHaveProperty('results');
+    });
+  });
+
+  describe('searching with a specified index', () => {
+    let response: Response;
+
+    beforeAll(async () => {
+      const payload = new Payload();
+      payload.terms = 'test-term';
+      payload.index = 'test-index'
+
+      response = await Handler(payload);
+    });
+
+    test('calls the search function with the expected input', () => {
+      expect(search).toHaveBeenCalledWith('test-term', 'test-index');
     });
 
     test('returns appropriate results for the search', () => {
