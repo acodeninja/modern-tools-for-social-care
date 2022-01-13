@@ -66,6 +66,7 @@ export const signedRequest =
 
       responseBody = JSON.parse(responseBody);
     } catch (e) {
+      console.log(`error parsing http response ${inspect(e)}`);
       responseBody = response.response.body;
     }
 
