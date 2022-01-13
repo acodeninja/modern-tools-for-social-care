@@ -59,27 +59,33 @@ export const search = async (terms: string | { [key: string]: string }, index: s
   if (index) url += `/${index}`;
   url += '/_search';
 
-  if (typeof terms !== 'string') {
-    await signedRequest({
-      url: new URL(url),
-      method: "POST",
-      service: "es",
-      region: process.env.AWS_REGION,
-      body: JSON.stringify({
-        query: {
-          bool: {
-            should: Object.entries(terms).map(([field, value]) => ({
-              match: {
-                [field]: {
-                  query: value,
-                  fuzziness: "AUTO",
-                  operator: "and"
-                }
+  let body = '';
+
+  if (typeof terms === 'string') {
+    body = JSON.stringify({
+      query: {
+        fuzzy: {
+          '_meta.compound': {
+            value: terms
+          },
+        },
+      },
+    })
+  } else {
+    body = JSON.stringify({
+      query: {
+        bool: {
+          should: Object.entries(terms).map(([field, value]) => ({
+            match: {
+              [field]: {
+                query: value,
+                fuzziness: "AUTO",
+                operator: "and"
               }
-            })),
-          }
+            }
+          })),
         }
-      }),
+      }
     });
   }
 
@@ -88,15 +94,7 @@ export const search = async (terms: string | { [key: string]: string }, index: s
     method: "POST",
     service: "es",
     region: process.env.AWS_REGION,
-    body: JSON.stringify({
-      query: {
-        fuzzy: {
-          '_meta.compound': {
-            value: terms
-          },
-        },
-      },
-    }),
+    body,
   });
 
   return {
