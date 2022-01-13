@@ -16,9 +16,9 @@ export interface AddItemInput {
 }
 
 export const put = async (input: AddItemInput) => {
-  await Promise.all(input.items.map(item => (async () => {
-    await findDocument(item._meta);
-  })()));
+  const existingData = await Promise.all(input.items.map(item => findDocument(item._meta)));
+
+  console.log(existingData);
 
   const body = input.items
     .map(item => {
@@ -120,7 +120,7 @@ const findDocument = async (documentMeta: {
   };
   domain: string;
 }) => {
-  await signedRequest({
+  const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
     method: "POST",
     service: "es",
@@ -149,4 +149,15 @@ const findDocument = async (documentMeta: {
       },
     }),
   });
+
+  const firstHit = response.body?.hits?.hits[0];
+
+  if (firstHit) {
+    return {
+      id: firstHit._id,
+      index: firstHit._index,
+    };
+  }
+
+  return {};
 }
