@@ -26,6 +26,18 @@ describe('services/search/lib/lambda/LambdaExtractPayload', () => {
     });
   });
 
+  describe('when the payload is in the path parameters', () => {
+    test('parses the payload', () => {
+      expect(LambdaExtractPayload({
+        body: '',
+        queryStringParameters: {},
+        pathParameters: {test: 'test'},
+      } as unknown as APIGatewayProxyEventV2WithRequestContext<APIGatewayEventRequestContextV2>)).toEqual({
+        test: 'test',
+      });
+    });
+  });
+
   describe('when the payload is in the body', () => {
     test('parses a valid payload', () => {
       expect(LambdaExtractPayload({
