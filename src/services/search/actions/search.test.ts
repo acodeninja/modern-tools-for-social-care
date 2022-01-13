@@ -51,6 +51,25 @@ describe('services/search/actions/search', () => {
     });
   });
 
+  describe('searching with field paths', () => {
+    let response: Response;
+
+    beforeAll(async () => {
+      const payload = new Payload();
+      payload['test.field'] = "test-term";
+
+      response = await Handler(payload);
+    });
+
+    test('calls the search function with the expected input', () => {
+      expect(search).toHaveBeenCalledWith({'test.field': 'test-term'}, undefined);
+    });
+
+    test('returns appropriate results for the search', () => {
+      expect(response).toHaveProperty('results');
+    });
+  });
+
   describe('invalid requests', () => {
     test('no payload values', async () => {
       await expect(Handler({})).rejects.toThrow(new RequestError("Must provide one of terms or field paths."));
