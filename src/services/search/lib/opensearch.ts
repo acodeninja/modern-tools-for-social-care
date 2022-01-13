@@ -46,7 +46,7 @@ export const getIndexes = async () => {
     region: process.env.AWS_REGION,
   });
 
-  return response.body.split('\n').filter(index => index !== 'i' && index.indexOf('kibana') === -1);
+  return response.body.split('\n').filter(index => !!index && index !== 'i' && index.indexOf('kibana') === -1);
 }
 
 export const search = async (terms: string, results: number = 20) => {
