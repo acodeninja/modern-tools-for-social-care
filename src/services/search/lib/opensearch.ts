@@ -16,6 +16,10 @@ export interface AddItemInput {
 }
 
 export const put = async (input: AddItemInput) => {
+  await Promise.all(input.items.map(item => (async () => {
+    await findDocument(item._meta);
+  })()));
+
   const body = input.items
     .map(item => {
       const meta = Object.assign(item._meta);
@@ -108,3 +112,41 @@ export const dropIndex = async (index: string): Promise<{
 
   return {result: 'success'};
 };
+
+const findDocument = async (documentMeta: {
+  location: {
+    api: string;
+    frontend: string;
+  };
+  domain: string;
+}) => {
+  await signedRequest({
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),
+    method: "POST",
+    service: "es",
+    region: process.env.AWS_REGION,
+    body: JSON.stringify({
+      query: {
+        bool: {
+          must: [
+            {
+              match: {
+                '_meta.location.api': documentMeta.location.api
+              }
+            },
+            {
+              match: {
+                '_meta.location.frontend': documentMeta.location.frontend
+              }
+            },
+            {
+              match: {
+                '_meta.domain': documentMeta.domain
+              }
+            },
+          ],
+        },
+      },
+    }),
+  });
+}
