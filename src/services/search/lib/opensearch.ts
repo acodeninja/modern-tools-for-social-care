@@ -38,17 +38,26 @@ export const put = async (input: AddItemInput) => {
   });
 };
 
-export const search = async (terms: string, results: number = 20) => {
-  await signedRequest({
+export const getIndexes = async () => {
+  const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices?v&h=i`),
     method: "GET",
-    service:"es",
+    service: "es",
     region: process.env.AWS_REGION,
   });
+
+  return response.body.split('\n').filter(index => index !== 'i' && index.indexOf('kibana') === -1);
+}
+
+export const search = async (terms: string, results: number = 20) => {
+  const indexes = await getIndexes();
+
+  console.log(`indexes: ${JSON.stringify(indexes)}`);
+
   await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/residents/_mapping`),
     method: "GET",
-    service:"es",
+    service: "es",
     region: process.env.AWS_REGION,
   });
 
