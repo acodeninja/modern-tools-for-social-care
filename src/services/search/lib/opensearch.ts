@@ -88,7 +88,10 @@ export const search = async (terms: string, results: number = 20) => {
   }
 };
 
-export const dropIndex = async (index: string) => {
+export const dropIndex = async (index: string): Promise<{
+  result: 'failure' | 'success';
+  error?: string;
+}> => {
   const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}`),
     method: "DELETE",
@@ -99,7 +102,7 @@ export const dropIndex = async (index: string) => {
   if (response.statusCode !== 200) {
     return {
       result: 'failure',
-      error: response.body,
+      error: response.body?.error?.reason,
     };
   }
 
