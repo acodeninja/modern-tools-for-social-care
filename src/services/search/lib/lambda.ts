@@ -38,9 +38,8 @@ export const LambdaExtractPayload = (event: APIGatewayProxyEventV2WithRequestCon
 }
 
 export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayProxyHandlerV2 => async (event) => {
-  const payload = LambdaExtractPayload(event);
-
   try {
+    const payload = LambdaExtractPayload(event);
     const response = await Handler(payload);
 
     return {
