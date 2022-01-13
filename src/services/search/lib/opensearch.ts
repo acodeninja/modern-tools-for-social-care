@@ -95,4 +95,13 @@ export const dropIndex = async (index: string) => {
     service: "es",
     region: process.env.AWS_REGION,
   });
+
+  if (response.statusCode !== 200) {
+    return {
+      result: 'failure',
+      error: response.body,
+    };
+  }
+
+  return {result: 'success'};
 };

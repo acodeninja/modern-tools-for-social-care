@@ -11,21 +11,15 @@ export class Payload implements ActionPayload {
 
 export class Response implements ActionResponse {
   result: 'failure' | 'success';
-  error?: string;
+  error?: unknown;
 }
 
 export const Handler = async (payload: Payload) => {
   console.log(`Running drop-index with payload ${inspect(payload)}`);
-  const response = new Response();
-  try {
-    await dropIndex(payload.index);
-    response.result = 'success';
-  } catch (e) {
-    response.result = 'failure';
-    response.error = e.message;
-  }
 
-  return response;
+  const response = await dropIndex(payload.index);
+
+  return Object.assign(new Response(), response);
 }
 
 export const LambdaHandler = LambdifyHandler(Handler);
