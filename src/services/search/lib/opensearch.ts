@@ -44,13 +44,13 @@ export const search = async (terms: string, results: number = 20) => {
     method: "GET",
     service:"es",
     region: process.env.AWS_REGION,
-  })
+  });
   await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/residents/_mapping`),
     method: "GET",
     service:"es",
     region: process.env.AWS_REGION,
-  })
+  });
 
   const response = await signedRequest({
     url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_search`),

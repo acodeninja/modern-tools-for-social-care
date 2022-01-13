@@ -29,18 +29,6 @@ export const signedRequest =
       sha256: Sha256
     });
 
-    console.log(`http request: ${JSON.stringify({
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-        'host': url.host
-      },
-      hostname: url.host,
-      query: Object.fromEntries(url.searchParams.entries()),
-      method,
-      path: url.pathname,
-    })}`);
-
     const response = await (new NodeHttpHandler()).handle(
       await signer.sign(new HttpRequest({
         body,
