@@ -73,7 +73,7 @@ export const signedRequest =
       body: responseBody,
       headers: response.response.headers,
       statusCode: response.response.statusCode,
-    })}`);
+    }, true, 10)}`);
 
     return {
       body: responseBody,
