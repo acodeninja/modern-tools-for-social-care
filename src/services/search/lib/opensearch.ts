@@ -40,7 +40,7 @@ export const put = async (input: AddItemInput) => {
 
 export const search = async (terms: string, results: number = 20) => {
   await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices`),
+    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices?v&h=i`),
     method: "GET",
     service:"es",
     region: process.env.AWS_REGION,
