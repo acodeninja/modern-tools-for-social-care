@@ -1,6 +1,7 @@
 import {ActionPayload, ActionResponse} from "../../../framework/service/types";
 import {LambdifyHandler, RequestError} from "../lib/lambda";
 import {put} from "../lib/opensearch";
+import {inspect} from "util";
 
 export const Name = 'Update';
 
@@ -23,7 +24,7 @@ export class Response implements ActionResponse {
 }
 
 export const Handler = async (payload: Payload): Promise<Response> => {
-  console.log(`Running update with payload ${JSON.stringify(payload)}`);
+  console.log(`Running update with payload ${inspect(payload)}`);
   const response = new Response();
 
   Validate(payload);

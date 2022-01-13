@@ -2,6 +2,7 @@ import {ActionPayload, ActionResponse} from "../../../framework/service/types";
 import {search} from "../lib/opensearch";
 import {SearchResult} from "../domains";
 import {LambdifyHandler} from "../lib/lambda";
+import {inspect} from "util";
 
 export const Name = 'Search';
 
@@ -15,7 +16,7 @@ export class Response implements ActionResponse {
 }
 
 export const Handler = async (payload: Payload) => {
-  console.log(`Running search with payload ${JSON.stringify(payload)}`);
+  console.log(`Running search with payload ${inspect(payload)}`);
   const searchResponse = await search(payload.terms);
 
   return Object.assign(new Response(), searchResponse);

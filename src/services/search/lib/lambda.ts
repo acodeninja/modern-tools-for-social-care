@@ -4,6 +4,7 @@ import {
   APIGatewayProxyHandlerV2
 } from "aws-lambda";
 import {ActionManifest, ActionPayload} from "../../../framework/service/types";
+import {inspect} from "util";
 
 export class RequestError extends Error {
 
@@ -45,7 +46,7 @@ export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayP
       body: JSON.stringify(response),
     };
   } catch (e) {
-    console.log(JSON.stringify({
+    console.log(inspect({
       stack: e.stack,
       code: e.code,
       message: e.message,

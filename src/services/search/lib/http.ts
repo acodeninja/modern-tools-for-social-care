@@ -4,6 +4,7 @@ import {SignatureV4} from "@aws-sdk/signature-v4";
 import {NodeHttpHandler} from "@aws-sdk/node-http-handler";
 import {Sha256} from "@aws-crypto/sha256-browser";
 import {HttpResponse} from "@aws-sdk/protocol-http";
+import {inspect} from "util";
 
 export interface SignedRequestInput {
   body?: unknown;
@@ -21,6 +22,19 @@ export const signedRequest =
            region,
            service,
          }: SignedRequestInput): Promise<HttpResponse> => {
+
+    console.log(`http request: ${inspect({
+      body,
+      headers: {
+        'Content-Type': 'application/json',
+        'host': url.host
+      },
+      hostname: url.host,
+      query: Object.fromEntries(url.searchParams.entries()),
+      method,
+      path: url.pathname,
+    })}`);
+
 
     const signer = new SignatureV4({
       credentials: defaultProvider(),
@@ -55,7 +69,7 @@ export const signedRequest =
       responseBody = response.response.body;
     }
 
-    console.log(`http response: ${JSON.stringify({
+    console.log(`http response: ${inspect({
       body: responseBody,
       headers: response.response.headers,
       statusCode: response.response.statusCode,
