@@ -62,6 +62,17 @@ export const search = async (terms: string | { [key: string]: string }, index: s
   let body = '';
 
   if (typeof terms === 'string') {
+    if (index) {
+      const indexes = await getIndexes();
+
+      await signedRequest({
+        url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}/_mapping`),
+        method: "GET",
+        service: "es",
+        region: process.env.AWS_REGION,
+      });
+    }
+
     body = JSON.stringify({
       query: {
         fuzzy: {
