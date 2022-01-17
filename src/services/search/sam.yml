@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'Modern Tools for Social Care: Search'
+
+Resources:
+  AppApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      Description: Search API
+      StageName: local
+
+  Search:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/actions/search/
+      Handler: search.LambdaHandler
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          SYSTEM: ''
+          ENVIRONMENT: ''
+          AWS_OPENSEARCH_ENDPOINT: ''
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AppApi
+            Path: /
+            Method: get
+
+  Update:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/actions/update/
+      Handler: update.LambdaHandler
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          SYSTEM: ''
+          ENVIRONMENT: ''
+          AWS_OPENSEARCH_ENDPOINT: ''
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AppApi
+            Path: /
+            Method: put
+
+  DropIndex:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: build/actions/drop-index/
+      Handler: drop-index.LambdaHandler
+      Runtime: nodejs14.x
+      Environment:
+        Variables:
+          SYSTEM: ''
+          ENVIRONMENT: ''
+          AWS_OPENSEARCH_ENDPOINT: ''
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref AppApi
+            Path: /{index}
+            Method: delete
