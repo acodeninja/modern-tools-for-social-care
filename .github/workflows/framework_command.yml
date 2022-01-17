@@ -12,18 +12,6 @@ on:
       - src/framework/command
 
 jobs:
-  test-framework-command:
-    name: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 14
-      - run: npm install
-        working-directory: src/framework/command
-      - run: npm test
-        working-directory: src/framework/command
   check-build-framework-command:
     name: test
     runs-on: ubuntu-latest
