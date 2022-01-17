@@ -5,11 +5,15 @@ on:
     branches: [ main, dev ]
     paths:
       - src/framework/command
+      - .bin/mtsc
+      - .github/workflows/framework_command.yml
   pull_request:
     types: [ opened, synchronize ]
     branches: ['*']
     paths:
       - src/framework/command
+      - .bin/mtsc
+      - .github/workflows/framework_command.yml
 
 jobs:
   check-build-framework-command:
