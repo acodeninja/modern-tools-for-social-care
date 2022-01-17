@@ -1,0 +1,45 @@
+name: 'Framework: Command'
+
+on:
+  push:
+    branches: [ main, dev ]
+    paths:
+      - src/framework/command
+  pull_request:
+    types: [ opened, synchronize ]
+    branches: ['*']
+    paths:
+      - src/framework/command
+
+jobs:
+  test-framework-command:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm install
+        working-directory: src/framework/command
+      - run: npm test
+        working-directory: src/framework/command
+  check-build-framework-command:
+    name: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14
+      - run: npm install
+        working-directory: src/framework/command
+      - run: mv .bin/mtsc .bin/committed-mtsc
+      - run: npm run build
+        working-directory: src/framework/command
+      - run: |
+          DIFF=$(diff --suppress-common-lines --speed-large-files -y .bin/mtsc .bin/committed-mtsc)
+          if [ -n "$DIFF" ]; then
+            echo "::error file={.bin/mtsc},title=Differences::Found differences between the committed and built versions of the file"
+            exit 1
+          fi
