@@ -1,0 +1,28 @@
+search:
+  dir: src/services/search
+  dev:
+    build:
+      command: npm run build -- --watch
+      isRunningMatcher: 'compiled successfully'
+    http:
+      command: |
+        sam local start-api \
+          --template sam.yml \
+          --host 0.0.0.0 \
+          --port 3001 \
+          --docker-volume-basedir "$PWD" \
+          --env-vars test.env.json
+      connectionString: http://localhost:3001/
+      isRunningMatcher: Running on
+    opensearch:
+      command: |
+        docker run \
+          -p 9200:9200 \
+          -p 9600:9600 \
+          -e "discovery.type=single-node" \
+          -e "plugins.security.disabled=true" \
+          --name services-search-opensearch \
+          opensearchproject/opensearch:1.1.0
+      postExit: docker container rm services-search-opensearch
+      connectionString: http://localhost:9200/
+      isRunningMatcher: Node started

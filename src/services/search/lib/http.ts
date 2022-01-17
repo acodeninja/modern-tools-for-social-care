@@ -50,7 +50,9 @@ export const signedRequest =
           'Content-Type': 'application/json',
           'host': url.host
         },
-        hostname: url.host,
+        hostname: url.hostname,
+        protocol: url.protocol,
+        port: parseInt(url.port),
         query: Object.fromEntries(url.searchParams.entries()),
         method,
         path: url.pathname,
