@@ -133,7 +133,7 @@ module "service" {
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
-          AWS_OPENSEARCH_ENDPOINT = aws_elasticsearch_domain.search.endpoint
+          AWS_OPENSEARCH_ENDPOINT = "https://${aws_elasticsearch_domain.search.endpoint}"
         }
       },
       {
@@ -145,7 +145,7 @@ module "service" {
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
-          AWS_OPENSEARCH_ENDPOINT = aws_elasticsearch_domain.search.endpoint
+          AWS_OPENSEARCH_ENDPOINT = "https://${aws_elasticsearch_domain.search.endpoint}"
         }
       },
       {
@@ -157,7 +157,7 @@ module "service" {
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
-          AWS_OPENSEARCH_ENDPOINT = aws_elasticsearch_domain.search.endpoint
+          AWS_OPENSEARCH_ENDPOINT = "https://${aws_elasticsearch_domain.search.endpoint}"
         }
       },
     ]

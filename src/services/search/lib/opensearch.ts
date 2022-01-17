@@ -35,7 +35,7 @@ export const put = async (input: AddItemInput) => {
   const body = updates.join('\n') + '\n';
 
   return await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
+    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
     body,
     method: "POST",
     service: "es",
@@ -45,7 +45,7 @@ export const put = async (input: AddItemInput) => {
 
 export const getIndexes = async () => {
   const response = await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices?v&h=i`),
+    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices?v&h=i`),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
@@ -56,7 +56,7 @@ export const getIndexes = async () => {
 
 export const getTextFieldsForIndex = async (index: string): Promise<Array<string>> => {
   const response = await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}/_mapping`),
+    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}/_mapping`),
     method: "GET",
     service: "es",
     region: process.env.AWS_REGION,
@@ -69,7 +69,7 @@ export const getTextFieldsForIndex = async (index: string): Promise<Array<string
 }
 
 export const search = async (terms: string | { [key: string]: string }, index: string = null, results: number = 20) => {
-  let url = `https://${process.env.AWS_OPENSEARCH_ENDPOINT}`
+  let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`
   if (index) url += `/${index}`;
   url += '/_search';
 
@@ -150,7 +150,7 @@ export const dropIndex = async (index: string): Promise<{
   error?: string;
 }> => {
   const response = await signedRequest({
-    url: new URL(`https://${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}`),
+    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}`),
     method: "DELETE",
     service: "es",
     region: process.env.AWS_REGION,
@@ -173,7 +173,7 @@ const findDocument = async (documentMeta: {
   };
   domain: string;
 }, index: string) => {
-  let url = `https://${process.env.AWS_OPENSEARCH_ENDPOINT}`;
+  let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`;
   if (index) url += `/${index}`;
   url += '/_search';
 
