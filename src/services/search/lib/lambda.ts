@@ -42,6 +42,20 @@ export const LambdaExtractPayload = (event: APIGatewayProxyEventV2WithRequestCon
   return payload;
 }
 
+export const stringifyResponse = (input: unknown) => {
+  const allKeys = [];
+  const seen = {};
+  JSON.stringify(input, (key, value) => {
+    if (!(key in seen)) {
+      allKeys.push(key);
+      seen[key] = null;
+    }
+    return value;
+  });
+  allKeys.sort();
+  return JSON.stringify(input, allKeys);
+}
+
 export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayProxyHandlerV2 => async (event) => {
   try {
     const payload = LambdaExtractPayload(event);
@@ -50,7 +64,7 @@ export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayP
     return {
       statusCode: 200,
       isBase64Encoded: false,
-      body: JSON.stringify(response),
+      body: stringifyResponse(response),
     };
   } catch (e) {
     console.log(inspect({
