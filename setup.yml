@@ -1,20 +1,20 @@
 search:
   dir: src/services/search
   dev:
-    build:
+    AppBuilder:
       command: npm run build -- --watch
       isRunningMatcher: 'compiled successfully'
-    http:
+    HTTPServer:
       command: |
         sam local start-api \
-          --template sam.yml \
+          --template dev/sam-local-api.yml \
           --host 0.0.0.0 \
           --port 3001 \
           --docker-volume-basedir "$PWD" \
-          --env-vars test.env.json
+          --env-vars dev/sam.env.json
       connectionString: http://localhost:3001/
       isRunningMatcher: Running on
-    opensearch:
+    AWSOpenSearch:
       command: |
         docker run \
           -p 9200:9200 \
@@ -26,3 +26,5 @@ search:
       postExit: docker container rm services-search-opensearch
       connectionString: http://localhost:9200/
       isRunningMatcher: Node started
+      onRunning:
+        - node dev/search.seed.js 3001 200
