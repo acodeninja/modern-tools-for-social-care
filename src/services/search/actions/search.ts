@@ -56,6 +56,10 @@ const Validate = (payload) => {
   ) {
     throw new RequestError('If passing a highlight you must also specify the term for that field.');
   }
+
+  if (!!highlights && !highlights.every(highlight => highlight.indexOf('_meta') !== 0)) {
+    throw new RequestError('Cannot add highlighting to _meta fields.');
+  }
 };
 
 export const LambdaHandler = LambdifyHandler(Handler);

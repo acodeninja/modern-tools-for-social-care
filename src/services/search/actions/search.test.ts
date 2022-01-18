@@ -84,5 +84,10 @@ describe('services/search/actions/search', () => {
       await expect(Handler({'test.field': 'test', highlight: 'test.not.field'}))
         .rejects.toThrow(new RequestError("If passing a highlight you must also specify the term for that field."));
     })
+
+    test('highlights of _meta fields', async () => {
+      await expect(Handler({'_meta.domain': 'test', highlight: '_meta.domain'}))
+        .rejects.toThrow(new RequestError("Cannot add highlighting to _meta fields."));
+    })
   })
 });
