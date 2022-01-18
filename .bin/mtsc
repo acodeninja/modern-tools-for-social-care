@@ -41244,7 +41244,7 @@ const Command = ({ devServices }) => {
         react_1.default.createElement(ink_1.Text, null,
             "Service: ",
             service.name),
-        service.servers.map(server => (react_1.default.createElement(RunProcess_1.default, { key: service.name + server.name, serviceName: service.name, serverName: server.name, command: server.command, postExit: server.postExit, isRunningMatcher: new RegExp(server.isRunningMatcher), connectionString: server.connectionString, workingDir: service.dir }))))))));
+        service.servers.map(server => (react_1.default.createElement(RunProcess_1.default, { key: service.name + server.name, serviceName: service.name, serverName: server.name, command: server.command, postExit: server.postExit, isRunningMatcher: new RegExp(server.isRunningMatcher), connectionString: server.connectionString, workingDir: service.dir, onRunning: server.onRunning }))))))));
 };
 const handler = (args) => {
     const services = yaml_1.default.parse((0, fs_1.readFileSync)((0, path_1.resolve)(process.cwd(), 'setup.yml')).toString());
@@ -41361,31 +41361,38 @@ const startProcess = (serviceName, serverName, command, postExit, workingDir, is
     // @ts-ignore
     return global.processes[`${serviceName}-${serverName}`];
 };
-const Status = ({ status }) => {
+const Status = ({ status, statusCharacters }) => {
     switch (status) {
         case 'loading':
-            return (react_1.default.createElement(ink_1.Text, { color: "yellow" },
+            return (statusCharacters === null || statusCharacters === void 0 ? void 0 : statusCharacters.loading) !== undefined ?
+                statusCharacters === null || statusCharacters === void 0 ? void 0 : statusCharacters.loading : (react_1.default.createElement(ink_1.Text, { color: "yellow" },
                 react_1.default.createElement(ink_spinner_1.default, { type: "dots" })));
         case 'running':
-            return (react_1.default.createElement(ink_1.Text, { color: 'green' }, "\u2714"));
+            return (statusCharacters === null || statusCharacters === void 0 ? void 0 : statusCharacters.running) !== undefined ?
+                statusCharacters === null || statusCharacters === void 0 ? void 0 : statusCharacters.running : (react_1.default.createElement(ink_1.Text, { color: 'green' }, "\u2714"));
         case 'exited':
-            return (react_1.default.createElement(ink_1.Text, { color: 'red' }, "\u2620"));
+            return (statusCharacters === null || statusCharacters === void 0 ? void 0 : statusCharacters.exited) !== undefined ?
+                statusCharacters === null || statusCharacters === void 0 ? void 0 : statusCharacters.exited : (react_1.default.createElement(ink_1.Text, { color: 'red' }, "\u2620"));
         default:
             return (react_1.default.createElement(ink_1.Text, { color: 'blue' }, "?"));
     }
 };
-const RunProcess = ({ serviceName, serverName, command, postExit, connectionString, isRunningMatcher, workingDir }) => {
+const RunProcess = ({ serviceName, serverName, command, postExit, connectionString, isRunningMatcher, workingDir, onRunning, statusCharacters }) => {
     const [status, setStatus] = (0, react_1.useState)('loading');
     startProcess(serviceName, serverName, command, postExit, workingDir, isRunningMatcher, setStatus);
     return (react_1.default.createElement(react_1.default.Fragment, null,
         react_1.default.createElement(ink_1.Box, { width: '100%', flexDirection: 'row' },
-            react_1.default.createElement(ink_1.Box, { width: "50%" },
+            react_1.default.createElement(ink_1.Box, { width: "65%" },
                 react_1.default.createElement(ink_1.Text, { color: 'blue' },
-                    react_1.default.createElement(Status, { status: status }),
+                    react_1.default.createElement(Status, { status: status, statusCharacters: statusCharacters }),
                     " ",
                     serverName)),
-            react_1.default.createElement(ink_1.Box, { width: "50%", marginRight: 1, alignItems: 'flex-end' },
-                react_1.default.createElement(ink_1.Text, null, (connectionString && status === 'running') ? `${connectionString}` : '')))));
+            react_1.default.createElement(ink_1.Box, { width: "35%", marginRight: 1, alignItems: 'flex-end' },
+                react_1.default.createElement(ink_1.Text, null, (connectionString && status === 'running') ? `${connectionString}` : ''))),
+        status === 'running' && onRunning && onRunning.map((onRunningCommand, index) => (react_1.default.createElement(ink_1.Box, { marginLeft: 3 },
+            react_1.default.createElement(RunProcess, { serviceName: serviceName, serverName: `${serverName}-${onRunningCommand.replace(/[\/\s:]/g, '-')} (${index + 1})`, command: onRunningCommand, isRunningMatcher: /ON RUNNING FINISHED/, statusCharacters: {
+                    exited: (react_1.default.createElement(ink_1.Text, { color: 'green' }, "\u2714")),
+                }, workingDir: workingDir }))))));
 };
 module.exports = RunProcess;
 exports["default"] = RunProcess;
