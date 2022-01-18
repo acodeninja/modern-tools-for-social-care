@@ -71,6 +71,44 @@ describe('services/search/lib/opensearch', () => {
       });
     });
 
+    describe('with a field and index', () => {
+      beforeAll(async () => {
+        (signedRequest as jest.Mock).mockClear();
+        (signedRequest as jest.Mock).mockResolvedValueOnce({
+          response: {
+            body: Buffer.from(''),
+            statusCode: 200,
+            headers: {},
+          },
+        })
+        await search({'_meta.compound': 'search terms'}, 'test-index', undefined);
+      });
+
+      test('does an index search on the _meta.compound key', () => {
+        expect(signedRequest).toHaveBeenCalledWith({
+          body: JSON.stringify({
+            query: {
+              bool: {
+                should: [{
+                  match: {
+                    '_meta.compound': {
+                      query: "search terms",
+                      fuzziness: "AUTO",
+                      operator: "and",
+                    },
+                  },
+                }],
+              },
+            },
+          }),
+          method: 'POST',
+          region: 'eu-west-2',
+          service: 'es',
+          url: new URL('https://search-service/test-index/_search'),
+        });
+      });
+    });
+
     describe('with a term and an existing index', () => {
       beforeAll(async () => {
         (signedRequest as jest.Mock).mockClear();

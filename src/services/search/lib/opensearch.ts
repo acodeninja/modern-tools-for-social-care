@@ -75,7 +75,7 @@ export const search =
   async (
     terms: string | { [key: string]: string },
     index: string = null,
-    highlight: Array<string> = undefined,
+    highlight: Array<string> = [],
     results: number = 20,
   ): Promise<{
     count: number;
@@ -123,13 +123,6 @@ export const search =
         })
       }
     } else {
-      const highlighting = {
-        highlight: {
-          pre_tags: ["<strong>"],
-          post_tags: ["</strong>"],
-          fields: {fieldOne: {}},
-        },
-      }
       const osRequest = {
         query: {
           bool: {
@@ -146,7 +139,7 @@ export const search =
         }
       };
 
-      if (!!highlight) {
+      if (Array.isArray(highlight) && highlight.length) {
         osRequest['highlight'] = {
           pre_tags: ["<strong>"],
           post_tags: ["</strong>"],
