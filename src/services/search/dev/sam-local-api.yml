@@ -12,9 +12,10 @@ Resources:
   Search:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: build/actions/search/
+      CodeUri: ../build/actions/search/
       Handler: search.LambdaHandler
       Runtime: nodejs14.x
+      Timeout: 30
       Environment:
         Variables:
           SYSTEM: ''
@@ -31,9 +32,10 @@ Resources:
   Update:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: build/actions/update/
+      CodeUri: ../build/actions/update/
       Handler: update.LambdaHandler
       Runtime: nodejs14.x
+      Timeout: 30
       Environment:
         Variables:
           SYSTEM: ''
@@ -50,9 +52,10 @@ Resources:
   DropIndex:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: build/actions/drop-index/
+      CodeUri: ../build/actions/drop-index/
       Handler: drop-index.LambdaHandler
       Runtime: nodejs14.x
+      Timeout: 30
       Environment:
         Variables:
           SYSTEM: ''
