@@ -1,7 +1,6 @@
 import {signedRequest} from "./http";
 import {SearchResult} from "../domains";
 import {RequestError} from "./lambda";
-import {inspect} from "util";
 
 export interface AddItemInput {
   index: string;
@@ -20,8 +19,6 @@ export interface AddItemInput {
 
 export const put = async (input: AddItemInput) => {
   const updates = await Promise.all(input.items.map(item => (async () => {
-    const existingDocument = await findDocument(item._meta, input.index);
-
     const meta = Object.assign(item._meta);
     delete item._meta;
     meta.compound = Object.values(item).join(' ');
@@ -30,20 +27,24 @@ export const put = async (input: AddItemInput) => {
     const indexInfo: { index: { _index: string, _id?: string } }
       = {index: {_index: input.index}};
 
-    if (existingDocument.id) indexInfo.index._id = existingDocument.id;
+    const existingDocument = await findDocument(item._meta, input.index);
+
+    if (existingDocument?.id) indexInfo.index._id = existingDocument.id;
 
     return JSON.stringify(indexInfo) + '\n' + JSON.stringify(item);
   })()));
 
   const body = updates.join('\n') + '\n';
 
-  return await signedRequest({
+  const response = await signedRequest({
     url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
     body,
     method: "POST",
     service: "es",
     region: process.env.AWS_REGION,
   });
+
+  return response.statusCode === 200;
 };
 
 export const getIndexes = async () => {
@@ -214,7 +215,10 @@ const findDocument = async (documentMeta: {
     frontend: string;
   };
   domain: string;
-}, index: string) => {
+}, index: string): Promise<{
+  id: string;
+  index: string;
+} | null> => {
   let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`;
   if (index) url += `/${index}`;
   url += '/_search';
@@ -258,5 +262,5 @@ const findDocument = async (documentMeta: {
     };
   }
 
-  return {};
+  return null;
 }
