@@ -206,11 +206,6 @@ describe('services/search/lib/opensearch', () => {
           results: [
             {
               data: {
-                _highlights: {
-                  emailAddress: [
-                    "<strong>Abel</strong>Bechtelar@example.org"
-                  ]
-                },
                 _meta: {
                   domain: "person",
                   location: {
@@ -218,7 +213,10 @@ describe('services/search/lib/opensearch', () => {
                     frontend: "https://service-website/person/110"
                   }
                 },
-                emailAddress: "Abel.Bechtelar@example.org"
+                emailAddress: "Abel.Bechtelar@example.org",
+                emailAddress__highlights: [
+                  "<strong>Abel</strong>Bechtelar@example.org"
+                ],
               },
               score: 3.67338
             }

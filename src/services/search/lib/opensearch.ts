@@ -170,8 +170,8 @@ export const search =
       results: response.body?.hits?.hits?.map(result => ({
         score: result._score,
         data: {
+          ...Object.fromEntries(Object.entries(result.highlight).map(([field, highlights]) => [`${field}__highlights`, highlights])),
           ...result._source,
-          _highlights: result.highlight,
         },
       })),
     }

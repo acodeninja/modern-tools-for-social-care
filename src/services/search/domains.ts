@@ -9,7 +9,6 @@ export class SearchResult {
       domain: string;
       compound: string;
     };
-    _highlights: { [key: string]: Array<string> };
     [key: string]: unknown;
   }
 }
