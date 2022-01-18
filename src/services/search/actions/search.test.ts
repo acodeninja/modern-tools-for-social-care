@@ -79,5 +79,10 @@ describe('services/search/actions/search', () => {
       await expect(Handler({terms: 'test', 'test.field': 'test'})).rejects
         .toThrow(new RequestError("Must provide only one of terms or field paths."));
     });
+
+    test('highlights without matching fields', async () => {
+      await expect(Handler({'test.field': 'test', highlight: 'test.not.field'}))
+        .rejects.toThrow(new RequestError("If passing a highlight you must also specify the term for that field."));
+    })
   })
 });
