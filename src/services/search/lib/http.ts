@@ -22,20 +22,6 @@ export const signedRequest =
            region,
            service,
          }: SignedRequestInput): Promise<HttpResponse> => {
-
-    console.log(`http request: ${inspect({
-      body,
-      headers: {
-        'Content-Type': 'application/json',
-        'host': url.host
-      },
-      hostname: url.host,
-      query: Object.fromEntries(url.searchParams.entries()),
-      method,
-      path: url.pathname,
-    })}`);
-
-
     const signer = new SignatureV4({
       credentials: defaultProvider(),
       region: region,
@@ -70,12 +56,6 @@ export const signedRequest =
     } catch (e) {
       console.error(`error parsing http response ${inspect(e)}, ${inspect(responseBody)}`);
     }
-
-    console.log(`http response: ${inspect({
-      body: responseBody,
-      headers: response.response.headers,
-      statusCode: response.response.statusCode,
-    }, true, 10)}`);
 
     return {
       body: responseBody,
