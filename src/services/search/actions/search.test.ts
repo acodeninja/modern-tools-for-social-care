@@ -23,7 +23,7 @@ describe('services/search/actions/search', () => {
     });
 
     test('calls the search function with the expected input', () => {
-      expect(search).toHaveBeenCalledWith('test', undefined);
+      expect(search).toHaveBeenCalledWith('test', undefined, undefined);
     });
 
     test('returns appropriate results for the search', () => {
@@ -43,7 +43,7 @@ describe('services/search/actions/search', () => {
     });
 
     test('calls the search function with the expected input', () => {
-      expect(search).toHaveBeenCalledWith('test-term', 'test-index');
+      expect(search).toHaveBeenCalledWith('test-term', 'test-index', undefined);
     });
 
     test('returns appropriate results for the search', () => {
@@ -62,7 +62,7 @@ describe('services/search/actions/search', () => {
     });
 
     test('calls the search function with the expected input', () => {
-      expect(search).toHaveBeenCalledWith({'test.field': 'test-term'}, undefined);
+      expect(search).toHaveBeenCalledWith({'test.field': 'test-term'}, undefined, undefined);
     });
 
     test('returns appropriate results for the search', () => {
