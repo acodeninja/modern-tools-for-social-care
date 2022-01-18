@@ -26,3 +26,5 @@ search:
       postExit: docker container rm services-search-opensearch
       connectionString: http://localhost:9200/
       isRunningMatcher: Node started
+      onRunning:
+        - node dev/search.seed.js 3001 200
