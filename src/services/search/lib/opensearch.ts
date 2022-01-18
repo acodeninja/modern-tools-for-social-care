@@ -76,7 +76,7 @@ export const search =
     terms: string | { [key: string]: string },
     index: string = null,
     highlight: Array<string> = [],
-    results: number = 20,
+    resultsCount: number = 20,
   ): Promise<{
     count: number;
     results: Array<SearchResult>;
@@ -158,15 +158,32 @@ export const search =
       body,
     });
 
+
+    const results = response.body?.hits?.hits?.map(result => {
+      const computedResult = {score: result._score, data: result._source};
+
+      if (result.highlight) {
+        Object.entries(result.highlight)
+          .forEach(([field, highlights]) => {
+            let position = computedResult.data;
+            const path = `${field}__highlights`.split('.');
+
+            path.forEach((key, index) => {
+              if (index === path.length - 1) {
+                position[key] = highlights;
+              } else {
+                position = position[key];
+              }
+            });
+          })
+      }
+
+      return computedResult;
+    });
+
     return {
       count: response.body?.hits?.total?.value,
-      results: response.body?.hits?.hits?.map(result => ({
-        score: result._score,
-        data: {
-          ...Object.fromEntries(Object.entries(result.highlight).map(([field, highlights]) => [`${field}__highlights`, highlights])),
-          ...result._source,
-        },
-      })),
+      results,
     }
   };
 

@@ -261,6 +261,87 @@ describe('services/search/lib/opensearch', () => {
           ]
         });
       });
+
+      describe('highlighting a nested field', () => {
+        let response;
+        beforeAll(async () => {
+          (signedRequest as jest.Mock).mockClear();
+          mockSearchRequest({
+            took: 4,
+            timed_out: false,
+            _shards: {total: 1, successful: 1, skipped: 0, failed: 0},
+            hits: {
+              total: {value: 1, relation: 'eq'},
+              max_score: 3.67338,
+              hits: [{
+                _index: 'test-index',
+                _score: 3.67338,
+                _source: {
+                  address: {postcode: 'SE8 0AA'},
+                  _meta: {
+                    location: {
+                      api: 'https://service-api/person/110',
+                      frontend: 'https://service-website/person/110'
+                    },
+                    domain: 'person',
+                  },
+                },
+                highlight: {'address.postcode': ['<strong>SE8</strong> 0AA']},
+              }]
+            }
+          });
+          response = await search({'address.postcode': 'SE8'}, 'test-index', ['address.postcode']);
+        });
+
+        test('calls the expected search endpoint requesting highlights', () => {
+          expect(signedRequest).toHaveBeenCalledWith({
+            body: JSON.stringify({
+              query: {
+                bool: {
+                  should: [
+                    {match: {'address.postcode': {query: "SE8", fuzziness: "AUTO", operator: "and"}}},
+                  ],
+                },
+              },
+              highlight: {
+                pre_tags: ["<strong>"],
+                post_tags: ["</strong>"],
+                fields: {'address.postcode': {}},
+              },
+            }),
+            method: 'POST',
+            region: 'eu-west-2',
+            service: 'es',
+            url: new URL('https://search-service/test-index/_search'),
+          });
+        });
+
+        test('has a correctly highlighted set in the response', () => {
+          expect(response).toEqual({
+            count: 1,
+            results: [
+              {
+                data: {
+                  _meta: {
+                    domain: "person",
+                    location: {
+                      api: "https://service-api/person/110",
+                      frontend: "https://service-website/person/110"
+                    }
+                  },
+                  address: {
+                    postcode: "SE8 0AA",
+                    postcode__highlights: [
+                      "<strong>SE8</strong> 0AA"
+                    ],
+                  },
+                },
+                score: 3.67338
+              }
+            ]
+          });
+        });
+      });
     });
   });
 
