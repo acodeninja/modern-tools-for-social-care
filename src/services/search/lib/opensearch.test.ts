@@ -277,7 +277,7 @@ describe('services/search/lib/opensearch', () => {
                 _index: 'test-index',
                 _score: 3.67338,
                 _source: {
-                  address: {postcode: 'SE8 0AA'},
+                  address: {postcode: 'E8 0AA'},
                   _meta: {
                     location: {
                       api: 'https://service-api/person/110',
@@ -286,11 +286,11 @@ describe('services/search/lib/opensearch', () => {
                     domain: 'person',
                   },
                 },
-                highlight: {'address.postcode': ['<strong>SE8</strong> 0AA']},
+                highlight: {'address.postcode': ['<strong>E8</strong> 0AA']},
               }]
             }
           });
-          response = await search({'address.postcode': 'SE8'}, 'test-index', ['address.postcode']);
+          response = await search({'address.postcode': 'E8'}, 'test-index', ['address.postcode']);
         });
 
         test('calls the expected search endpoint requesting highlights', () => {
@@ -299,7 +299,7 @@ describe('services/search/lib/opensearch', () => {
               query: {
                 bool: {
                   should: [
-                    {match: {'address.postcode': {query: "SE8", fuzziness: "AUTO", operator: "and"}}},
+                    {match: {'address.postcode': {query: "E8", fuzziness: "AUTO", operator: "and"}}},
                   ],
                 },
               },
@@ -330,9 +330,9 @@ describe('services/search/lib/opensearch', () => {
                     }
                   },
                   address: {
-                    postcode: "SE8 0AA",
+                    postcode: "E8 0AA",
                     postcode__highlights: [
-                      "<strong>SE8</strong> 0AA"
+                      "<strong>E8</strong> 0AA"
                     ],
                   },
                 },
