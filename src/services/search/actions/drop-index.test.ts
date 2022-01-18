@@ -2,24 +2,31 @@ import {beforeAll, describe, expect, jest, test} from '@jest/globals';
 import {Handler, Payload, Response} from "./drop-index";
 
 import {dropIndex} from "../lib/opensearch";
+import {RequestError} from "../lib/lambda";
 
 jest.mock('../lib/opensearch');
 
-(dropIndex as jest.Mock).mockResolvedValue({});
-
-describe('services/search/actions/search', () => {
-  describe('searching for a single term', () => {
+describe('services/search/actions/drop-index', () => {
+  describe('dropping an index that exists', () => {
     let response: Response;
 
     beforeAll(async () => {
+      (dropIndex as jest.Mock).mockResolvedValue({});
       const payload = new Payload();
       payload.index = "test";
-
       response = await Handler(payload);
     });
 
     test('calls delete with the test index', () => {
       expect(dropIndex).toHaveBeenCalledWith('test');
+    });
+  });
+
+  describe('dropping an index that does not', () => {
+    test('calls delete with the test index', async () => {
+      (dropIndex as jest.Mock).mockResolvedValue({result: 'failure', error: 'test error'});
+
+      await expect(Handler({index: 'test'})).rejects.toThrow(new RequestError('test error'));
     });
   });
 });
