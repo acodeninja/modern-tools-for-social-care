@@ -70,20 +70,30 @@ const startProcess = (
   return global.processes[`${serviceName}-${serverName}`];
 };
 
-type StatusString = 'loading' | 'running' | 'exited';
+type StatusString = 'loading' | 'running' | 'exited' | 'waiting';
 
-const Status: FC<{ status: StatusString; }> = ({status}) => {
+const Status: FC<{
+  status: StatusString;
+  statusCharacters?: {
+    loading?: JSX.Element;
+    running?: JSX.Element;
+    exited?: JSX.Element;
+  };
+}> = ({status, statusCharacters}) => {
   switch (status) {
     case 'loading':
-      return (
-        <Text color="yellow">
-          <Spinner type="dots"/>
-        </Text>
-      );
+      return statusCharacters?.loading !== undefined ?
+        statusCharacters?.loading : (
+          <Text color="yellow">
+            <Spinner type="dots"/>
+          </Text>
+        );
     case 'running':
-      return (<Text color='green'>✔</Text>);
+      return statusCharacters?.running !== undefined ?
+        statusCharacters?.running : (<Text color='green'>✔</Text>);
     case 'exited':
-      return (<Text color='red'>☠</Text>);
+      return statusCharacters?.exited !== undefined ?
+        statusCharacters?.exited : (<Text color='red'>☠</Text>);
     default:
       return (<Text color='blue'>?</Text>);
   }
@@ -97,7 +107,23 @@ const RunProcess: FC<{
   connectionString?: string;
   isRunningMatcher: RegExp;
   workingDir: string;
-}> = ({serviceName, serverName, command, postExit, connectionString, isRunningMatcher, workingDir}) => {
+  onRunning?: Array<string>;
+  statusCharacters?: {
+    loading?: JSX.Element;
+    running?: JSX.Element;
+    exited?: JSX.Element;
+  };
+}> = ({
+        serviceName,
+        serverName,
+        command,
+        postExit,
+        connectionString,
+        isRunningMatcher,
+        workingDir,
+        onRunning,
+        statusCharacters
+      }) => {
   const [status, setStatus] = useState<StatusString>('loading');
 
   startProcess(
@@ -113,17 +139,31 @@ const RunProcess: FC<{
   return (
     <>
       <Box width='100%' flexDirection='row'>
-        <Box width="50%">
+        <Box width="65%">
           <Text color='blue'>
-            <Status status={status}/> {serverName}
+            <Status status={status} statusCharacters={statusCharacters}/> {serverName}
           </Text>
         </Box>
-        <Box width="50%" marginRight={1} alignItems='flex-end'>
+        <Box width="35%" marginRight={1} alignItems='flex-end'>
           <Text>
             {(connectionString && status === 'running') ? `${connectionString}` : ''}
           </Text>
         </Box>
       </Box>
+      {status === 'running' && onRunning && onRunning.map((onRunningCommand: string, index) => (
+        <Box marginLeft={3}>
+          <RunProcess
+            serviceName={serviceName}
+            serverName={`${serverName}-${onRunningCommand.replace(/[\/\s:]/g, '-')} (${index + 1})`}
+            command={onRunningCommand}
+            isRunningMatcher={/ON RUNNING FINISHED/}
+            statusCharacters={{
+              exited: (<Text color='green'>✔</Text>),
+            }}
+            workingDir={workingDir}
+          />
+        </Box>
+      ))}
     </>
   )
 };

@@ -38,6 +38,7 @@ const Command: FC<{ args: Arguments<{ service?: string }>, devServices: Array<De
               isRunningMatcher={new RegExp(server.isRunningMatcher)}
               connectionString={server.connectionString}
               workingDir={service.dir}
+              onRunning={server.onRunning}
             />
           ))}
         </Fragment>
@@ -97,6 +98,7 @@ interface DevService {
     postExit?: string;
     connectionString: string;
     isRunningMatcher: string;
+    onRunning?: Array<string>;
   }>;
 }
 
@@ -109,6 +111,7 @@ interface ServiceFile {
         postExit?: string;
         connectionString: string;
         isRunningMatcher: string;
+        onRunning?: Array<string>;
       }
     }
   };
