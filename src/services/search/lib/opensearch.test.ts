@@ -31,11 +31,9 @@ const mockGetTextFieldsForIndex = (index, fields) => {
 
 const mockSearchRequest = (body = null) => {
   (signedRequest as jest.Mock).mockResolvedValueOnce({
-    response: {
-      body: body ? body : Buffer.from(''),
-      statusCode: 200,
-      headers: {},
-    },
+    body: body ? body : Buffer.from(''),
+    statusCode: 200,
+    headers: {},
   })
 }
 
@@ -146,6 +144,88 @@ describe('services/search/lib/opensearch', () => {
           .toThrow(new RequestError('index not-an-index does not exist'));
       });
     });
+
+    describe('with a field and highlighting', () => {
+      let response;
+
+      beforeAll(async () => {
+        (signedRequest as jest.Mock).mockClear();
+        mockSearchRequest({
+          took: 4,
+          timed_out: false,
+          _shards: {total: 1, successful: 1, skipped: 0, failed: 0},
+          hits: {
+            total: {value: 1, relation: 'eq'},
+            max_score: 3.67338,
+            hits: [{
+              _index: 'test-index',
+              _score: 3.67338,
+              _source: {
+                emailAddress: 'Abel.Bechtelar@example.org',
+                _meta: {
+                  location: {
+                    api: 'https://service-api/person/110',
+                    frontend: 'https://service-website/person/110'
+                  },
+                  domain: 'person',
+                },
+              },
+              highlight: {emailAddress: ['<strong>Abel</strong>Bechtelar@example.org']},
+            }]
+          }
+        });
+        response = await search({emailAddress: 'search terms'}, 'test-index', 'emailAddress');
+      });
+
+      test('calls the expected search endpoint requesting highlights', () => {
+        expect(signedRequest).toHaveBeenCalledWith({
+          body: JSON.stringify({
+            query: {
+              bool: {
+                should: [
+                  {match: {emailAddress: {query: "search terms", fuzziness: "AUTO", operator: "and"}}},
+                ],
+              },
+            },
+            highlight: {
+              pre_tags: ["<strong>"],
+              post_tags: ["</strong>"],
+              fields: {emailAddress: {}},
+            },
+          }),
+          method: 'POST',
+          region: 'eu-west-2',
+          service: 'es',
+          url: new URL('https://search-service/test-index/_search'),
+        });
+      });
+
+      test('has a correctly highlighted set in the response', () => {
+        expect(response).toEqual({
+          count: 1,
+          results: [
+            {
+              data: {
+                _highlights: {
+                  emailAddress: [
+                    "<strong>Abel</strong>Bechtelar@example.org"
+                  ]
+                },
+                _meta: {
+                  domain: "person",
+                  location: {
+                    api: "https://service-api/person/110",
+                    frontend: "https://service-website/person/110"
+                  }
+                },
+                emailAddress: "Abel.Bechtelar@example.org"
+              },
+              score: 3.67338
+            }
+          ]
+        });
+      });
+    });
   });
 
   describe('calling getIndexes', () => {
@@ -165,6 +245,7 @@ describe('services/search/lib/opensearch', () => {
         url: new URL('https://search-service/_cat/indices?v&h=i'),
       })
     });
+
     test('returns a list of expected indexes', () => {
       expect(indexes).toEqual(['test-index']);
     });

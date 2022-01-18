@@ -1,6 +1,7 @@
 import {signedRequest} from "./http";
 import {SearchResult} from "../domains";
 import {RequestError} from "./lambda";
+import {inspect} from "util";
 
 export interface AddItemInput {
   index: string;
@@ -72,7 +73,10 @@ export const getTextFieldsForIndex = async (index: string): Promise<Array<string
 
 export const search =
   async (
-    terms: string | { [key: string]: string }, index: string = null, results: number = 20
+    terms: string | { [key: string]: string },
+    index: string = null,
+    highlight: string = undefined,
+    results: number = 20,
   ): Promise<{
     count: number;
     results: Array<SearchResult>;
@@ -119,7 +123,14 @@ export const search =
         })
       }
     } else {
-      body = JSON.stringify({
+      const highlighting = {
+        highlight: {
+          pre_tags: ["<strong>"],
+          post_tags: ["</strong>"],
+          fields: {fieldOne: {}},
+        },
+      }
+      const osRequest = {
         query: {
           bool: {
             should: Object.entries(terms).map(([field, value]) => ({
@@ -133,7 +144,17 @@ export const search =
             })),
           }
         }
-      });
+      };
+
+      if (!!highlight) {
+        osRequest['highlight'] = {
+          pre_tags: ["<strong>"],
+          post_tags: ["</strong>"],
+          fields: Object.fromEntries(highlight.split(',').map(field => [field, {}])),
+        };
+      }
+
+      body = JSON.stringify(osRequest);
     }
 
     const response = await signedRequest({
@@ -148,7 +169,10 @@ export const search =
       count: response.body?.hits?.total?.value,
       results: response.body?.hits?.hits?.map(result => ({
         score: result._score,
-        data: result._source,
+        data: {
+          ...result._source,
+          _highlights: result.highlight,
+        },
       })),
     }
   };
