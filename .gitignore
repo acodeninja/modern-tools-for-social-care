@@ -2,6 +2,7 @@ node_modules/
 build/
 dist/
 logs/
+coverage/
 .aws-sam/
 .terraform/
 *.tfplan
