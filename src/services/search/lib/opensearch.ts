@@ -75,7 +75,7 @@ export const search =
   async (
     terms: string | { [key: string]: string },
     index: string = null,
-    highlight: string = undefined,
+    highlight: Array<string> = undefined,
     results: number = 20,
   ): Promise<{
     count: number;
@@ -150,7 +150,7 @@ export const search =
         osRequest['highlight'] = {
           pre_tags: ["<strong>"],
           post_tags: ["</strong>"],
-          fields: Object.fromEntries(highlight.split(',').map(field => [field, {}])),
+          fields: Object.fromEntries(highlight.map(field => [field, {}])),
         };
       }
 

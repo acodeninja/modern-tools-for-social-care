@@ -174,7 +174,7 @@ describe('services/search/lib/opensearch', () => {
             }]
           }
         });
-        response = await search({emailAddress: 'search terms'}, 'test-index', 'emailAddress');
+        response = await search({emailAddress: 'search terms'}, 'test-index', ['emailAddress']);
       });
 
       test('calls the expected search endpoint requesting highlights', () => {

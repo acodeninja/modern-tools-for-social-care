@@ -26,7 +26,7 @@ export const Handler = async (payload: Payload) => {
   const searchResponse = await search(
     payload.terms || without(payload, ['terms', 'index', 'highlight']),
     payload.index,
-    payload.highlight,
+    payload.highlight ? payload.highlight.split(',') : undefined,
   );
 
   return Object.assign(new Response(), searchResponse);
