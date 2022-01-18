@@ -1,5 +1,6 @@
 import {signedRequest} from "./http";
 import {SearchResult} from "../domains";
+import {RequestError} from "./lambda";
 
 export interface AddItemInput {
   index: string;
@@ -103,6 +104,8 @@ export const search =
               }
             }
           });
+        } else {
+          throw new RequestError(`index ${index} does not exist`);
         }
       } else {
         body = JSON.stringify({

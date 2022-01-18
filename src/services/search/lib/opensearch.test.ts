@@ -1,6 +1,7 @@
-import {beforeAll, describe, expect, jest, test} from '@jest/globals';
+import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals';
 import {signedRequest} from "./http";
 import {getIndexes, search} from "./opensearch";
+import {RequestError} from "./lambda";
 
 jest.mock("./http");
 process.env.AWS_OPENSEARCH_ENDPOINT = 'https://search-service';
@@ -117,6 +118,32 @@ describe('services/search/lib/opensearch', () => {
           service: 'es',
           url: new URL('https://search-service/test-index/_search'),
         });
+      });
+    });
+
+    describe('with an index that does not exist', () => {
+      beforeEach(async () => {
+        (signedRequest as jest.Mock).mockClear();
+        mockGetIndexes('test-index');
+      });
+
+      test('calls the getIndexes function', async () => {
+        try {
+          await search('search terms', 'not-an-index');
+        } catch (e) {
+
+        }
+        expect(signedRequest).toHaveBeenCalledWith({
+          method: 'GET',
+          region: 'eu-west-2',
+          service: 'es',
+          url: new URL('https://search-service/_cat/indices?v&h=i'),
+        });
+      });
+
+      test('throws a request error', async () => {
+        await expect(search('search terms', 'not-an-index')).rejects
+          .toThrow(new RequestError('index not-an-index does not exist'));
       });
     });
   });
