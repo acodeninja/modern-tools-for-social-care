@@ -1,4 +1,5 @@
 import {signedRequest} from "./http";
+import {SearchResult} from "../domains";
 
 export interface AddItemInput {
   index: string;
@@ -68,82 +69,86 @@ export const getTextFieldsForIndex = async (index: string): Promise<Array<string
   }).filter(field => !!field);
 }
 
-export const search = async (terms: string | { [key: string]: string }, index: string = null, results: number = 20) => {
-  let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`
-  if (index) url += `/${index}`;
-  url += '/_search';
+export const search =
+  async (
+    terms: string | { [key: string]: string }, index: string = null, results: number = 20
+  ): Promise<{
+    count: number;
+    results: Array<SearchResult>;
+  }> => {
+    let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`
+    if (index) url += `/${index}`;
+    url += '/_search';
 
-  let body = '';
+    let body = '';
 
-  if (typeof terms === 'string') {
-    if (index) {
-      const indexes = await getIndexes();
-      if (indexes.includes(index)) {
-        const fields = await getTextFieldsForIndex(index);
+    if (typeof terms === 'string') {
+      if (index) {
+        const indexes = await getIndexes();
+        if (indexes.includes(index)) {
+          const fields = await getTextFieldsForIndex(index);
 
+          body = JSON.stringify({
+            query: {
+              bool: {
+                should: fields.map(field => ({
+                  match: {
+                    [field]: {
+                      query: terms,
+                      fuzziness: "AUTO",
+                      operator: "and"
+                    }
+                  }
+                })),
+              }
+            }
+          });
+        }
+      } else {
         body = JSON.stringify({
           query: {
-            bool: {
-              should: fields.map(field => ({
-                match: {
-                  [field]: {
-                    query: terms,
-                    fuzziness: "AUTO",
-                    operator: "and"
-                  }
-                }
-              })),
-            }
-          }
-        });
+            fuzzy: {
+              '_meta.compound': {
+                value: terms
+              },
+            },
+          },
+        })
       }
     } else {
       body = JSON.stringify({
         query: {
-          fuzzy: {
-            '_meta.compound': {
-              value: terms
-            },
-          },
-        },
-      })
-    }
-  } else {
-    body = JSON.stringify({
-      query: {
-        bool: {
-          should: Object.entries(terms).map(([field, value]) => ({
-            match: {
-              [field]: {
-                query: value,
-                fuzziness: "AUTO",
-                operator: "and"
+          bool: {
+            should: Object.entries(terms).map(([field, value]) => ({
+              match: {
+                [field]: {
+                  query: value,
+                  fuzziness: "AUTO",
+                  operator: "and"
+                }
               }
-            }
-          })),
+            })),
+          }
         }
-      }
+      });
+    }
+
+    const response = await signedRequest({
+      url: new URL(url),
+      method: "POST",
+      service: "es",
+      region: process.env.AWS_REGION,
+      body,
     });
-  }
 
-  const response = await signedRequest({
-    url: new URL(url),
-    method: "POST",
-    service: "es",
-    region: process.env.AWS_REGION,
-    body,
-  });
-
-  return {
-    count: response.body?.hits?.total?.value,
-    results: response.body?.hits?.hits?.map(result => {
-      return {
+    return {
+      count: response.body?.hits?.total?.value,
+      results: response.body?.hits?.hits?.map(result => ({
         score: result._score,
         data: result._source,
-      }
-    }),
-  }
-};
+      })),
+    }
+  };
 
 export const dropIndex = async (index: string): Promise<{
   result: 'failure' | 'success';

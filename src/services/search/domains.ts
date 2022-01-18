@@ -1,4 +1,14 @@
 export class SearchResult {
-  title: string;
-  location: URL;
+  score: number;
+  data: {
+    _meta: {
+      location: {
+        frontend: string;
+        api: string;
+      };
+      domain: string;
+      compound: string;
+    };
+    [key: string]: unknown;
+  }
 }
