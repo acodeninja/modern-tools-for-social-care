@@ -21,7 +21,11 @@ export const put = async (input: AddItemInput) => {
   const updates = await Promise.all(input.items.map(item => (async () => {
     const meta = Object.assign(item._meta);
     delete item._meta;
-    meta.compound = Object.values(item).join(' ');
+
+    meta.compound = Object.values(item)
+      .filter(i => i.toString() === i)
+      .join(' ');
+
     item._meta = meta;
 
     const indexInfo: { index: { _index: string, _id?: string } }
