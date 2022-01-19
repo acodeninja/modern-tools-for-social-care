@@ -437,4 +437,79 @@ describe('services/search/lib/opensearch.put', () => {
       })
     });
   });
+
+  describe('with an item that has already been indexed', () => {
+    beforeAll(async () => {
+      (signedRequest as jest.Mock).mockClear();
+      mockSearchRequest({
+        hits: {hits: [{_id: 'test-doc-id', _index: 'test-index'}]},
+      });
+      mockSearchRequest({});
+      await put({
+        index: 'test-index',
+        items: [{
+          _meta: {
+            location: {
+              api: 'http://service-api/entity/1',
+              frontend: 'http://service-website/entity/1',
+            },
+            domain: 'entity',
+          },
+          name: 'Chandler Bing',
+          address: {
+            address: "123 Somewhere Pl. Hackney",
+            postcode: "E8 0AA",
+          },
+        }],
+      });
+    });
+
+    test('tries to identify the item in the index', () => {
+      expect(signedRequest).toHaveBeenCalledWith({
+        url: new URL("https://search-service/test-index/_search"),
+        method: "POST",
+        service: "es",
+        region: process.env.AWS_REGION,
+        body: JSON.stringify({
+          query: {
+            bool: {
+              must: [
+                {match: {'_meta.location.api': 'http://service-api/entity/1'}},
+                {match: {'_meta.location.frontend': 'http://service-website/entity/1'}},
+                {match: {'_meta.domain': 'entity'}},
+              ],
+            },
+          },
+        }),
+      })
+    });
+
+    test('uses the bulk update api to upload the item', () => {
+      expect(signedRequest).toHaveBeenCalledWith({
+        url: new URL("https://search-service/_bulk"),
+        method: "POST",
+        service: "es",
+        region: process.env.AWS_REGION,
+        body: [
+          JSON.stringify({index: {_index: 'test-index', _id: 'test-doc-id'}}),
+          JSON.stringify({
+            name: 'Chandler Bing',
+            address: {
+              address: "123 Somewhere Pl. Hackney",
+              postcode: "E8 0AA",
+            },
+            _meta: {
+              location: {
+                api: 'http://service-api/entity/1',
+                frontend: 'http://service-website/entity/1',
+              },
+              domain: 'entity',
+              compound: 'Chandler Bing'
+            },
+          }),
+          '',
+        ].join('\n'),
+      })
+    });
+  });
 });
