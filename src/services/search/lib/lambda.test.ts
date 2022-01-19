@@ -1,6 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
-import {LambdaExtractPayload, RequestError, stringifyResponse} from "./lambda";
-import {APIGatewayEventRequestContextV2, APIGatewayProxyEventV2WithRequestContext} from "aws-lambda";
+import {LambdaExtractPayload, LambdifyHandler, RequestError, ServerError, stringifyResponse} from "./lambda";
+import {APIGatewayEventRequestContextV2, APIGatewayProxyEventV2WithRequestContext, Context} from "aws-lambda";
 
 describe('services/search/lib/lambda.LambdaExtractPayload', () => {
   describe('when there is no payload', () => {
@@ -112,6 +112,120 @@ describe('services/search/lib/lambda.stringifyResponse', () => {
           d: {},
         },
       }));
+    });
+  });
+});
+
+describe('services/search/lib/lambda.LambdifyHandler', () => {
+  describe('when there is a successful response', () => {
+    const mockSuccessHandler = jest.fn().mockResolvedValue({});
+    let response;
+
+    beforeAll(async () => {
+      response = await (LambdifyHandler(mockSuccessHandler))(
+        {
+          body: '',
+          isBase64Encoded: false,
+        } as APIGatewayProxyEventV2WithRequestContext<APIGatewayEventRequestContextV2>,
+        {} as Context,
+        jest.fn(),
+      );
+    });
+
+    test('calls the handler function', () => {
+      expect(mockSuccessHandler).toHaveBeenCalled();
+    });
+
+    test('returns a successful response', () => {
+      expect(response).toEqual({
+        statusCode: 200,
+        body: '{}',
+        isBase64Encoded: false,
+      })
+    });
+  });
+
+  describe('when there is a request error', () => {
+    const mockRequestErrorHandler = jest.fn().mockRejectedValue(new RequestError("request error"));
+    let response;
+
+    beforeAll(async () => {
+      response = await (LambdifyHandler(mockRequestErrorHandler))(
+        {
+          body: '',
+          isBase64Encoded: false,
+        } as APIGatewayProxyEventV2WithRequestContext<APIGatewayEventRequestContextV2>,
+        {} as Context,
+        jest.fn(),
+      );
+    });
+
+    test('calls the handler function', () => {
+      expect(mockRequestErrorHandler).toHaveBeenCalled();
+    });
+
+    test('returns a request error response', () => {
+      expect(response).toEqual({
+        statusCode: 400,
+        body: '{"message":"request error"}',
+        isBase64Encoded: false,
+      })
+    });
+  });
+
+  describe('when there is a server error', () => {
+    const mockServerErrorHandler = jest.fn().mockRejectedValue(new ServerError("server error"));
+    let response;
+
+    beforeAll(async () => {
+      response = await (LambdifyHandler(mockServerErrorHandler))(
+        {
+          body: '',
+          isBase64Encoded: false,
+        } as APIGatewayProxyEventV2WithRequestContext<APIGatewayEventRequestContextV2>,
+        {} as Context,
+        jest.fn(),
+      );
+    });
+
+    test('calls the handler function', () => {
+      expect(mockServerErrorHandler).toHaveBeenCalled();
+    });
+
+    test('returns a request error response', () => {
+      expect(response).toEqual({
+        statusCode: 500,
+        body: '{"message":"server error"}',
+        isBase64Encoded: false,
+      })
+    });
+  });
+
+  describe('when there is an unhandled error', () => {
+    const mockUnhandledErrorHandler = jest.fn().mockRejectedValue(new Error("unhandled error"));
+    let response;
+
+    beforeAll(async () => {
+      response = await (LambdifyHandler(mockUnhandledErrorHandler))(
+        {
+          body: '',
+          isBase64Encoded: false,
+        } as APIGatewayProxyEventV2WithRequestContext<APIGatewayEventRequestContextV2>,
+        {} as Context,
+        jest.fn(),
+      );
+    });
+
+    test('calls the handler function', () => {
+      expect(mockUnhandledErrorHandler).toHaveBeenCalled();
+    });
+
+    test('returns a request error response', () => {
+      expect(response).toEqual({
+        statusCode: 500,
+        body: '{"message":"unhandled error"}',
+        isBase64Encoded: false,
+      })
     });
   });
 });
