@@ -1,5 +1,21 @@
 # Search Service
 
+## Developing an integration
+
+Requirements
+
+* nodejs >=14
+* aws cli
+* aws sam cli
+* docker
+
+To start the local development server run `.bin/mtsc dev search`. The search
+engine will be seeded with data that can be used with the examples given later
+in this document.
+
+Once the dev server is started you can see logs for the various processes under
+`/logs/search`.
+
 ## Technical Documentation
 
 ### Domain
