@@ -119,7 +119,7 @@ GET /?terms=Chandler
 Search a specific index for a string (more accurate and very slow).
 
 ```http request
-GET /?index=entities&terms=search term
+GET /?index=entities&terms=chandler
 ```
 
 <details>
