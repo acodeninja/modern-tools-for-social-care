@@ -20,7 +20,8 @@ export class Payload implements ActionPayload {
 }
 
 export class Response implements ActionResponse {
-  success: boolean;
+  result: 'failure' | 'success';
+  error?: unknown;
 }
 
 export const Handler = async (payload: Payload): Promise<Response> => {
@@ -29,10 +30,9 @@ export const Handler = async (payload: Payload): Promise<Response> => {
 
   Validate(payload);
 
-  const results = await put({
-    index: payload.index,
-    items: payload.items,
-  });
+  response.result =
+    await put({index: payload.index, items: payload.items}) ?
+      'success' : 'failure';
 
   return response;
 }

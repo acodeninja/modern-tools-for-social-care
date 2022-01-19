@@ -9,6 +9,7 @@ export const Name = 'Search';
 export class Payload implements ActionPayload {
   terms?: string;
   index?: string;
+  highlight?: string;
   [key: string]: string;
 }
 
@@ -22,7 +23,11 @@ export const Handler = async (payload: Payload) => {
 
   Validate(payload);
 
-  const searchResponse = await search(payload.terms || without(payload, ['terms', 'index']), payload.index);
+  const searchResponse = await search(
+    payload.terms || without(payload, ['terms', 'index', 'highlight']),
+    payload.index,
+    payload.highlight ? payload.highlight.split(',') : undefined,
+  );
 
   return Object.assign(new Response(), searchResponse);
 }
@@ -34,7 +39,8 @@ const without = (source, keys) => {
 }
 
 const Validate = (payload) => {
-  const otherTerms = without(payload, ['terms', 'index']);
+  const otherTerms = without(payload, ['terms', 'index', 'highlight']);
+  const highlights = !!payload.highlight ? payload.highlight.split(',') : null;
 
   if (!payload.terms && Object.entries(otherTerms).length === 0) {
     throw new RequestError("Must provide one of terms or field paths.");
@@ -42,6 +48,17 @@ const Validate = (payload) => {
 
   if (payload.terms && Object.entries(otherTerms).length > 0) {
     throw new RequestError("Must provide only one of terms or field paths.");
+  }
+
+  if (
+    !!highlights &&
+    !highlights.every(highlight => Object.keys(otherTerms).includes(highlight))
+  ) {
+    throw new RequestError('If passing a highlight you must also specify the term for that field.');
+  }
+
+  if (!!highlights && !highlights.every(highlight => highlight.indexOf('_meta') !== 0)) {
+    throw new RequestError('Cannot add highlighting to _meta fields.');
   }
 };
 

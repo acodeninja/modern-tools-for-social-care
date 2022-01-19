@@ -16,6 +16,8 @@ const runRequest = (index, items) => new Promise(resolve => {
     items,
   });
 
+  console.log(`Sending to index ${index}`, JSON.stringify(items, null, 2));
+
   const req = request({
     hostname: 'localhost',
     port,
@@ -55,21 +57,19 @@ const processRecords = (index, records) => Promise.all(
 const records = (new Array(number))
   .fill(null)
   .map((_, i) => {
-    const bornAgo = Math.floor(Math.random() * (80 - 18 + 1) + 18);
-    const diedAgo = faker.datatype.boolean() ? Math.floor(Math.random() * (bornAgo - 10 + 1) + 10) : null;
-
     const firstName = faker.name.firstName();
     const lastName = faker.name.lastName();
 
     return {
       _meta: {
         location: {
-          api: `https://service-api/resident/${i + 1}`,
-          frontend: `https://service-website/resident/${i + 1}`,
+          api: `https://service-api/entity/${i + 1}`,
+          frontend: `https://service-website/entity/${i + 1}`,
         },
-        domain: 'resident',
+        domain: 'entity',
       },
-      mosaicId: faker.datatype.number(),
+      someSystemId: faker.datatype.number(),
+      someOtherSystemId: faker.datatype.number(),
       title: faker.name.prefix(),
       firstName,
       lastName,
@@ -77,25 +77,14 @@ const records = (new Array(number))
         firstName,
         lastName: faker.name.lastName(),
       }],
-      dateOfBirth: faker.date.past(bornAgo).toISOString().split("T")[0],
-      dateOfDeath: diedAgo ? faker.date.past(diedAgo).toISOString().split("T")[0] : null,
-      nhsNumber: faker.datatype.number(),
       emailAddress: faker.internet.exampleEmail(firstName, lastName),
       address: {
         address: faker.address.streetAddress(false),
-        postcode: faker.address.zipCode(undefined).replace(/^[A-Z]+/, 'E'),
+        postcode: `E${faker.datatype.number({max: 99})} ${faker.datatype.number({max: 9})}${faker.datatype.string(2).toUpperCase()}`, //faker.address.zipCode(undefined).replace(/^[A-Z]+/, 'E8'),
       },
-      phoneNumbers: [
-        {
-          number: faker.phone.phoneNumber("07#########"),
-        },
-        {
-          number: faker.phone.phoneNumber("0##########"),
-        }
-      ],
     };
   });
 
-processRecords('residents', records)
+processRecords('entities', records)
   .then(() => console.log('ON RUNNING FINISHED'))
   .catch(console.error);
