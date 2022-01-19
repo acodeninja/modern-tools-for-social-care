@@ -43,8 +43,11 @@ export const LambdaExtractPayload = (event: APIGatewayProxyEventV2WithRequestCon
 }
 
 export const stringifyResponse = (input: unknown) => {
+  if (!input) return;
+
   const allKeys = [];
   const seen = {};
+
   JSON.stringify(input, (key, value) => {
     if (!(key in seen)) {
       allKeys.push(key);
@@ -52,7 +55,9 @@ export const stringifyResponse = (input: unknown) => {
     }
     return value;
   });
+
   allKeys.sort();
+
   return JSON.stringify(input, allKeys);
 }
 
