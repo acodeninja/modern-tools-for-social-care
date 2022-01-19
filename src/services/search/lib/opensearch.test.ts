@@ -115,7 +115,7 @@ describe('services/search/lib/opensearch.search', () => {
     beforeAll(async () => {
       (signedRequest as jest.Mock).mockClear();
       mockGetIndexes('test-index');
-      mockGetTextFieldsForIndex('test-index', ['fieldOne', 'fieldTwo']);
+      mockGetTextFieldsForIndex('test-index', ['_meta', 'fieldOne', 'fieldTwo']);
       mockSearchRequest({});
       await search('search terms', 'test-index');
     });
