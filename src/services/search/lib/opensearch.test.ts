@@ -1,6 +1,6 @@
 import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals';
 import {signedRequest} from "./http";
-import {getIndexes, put, search} from "./opensearch";
+import {dropIndex, getIndexes, put, search} from "./opensearch";
 import {RequestError} from "./lambda";
 
 jest.mock("./http");
@@ -33,6 +33,14 @@ const mockSearchRequest = (body = null) => {
   (signedRequest as jest.Mock).mockResolvedValueOnce({
     body: body ? body : Buffer.from(''),
     statusCode: 200,
+    headers: {},
+  })
+};
+
+const mockDropIndexRequest = (body = null, statusCode = 200) => {
+  (signedRequest as jest.Mock).mockResolvedValueOnce({
+    body,
+    statusCode,
     headers: {},
   })
 };
@@ -510,6 +518,50 @@ describe('services/search/lib/opensearch.put', () => {
           '',
         ].join('\n'),
       })
+    });
+  });
+});
+
+describe('services/search/lib/opensearch.dropIndex', () => {
+  describe('an index that exists', () => {
+    let response;
+    beforeAll(async () => {
+      mockDropIndexRequest({}, 200);
+      response = await dropIndex('test-index');
+    });
+
+    test('attempts to drop the index', () => {
+      expect(signedRequest).toHaveBeenCalledWith({
+        url: new URL("https://search-service/test-index"),
+        method: "DELETE",
+        service: "es",
+        region: process.env.AWS_REGION,
+      });
+    });
+
+    test('returns a success result', () => {
+      expect(response).toEqual({result: 'success'});
+    });
+  });
+
+  describe('an index that does not exist', () => {
+    let response;
+    beforeAll(async () => {
+      mockDropIndexRequest({error: {reason: '🤷'}}, 404);
+      response = await dropIndex('test-index');
+    });
+
+    test('attempts to drop the index', () => {
+      expect(signedRequest).toHaveBeenCalledWith({
+        url: new URL("https://search-service/test-index"),
+        method: "DELETE",
+        service: "es",
+        region: process.env.AWS_REGION,
+      })
+    });
+
+    test('returns a success result', () => {
+      expect(response).toEqual({result: 'failure', error: '🤷'});
     });
   });
 });
