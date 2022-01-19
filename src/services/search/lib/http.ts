@@ -15,13 +15,7 @@ export interface SignedRequestInput {
 }
 
 export const signedRequest =
-  async ({
-           body = null,
-           url,
-           method = 'GET',
-           region,
-           service,
-         }: SignedRequestInput): Promise<HttpResponse> => {
+  async ({body = null, url, method, region, service}: SignedRequestInput): Promise<HttpResponse> => {
     const signer = new SignatureV4({
       credentials: defaultProvider(),
       region: region,

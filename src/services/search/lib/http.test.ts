@@ -135,5 +135,30 @@ describe('services/search/lib/http', () => {
         );
       });
     });
+
+    describe('when no body is provided', function () {
+      test('defaults to a null body', async () => {
+        await signedRequest({
+          url: new URL("https://example.com"),
+          method: 'GET',
+          region: 'aws-region',
+          service: 'es',
+        });
+
+        expect(mockSign).toHaveBeenCalledWith(new HttpRequest({
+          body: null,
+          headers: {
+            'Content-Type': 'application/json',
+            'host': 'example.com'
+          },
+          hostname: 'example.com',
+          protocol: 'https:',
+          port: NaN,
+          query: {},
+          method: 'GET',
+          path: '/',
+        }));
+      });
+    });
   });
 });
