@@ -17,11 +17,13 @@ jest.mock("@aws-crypto/sha256-browser");
 (Sha256 as jest.Mock).mockReturnValue({});
 
 const mockSign = jest.fn().mockResolvedValue({
+  // @ts-ignore
   signedRequest: true,
 });
 (SignatureV4 as jest.Mock).mockReturnValue({sign: mockSign});
 
 const mockHandle = jest.fn().mockResolvedValue({
+  // @ts-ignore
   response: new HttpResponse({
     body: undefined,
     headers: undefined,
@@ -79,6 +81,7 @@ describe('services/search/lib/http', () => {
         body.push(JSON.stringify({test:'test'}));
         body.push(null);
         mockHandle.mockResolvedValue({
+          // @ts-ignore
           response: new HttpResponse({
             body,
             headers: undefined,
@@ -106,6 +109,7 @@ describe('services/search/lib/http', () => {
         body.push('test string');
         body.push(null);
         mockHandle.mockResolvedValue({
+          // @ts-ignore
           response: new HttpResponse({
             body,
             headers: undefined,
