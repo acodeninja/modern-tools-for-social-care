@@ -74,13 +74,8 @@ describe('services/search/lib/opensearch', () => {
     describe('with a field and index', () => {
       beforeAll(async () => {
         (signedRequest as jest.Mock).mockClear();
-        (signedRequest as jest.Mock).mockResolvedValueOnce({
-          response: {
-            body: Buffer.from(''),
-            statusCode: 200,
-            headers: {},
-          },
-        })
+        mockGetIndexes('test-index')
+        mockSearchRequest();
         await search({'_meta.compound': 'search terms'}, 'test-index', undefined);
       });
 
@@ -188,6 +183,7 @@ describe('services/search/lib/opensearch', () => {
 
       beforeAll(async () => {
         (signedRequest as jest.Mock).mockClear();
+        mockGetIndexes('test-index')
         mockSearchRequest({
           took: 4,
           timed_out: false,
@@ -266,6 +262,7 @@ describe('services/search/lib/opensearch', () => {
         let response;
         beforeAll(async () => {
           (signedRequest as jest.Mock).mockClear();
+          mockGetIndexes('test-index')
           mockSearchRequest({
             took: 4,
             timed_out: false,

@@ -88,30 +88,32 @@ export const search =
 
     let body = '';
 
+    if (index) {
+      if (!(await getIndexes()).includes(index)) {
+        throw new RequestError(`index ${index} does not exist`);
+      }
+    }
+
     if (typeof terms === 'string') {
       if (index) {
-        const indexes = await getIndexes();
-        if (indexes.includes(index)) {
-          const fields = await getTextFieldsForIndex(index);
+        const fields = await getTextFieldsForIndex(index);
 
-          body = JSON.stringify({
-            query: {
-              bool: {
-                should: fields.map(field => ({
-                  match: {
-                    [field]: {
-                      query: terms,
-                      fuzziness: "AUTO",
-                      operator: "and"
-                    }
+        body = JSON.stringify({
+          query: {
+            bool: {
+              should: fields.map(field => ({
+                match: {
+                  [field]: {
+                    query: terms,
+                    fuzziness: "AUTO",
+                    operator: "and"
                   }
-                })),
-              }
+                }
+              })),
             }
-          });
-        } else {
-          throw new RequestError(`index ${index} does not exist`);
-        }
+          }
+        });
+
       } else {
         body = JSON.stringify({
           query: {
@@ -122,6 +124,7 @@ export const search =
             },
           },
         })
+
       }
     } else {
       const osRequest = {
