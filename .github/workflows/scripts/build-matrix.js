@@ -54,6 +54,13 @@ module.exports = async ({context, changes}) => {
       });
   }
 
+  if (changes.filter(change => change.indexOf('environments/') === 0).length > 0) {
+    fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
+      .forEach(service => {
+        changes.push(`src/services/${service}`);
+      });
+  }
+
   if (changes.filter(change => change.indexOf('.github') === 0).length > 0) {
     fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
       .forEach(service => {
