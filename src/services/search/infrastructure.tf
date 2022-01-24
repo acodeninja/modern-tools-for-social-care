@@ -34,9 +34,10 @@ variable "environment" {
 variable "service-config-search" {
   description = "The configuration object for this service."
   type = object({
-    aws_opensearch_instance_type        = string
-    aws_opensearch_instance_count       = number
-    aws_opensearch_instance_volume_size = number
+    aws_opensearch_instance_type         = string
+    aws_opensearch_instance_count        = number
+    aws_opensearch_instance_volume_size  = number
+    aws_api_gateway_cors_allowed_origins = set(string)
   })
 }
 
@@ -123,6 +124,11 @@ module "service" {
   system      = var.system
   environment = var.environment
   config = {
+    api = {
+      cors = {
+        origins = var.service-config-search.aws_api_gateway_cors_allowed_origins
+      }
+    }
     actions = [
       {
         name            = "search"
