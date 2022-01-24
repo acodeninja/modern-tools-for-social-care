@@ -6,6 +6,11 @@ variable "name" {
 variable "config" {
   description = "The service configuration"
   type = object({
+    api = object({
+      cors = object({
+        origins = set(string)
+      })
+    })
     actions = list(object({
       name                  = string
       handler               = string

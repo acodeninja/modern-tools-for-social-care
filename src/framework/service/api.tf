@@ -1,6 +1,9 @@
 resource "aws_apigatewayv2_api" "api" {
   name          = "${var.system}-${var.environment}-${var.name}"
   protocol_type = "HTTP"
+  cors_configuration {
+    allow_origins = var.config.api.cors.origins
+  }
 }
 
 resource "aws_apigatewayv2_stage" "api" {
