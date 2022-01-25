@@ -49,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "lambda_logs" {
 resource "aws_lambda_function" "authorizer" {
   function_name     = "${var.system}-${var.environment}-authorizer"
   role              = aws_iam_role.authorizer_role.arn
-  handler           = 'lambda-authorizer.handler'
+  handler           = "lambda-authorizer.handler"
   runtime           = "nodejs14.x"
   publish           = true
   s3_bucket         = aws_s3_bucket_object.artefact.bucket
