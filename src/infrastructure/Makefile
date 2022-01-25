@@ -1,6 +1,7 @@
 .PHONY: install test build lint deploy
 
 install:
+	npm ci
 	terraform init -backend=false
 
 test:
