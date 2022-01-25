@@ -131,6 +131,17 @@ module "service" {
     }
     actions = [
       {
+        name            = "auth-check"
+        handler         = "auth-check.LambdaHandler"
+        build_directory = "build/actions/auth-check"
+        route           = "GET /auth-check"
+        policy          = data.aws_iam_policy_document.get_to_open_search.json
+        environment_variables = {
+          ENVIRONMENT = var.environment
+          SYSTEM      = var.system
+        }
+      },
+      {
         name            = "search"
         handler         = "search.LambdaHandler"
         build_directory = "build/actions/search"
