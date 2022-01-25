@@ -18,9 +18,6 @@ variable "config" {
       environment_variables = map(string)
       route                 = optional(string)
       policy                = optional(string)
-      authentication        = optional(object({
-
-      }))
     }))
   })
 }

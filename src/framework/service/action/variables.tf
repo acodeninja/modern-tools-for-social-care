@@ -30,11 +30,6 @@ variable "environment_variables" {
   type        = map(string)
 }
 
-variable "authentication" {
-  description = "Authentication configuration for the action"
-  type        = optional(object({}))
-}
-
 variable "log_retention_days" {
   description = "Number of days to retain logs for"
   default     = 14
