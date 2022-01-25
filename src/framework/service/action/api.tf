@@ -26,7 +26,4 @@ resource "aws_apigatewayv2_integration" "action" {
   integration_method   = "POST"
   integration_uri      = aws_lambda_function.action.invoke_arn
   passthrough_behavior = "WHEN_NO_MATCH"
-  request_parameters = {
-    "cookies"    = "$request.header.Cookie"
-  }
 }
