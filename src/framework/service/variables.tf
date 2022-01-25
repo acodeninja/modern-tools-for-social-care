@@ -15,9 +15,12 @@ variable "config" {
       name                  = string
       handler               = string
       build_directory       = string
+      environment_variables = map(string)
       route                 = optional(string)
       policy                = optional(string)
-      environment_variables = map(string)
+      authentication        = optional(object({
+
+      }))
     }))
   })
 }

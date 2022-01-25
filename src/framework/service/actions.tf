@@ -13,4 +13,5 @@ module "actions" {
   api_route             = each.value.route
   api_execution_arn     = aws_apigatewayv2_api.api.execution_arn
   environment_variables = each.value.environment_variables
+  authentication        = each.value.authentication
 }
