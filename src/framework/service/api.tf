@@ -10,6 +10,11 @@ resource "aws_apigatewayv2_stage" "api" {
   api_id        = aws_apigatewayv2_api.api.id
   name          = var.environment
   deployment_id = aws_apigatewayv2_deployment.api.id
+  stage_variables = {
+    SYSTEM        = var.system
+    SERVICE       = var.name
+    MANIFEST_PATH = "s3://${var.system}-${var.environment}-manifests/services/${var.name}.json"
+  }
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.action.arn
@@ -36,7 +41,7 @@ resource "aws_apigatewayv2_deployment" "api" {
 
   triggers = {
     config-changed = sha1(jsonencode(var.config))
-    actions-deploy = sha1(jsonencode([ for action in module.actions : action.api-config ]))
+    actions-deploy = sha1(jsonencode([for action in module.actions : action.api-config]))
   }
 
   depends_on = [module.actions]

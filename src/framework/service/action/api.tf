@@ -16,8 +16,8 @@ resource "aws_apigatewayv2_route" "action" {
   api_id             = var.api_id
   route_key          = var.api_route
   target             = "integrations/${aws_apigatewayv2_integration.action.id}"
-  authorizer_id      = var.authentication ? aws_apigatewayv2_authorizer.authorizer[0].id : ""
-  authorization_type = var.authentication ? "CUSTOM" : "NONE"
+  authorizer_id      = var.authentication == null ? "" : aws_apigatewayv2_authorizer.authorizer[0].id
+  authorization_type = var.authentication == null ? "NONE" : "CUSTOM"
 }
 
 data "aws_s3_bucket_object" "service_manifest" {
@@ -30,7 +30,7 @@ locals {
 }
 
 resource "aws_apigatewayv2_authorizer" "authorizer" {
-  count                             = var.authentication ? 1 : 0
+  count                             = var.authentication == null ? 0 : 1
   api_id                            = var.api_id
   authorizer_type                   = "REQUEST"
   authorizer_uri                    = local.system-manifest.lambdaAuthorizer.invokeArn

@@ -19,7 +19,7 @@ resource "aws_iam_role" "authorizer_role" {
   assume_role_policy = data.aws_iam_policy_document.authorizer_assume_role.json
 }
 
-data "aws_iam_policy_document" "action_logging" {
+data "aws_iam_policy_document" "authorizer_policy" {
   statement {
     sid    = "AllowLoggingToCloudwatch"
     effect = "Allow"
@@ -33,12 +33,19 @@ data "aws_iam_policy_document" "action_logging" {
       "${aws_cloudwatch_log_group.authorizer.arn}:*",
     ]
   }
+
+  statement {
+    sid       = "AllowReadAccessToManifestsS3Bucket"
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.manifests.arn}/*"]
+  }
 }
 
 resource "aws_iam_policy" "lambda" {
   name   = "${var.system}-${var.environment}-authorizer-policy"
   path   = "/"
-  policy = data.aws_iam_policy_document.action_logging.json
+  policy = data.aws_iam_policy_document.authorizer_policy.json
 }
 
 resource "aws_iam_role_policy_attachment" "lambda_logs" {
