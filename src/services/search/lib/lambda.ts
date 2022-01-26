@@ -62,6 +62,8 @@ export const stringifyResponse = (input: unknown) => {
 }
 
 export const LambdifyHandler = (Handler: ActionManifest['Handler']): APIGatewayProxyHandlerV2 => async (event) => {
+  console.log(`event: ${inspect(event, false, 15)}`);
+
   try {
     const payload = LambdaExtractPayload(event);
     const response = await Handler(payload);
