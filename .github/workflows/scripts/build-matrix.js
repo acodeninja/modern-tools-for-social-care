@@ -42,26 +42,18 @@ const without = (source, key) => {
   const destination = Object.assign({}, source);
   delete destination[key];
   return destination;
+};
+
+const shouldDeployAllServices = (changes) => {
+  return changes.filter(change => change.indexOf('src/framework/service') === 0).length > 0
+    || changes.filter(change => change.indexOf('environments/') === 0).length > 0
+    || changes.filter(change => change.indexOf('.github') === 0).length > 0
 }
 
 module.exports = async ({context, changes}) => {
   console.log(`Building change list for target ${getTarget(context)} on ${getEnvironments(context)}`);
 
-  if (changes.filter(change => change.indexOf('src/framework/service') === 0).length > 0) {
-    fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
-      .forEach(service => {
-        changes.push(`src/services/${service}`);
-      });
-  }
-
-  if (changes.filter(change => change.indexOf('environments/') === 0).length > 0) {
-    fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
-      .forEach(service => {
-        changes.push(`src/services/${service}`);
-      });
-  }
-
-  if (changes.filter(change => change.indexOf('.github') === 0).length > 0) {
+  if (shouldDeployAllServices(changes)) {
     fs.readdirSync(path.resolve(__dirname, '..', '..', '..', 'src', 'services'))
       .forEach(service => {
         changes.push(`src/services/${service}`);
