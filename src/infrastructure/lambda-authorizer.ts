@@ -79,7 +79,7 @@ export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) =>
   const inRequiredGroups = actionManifest.authentication?.required_groups?.every(group => credentials.groups.includes(group));
 
   return {
-    principalId: credentials,
+    principalId: credentials.sub,
     policyDocument: {
       Version: '2012-10-17',
       Statement: [{
