@@ -11,9 +11,9 @@ resource "aws_apigatewayv2_stage" "api" {
   name          = var.environment
   deployment_id = aws_apigatewayv2_deployment.api.id
   stage_variables = {
-    SYSTEM           = var.system
-    SERVICE          = var.name
-    SERVICE_MANIFEST = local.manifest-content
+    SYSTEM        = var.system
+    SERVICE       = var.name
+    MANIFEST_PATH = "s3://${var.system}-${var.environment}-manifests/services/${var.name}.json"
   }
 
   access_log_settings {
