@@ -1,7 +1,7 @@
-import {APIGatewayRequestAuthorizerHandler} from "aws-lambda";
+import {APIGatewayRequestIAMAuthorizerHandlerV2} from "aws-lambda";
 import {inspect} from "util";
 
-export const handler: APIGatewayRequestAuthorizerHandler = async (event) => {
+export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) => {
   console.log(inspect(event, false, 15));
 
   const testToken = {
@@ -23,7 +23,7 @@ export const handler: APIGatewayRequestAuthorizerHandler = async (event) => {
       Statement: [{
         Action: "execute-api:Invoke",
         Effect: 'Allow',
-        Resource: event.methodArn,
+        Resource: event.routeArn,
       }],
     },
     context: {
