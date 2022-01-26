@@ -30,7 +30,7 @@ locals {
 }
 
 resource "aws_apigatewayv2_authorizer" "authorizer" {
-  count                             = var.authentication ? 1 : 0
+  count                             = var.authentication == null ? 0 : 1
   api_id                            = var.api_id
   authorizer_type                   = "REQUEST"
   authorizer_uri                    = local.system-manifest.lambdaAuthorizer.invokeArn
