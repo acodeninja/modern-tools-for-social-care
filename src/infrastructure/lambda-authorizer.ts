@@ -2,8 +2,10 @@ import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3"
 import {APIGatewayRequestAuthorizerEventV2, APIGatewayRequestIAMAuthorizerHandlerV2} from "aws-lambda";
 import {inspect} from "util";
 import {Readable} from 'stream'
+import {decode as JWTDecode, verify as JWTVerify} from 'jsonwebtoken';
 
 class ManifestRetrievalError extends Error {}
+class NoToken extends Error {}
 
 interface ServiceManifest {
   actions: {
@@ -52,7 +54,19 @@ export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) =>
 
   if (!actionManifest) throw new ManifestRetrievalError();
 
-  console.log(inspect(actionManifest, false, 15));
+  const token = event.cookies
+    .find(cookie => cookie.indexOf('testToken') === 0)
+    ?.split('=')
+    .slice(1)
+    .join('=');
+
+  if (!token) throw new NoToken();
+
+  JWTVerify(token, 'test-secret-key');
+
+  const credentials = JWTDecode(token);
+
+  console.log(inspect({actionManifest, token, credentials}, false, 15));
 
   const testToken = {
     sub: "100561961286081451085",
