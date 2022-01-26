@@ -17,6 +17,7 @@ module.exports = [{
   },
   output: {
     path: resolve(__dirname, 'build', 'lambda-authorizer'),
-    filename: 'lambda-authorizer.js'
+    filename: 'lambda-authorizer.js',
+    libraryTarget: "commonjs",
   }
 }];
