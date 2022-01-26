@@ -1,6 +1,7 @@
 import {S3Client, GetObjectCommand} from "@aws-sdk/client-s3"
 import {APIGatewayRequestIAMAuthorizerHandlerV2} from "aws-lambda";
 import {inspect} from "util";
+import {Readable} from 'stream'
 
 interface ServiceManifest {
   actions: {
@@ -16,20 +17,31 @@ interface ServiceManifest {
   views: {};
 }
 
-const getAndParseServiceManifest = async ({bucket, key}: {bucket: string; key: string;}): Promise<ServiceManifest> => {
-  const source = await (new S3Client({})).send(new GetObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  }));
+const streamToString = (stream: Readable): Promise<string> => {
+  const chunks: Array<Buffer> = [];
 
-  console.log(inspect(source.Body?.toString()));
+  return new Promise((resolve, reject) => {
+    stream.on('data', (chunk: string) => chunks.push(Buffer.from(chunk)));
+    stream.on('error', (err: Error) => reject(err));
+    stream.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+  })
+}
 
-  const sourceString = Buffer.from(source.Body?.toString() || '', 'base64')
-    .toString('ascii');
+const getAndParseServiceManifest = async ({
+                                            bucket,
+                                            key
+                                          }: { bucket: string; key: string; }): Promise<ServiceManifest> => {
+  const source = await (new S3Client({}))
+    .send(new GetObjectCommand({
+      Bucket: bucket,
+      Key: key,
+    }));
 
-  console.log(inspect(sourceString));
+  if (source.Body instanceof Readable) {
+    return JSON.parse(await streamToString(source.Body));
+  }
 
-  return JSON.parse(sourceString);
+  return {actions: {}, events: {}, subscribers: {}, views: {}};
 };
 
 export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) => {
