@@ -13,9 +13,10 @@ variable "api_execution_arn" {
 }
 
 resource "aws_apigatewayv2_route" "action" {
-  api_id    = var.api_id
-  route_key = var.api_route
-  target    = "integrations/${aws_apigatewayv2_integration.action.id}"
+  api_id        = var.api_id
+  route_key     = var.api_route
+  target        = "integrations/${aws_apigatewayv2_integration.action.id}"
+  authorizer_id = var.authentication ? aws_apigatewayv2_authorizer.example.id : ""
 }
 
 data "aws_s3_bucket_object" "service_manifest" {
