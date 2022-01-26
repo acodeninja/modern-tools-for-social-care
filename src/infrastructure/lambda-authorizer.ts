@@ -1,7 +1,9 @@
-import {S3Client, GetObjectCommand} from "@aws-sdk/client-s3"
-import {APIGatewayRequestIAMAuthorizerHandlerV2} from "aws-lambda";
+import {GetObjectCommand, S3Client} from "@aws-sdk/client-s3"
+import {APIGatewayRequestAuthorizerEventV2, APIGatewayRequestIAMAuthorizerHandlerV2} from "aws-lambda";
 import {inspect} from "util";
 import {Readable} from 'stream'
+
+class ManifestRetrievalError extends Error {}
 
 interface ServiceManifest {
   actions: {
@@ -27,32 +29,30 @@ const streamToString = (stream: Readable): Promise<string> => {
   })
 }
 
-const getAndParseServiceManifest = async ({
-                                            bucket,
-                                            key
-                                          }: { bucket: string; key: string; }): Promise<ServiceManifest> => {
+const getActionManifest = async (event: APIGatewayRequestAuthorizerEventV2): Promise<ServiceManifest['actions']['name'] | undefined> => {
   const source = await (new S3Client({}))
     .send(new GetObjectCommand({
-      Bucket: bucket,
-      Key: key,
+      Bucket: event.stageVariables?.['MANIFEST_BUCKET'] || '',
+      Key: event.stageVariables?.['MANIFEST_KEY'] || '',
     }));
 
   if (source.Body instanceof Readable) {
-    return JSON.parse(await streamToString(source.Body));
+    const data: ServiceManifest = JSON.parse(await streamToString(source.Body));
+
+    return Object.values(data.actions).find(action => action.route === event.routeKey);
   }
 
-  return {actions: {}, events: {}, subscribers: {}, views: {}};
+  throw new ManifestRetrievalError();
 };
 
 export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) => {
   console.log(inspect(event, false, 15));
 
-  const manifest = await getAndParseServiceManifest({
-    bucket: event.stageVariables?.['MANIFEST_BUCKET'] || '',
-    key: event.stageVariables?.['MANIFEST_KEY'] || '',
-  });
+  const actionManifest = await getActionManifest(event);
 
-  console.log(inspect(manifest, false, 15));
+  if (!actionManifest) throw new ManifestRetrievalError();
+
+  console.log(inspect(actionManifest, false, 15));
 
   const testToken = {
     sub: "100561961286081451085",
