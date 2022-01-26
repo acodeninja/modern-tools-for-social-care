@@ -10,6 +10,7 @@ locals {
     lambdaAuthorizer = {
       invokeArn = aws_lambda_function.authorizer.invoke_arn
       roleArn   = aws_iam_role.authorizer_role.arn
+      version   = aws_lambda_function.authorizer.version
     }
   }
 }
