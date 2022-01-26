@@ -136,7 +136,9 @@ module "service" {
         build_directory = "build/actions/auth-check"
         route           = "GET /auth-check"
         policy          = data.aws_iam_policy_document.get_to_open_search.json
-        authentication  = true
+        authentication  = {
+          groups_required = ["developers"]
+        }
         environment_variables = {
           ENVIRONMENT = var.environment
           SYSTEM      = var.system
