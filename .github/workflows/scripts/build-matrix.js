@@ -48,6 +48,7 @@ const shouldDeployAllServices = (changes) => {
   return changes.filter(change => change.indexOf('src/framework/service') === 0).length > 0
     || changes.filter(change => change.indexOf('environments/') === 0).length > 0
     || changes.filter(change => change.indexOf('.github') === 0).length > 0
+    || changes.filter(change => change.indexOf('src/infrastructure') === 0).length > 0
 }
 
 module.exports = async ({context, changes}) => {
