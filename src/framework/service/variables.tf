@@ -16,7 +16,9 @@ variable "config" {
       handler               = string
       build_directory       = string
       environment_variables = map(string)
-      authentication        = bool
+      authentication        = optional(object({
+        required_groups = optional(set(string))
+      }))
       route                 = optional(string)
       policy                = optional(string)
     }))
