@@ -5,7 +5,17 @@ import {Readable} from 'stream'
 import {decode as JWTDecode, verify as JWTVerify} from 'jsonwebtoken';
 
 class ManifestRetrievalError extends Error {}
+
 class NoToken extends Error {}
+
+interface Credentials {
+  sub: string;
+  iss: string;
+  iat: number;
+  email: string;
+  name: string;
+  groups: Array<string>;
+}
 
 interface ServiceManifest {
   actions: {
@@ -64,34 +74,22 @@ export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) =>
 
   JWTVerify(token, 'test-secret-key');
 
-  const credentials = JWTDecode(token);
+  const credentials = <Credentials>JWTDecode(token);
 
-  console.log(inspect({actionManifest, token, credentials}, false, 15));
-
-  const testToken = {
-    sub: "100561961286081451085",
-    email: "test@example.com",
-    iss: "Example Authority",
-    name: "Test Testington",
-    groups: [
-      "developers",
-      "search-admin"
-    ],
-    iat: Math.floor(Date.now() / 1000),
-  };
+  const inRequiredGroups = actionManifest.authentication?.required_groups?.every(group => credentials.groups.includes(group));
 
   return {
-    principalId: 'user',
+    principalId: credentials,
     policyDocument: {
       Version: '2012-10-17',
       Statement: [{
         Action: "execute-api:Invoke",
-        Effect: 'Allow',
+        Effect: inRequiredGroups ? 'Allow' : 'Deny',
         Resource: event.routeArn,
       }],
     },
     context: {
-      token: Buffer.from(JSON.stringify(testToken)).toString('base64url'),
+      credentials: Buffer.from(JSON.stringify(credentials)).toString('base64url'),
     }
   };
 };
