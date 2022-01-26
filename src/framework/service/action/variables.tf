@@ -28,7 +28,7 @@ variable "policy" {
 variable "authentication" {
   description = "If the account lambda authorizer should be used for this action."
   default     = null
-  type        = object({
+  type = object({
     required_groups = optional(set(string))
   })
 }

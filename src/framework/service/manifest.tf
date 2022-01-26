@@ -1,13 +1,14 @@
 locals {
   manifest-content = base64encode(jsonencode({
     actions = {
-    for action in var.config.actions : action.name => {
-
+      for action in var.config.actions : action.name => {
+        route          = action.route
+        authentication = action.authentication
+      }
     }
-    }
-    events  = {}
+    events      = {}
     subscribers = {}
-    views = {}
+    views       = {}
   }))
 }
 
