@@ -36,7 +36,7 @@ resource "aws_apigatewayv2_deployment" "api" {
 
   triggers = {
     config-changed = sha1(jsonencode(var.config))
-    actions-deploy = sha1(jsonencode(module.actions.api-config))
+    actions-deploy = sha1(jsonencode([ for action in module.actions : action.api-config ]))
   }
 
   depends_on = [module.actions]
