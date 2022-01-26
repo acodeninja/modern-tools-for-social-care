@@ -1,8 +1,16 @@
+import {S3Client, GetObjectCommand} from "@aws-sdk/client-s3"
 import {APIGatewayRequestIAMAuthorizerHandlerV2} from "aws-lambda";
 import {inspect} from "util";
 
 export const handler: APIGatewayRequestIAMAuthorizerHandlerV2 = async (event) => {
   console.log(inspect(event, false, 15));
+
+  const manifest = await (new S3Client({})).send(new GetObjectCommand({
+    Bucket: event.stageVariables?.['MANIFEST_BUCKET'],
+    Key: event.stageVariables?.['MANIFEST_KEY'],
+  }));
+
+  console.log(inspect(JSON.parse(manifest.Body ? manifest.Body.toString() : '{}'), false, 15));
 
   const testToken = {
     sub: "100561961286081451085",
