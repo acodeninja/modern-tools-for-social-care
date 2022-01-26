@@ -59,6 +59,16 @@ resource "aws_lambda_function" "authorizer" {
   depends_on = [aws_s3_bucket_object.artefact]
 }
 
+data "aws_caller_identity" "me" {}
+data "aws_region" "current" {}
+
+resource "aws_lambda_permission" "lambda_permission" {
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.authorizer.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.me.account_id}:*"
+}
+
 data "archive_file" "action" {
   output_path = "${path.root}/dist/lambda-authorizer.zip"
   type        = "zip"
