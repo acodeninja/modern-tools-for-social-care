@@ -28,12 +28,13 @@ locals {
 }
 
 resource "aws_apigatewayv2_authorizer" "example" {
-  count                            = var.authentication ? 1 : 0
-  api_id                           = var.api_id
-  authorizer_type                  = "REQUEST"
-  authorizer_uri                   = local.system-manifest.lambdaAuthorizer.invokeArn
-  name                             = "${var.system}-${var.environment}-${var.action}-authorizer"
-  authorizer_result_ttl_in_seconds = 0
+  count                             = var.authentication ? 1 : 0
+  api_id                            = var.api_id
+  authorizer_type                   = "REQUEST"
+  authorizer_uri                    = local.system-manifest.lambdaAuthorizer.invokeArn
+  name                              = "${var.system}-${var.environment}-${var.action}-authorizer"
+  authorizer_result_ttl_in_seconds  = 0
+  authorizer_payload_format_version = "2.0"
 }
 
 resource "aws_apigatewayv2_integration" "action" {
