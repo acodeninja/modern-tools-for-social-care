@@ -22,8 +22,12 @@ const getAndParseServiceManifest = async ({bucket, key}: {bucket: string; key: s
     Key: key,
   }));
 
-  const sourceString = new Buffer(source.Body?.toString() || '', 'base64')
+  console.log(inspect(source.Body?.toString()));
+
+  const sourceString = Buffer.from(source.Body?.toString() || '', 'base64')
     .toString('ascii');
+
+  console.log(inspect(sourceString));
 
   return JSON.parse(sourceString);
 };
