@@ -136,6 +136,7 @@ module "service" {
         build_directory = "build/actions/auth-check"
         route           = "GET /auth-check"
         policy          = data.aws_iam_policy_document.get_to_open_search.json
+        authentication  = true
         environment_variables = {
           ENVIRONMENT = var.environment
           SYSTEM      = var.system
@@ -147,6 +148,7 @@ module "service" {
         build_directory = "build/actions/search"
         route           = "GET /"
         policy          = data.aws_iam_policy_document.get_to_open_search.json
+        authentication  = false
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
@@ -159,6 +161,7 @@ module "service" {
         build_directory = "build/actions/drop-index"
         route           = "DELETE /{index}"
         policy          = data.aws_iam_policy_document.delete_to_open_search.json
+        authentication  = false
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system
@@ -171,6 +174,7 @@ module "service" {
         build_directory = "build/actions/update"
         route           = "PUT /"
         policy          = data.aws_iam_policy_document.put_to_open_search.json
+        authentication  = false
         environment_variables = {
           ENVIRONMENT             = var.environment
           SYSTEM                  = var.system

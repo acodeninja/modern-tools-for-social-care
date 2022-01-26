@@ -25,6 +25,11 @@ variable "policy" {
   description = "The JSON policy document that should be applied to this function"
 }
 
+variable "authentication" {
+  description = "If the account lambda authorizer should be used for this action."
+  type        = bool
+}
+
 variable "environment_variables" {
   description = "A map of environment variables for the action"
   type        = map(string)

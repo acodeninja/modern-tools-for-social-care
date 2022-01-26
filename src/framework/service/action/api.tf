@@ -18,6 +18,23 @@ resource "aws_apigatewayv2_route" "action" {
   target    = "integrations/${aws_apigatewayv2_integration.action.id}"
 }
 
+data "aws_s3_bucket_object" "service_manifest" {
+  bucket = "${var.system}-${var.environment}-manifests"
+  key    = "system.json"
+}
+
+locals {
+  system-manifest = jsondecode(data.aws_s3_bucket_object.service_manifest.body)
+}
+
+resource "aws_apigatewayv2_authorizer" "example" {
+  count           = var.authentication ? 1 : 0
+  api_id          = var.api_id
+  authorizer_type = "REQUEST"
+  authorizer_uri  = local.system-manifest.lambdaAuthorizer.invokeArn
+  name            = "${var.system}-${var.environment}-${var.action}-authorizer"
+}
+
 resource "aws_apigatewayv2_integration" "action" {
   api_id               = var.api_id
   integration_type     = "AWS_PROXY"
