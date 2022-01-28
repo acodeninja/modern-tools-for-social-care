@@ -49,3 +49,8 @@ variable "environment" {
     error_message = "The environment value must be one of 'production', 'staging', 'testing'."
   }
 }
+
+variable "root-domain" {
+  description = "The root domain all services run from."
+  type        = string
+}
