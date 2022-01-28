@@ -54,3 +54,10 @@ variable "root-domain" {
   description = "The root domain all services run from."
   type        = string
 }
+
+locals {
+  domains = {
+    api = "api.${var.name}.${var.root-domain}"
+    web = "${var.name}.${var.root-domain}"
+  }
+}

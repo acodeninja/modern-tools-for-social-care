@@ -52,3 +52,9 @@ resource "aws_cloudwatch_log_group" "action" {
   name              = "/aws/api/${var.system}-${var.environment}-${var.name}"
   retention_in_days = 14
 }
+
+resource "aws_apigatewayv2_api_mapping" "service" {
+  api_id      = aws_apigatewayv2_api.api.id
+  domain_name = aws_apigatewayv2_domain_name.service.id
+  stage       = aws_apigatewayv2_stage.api.id
+}
