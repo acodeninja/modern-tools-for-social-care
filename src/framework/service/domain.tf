@@ -7,7 +7,7 @@ data "aws_acm_certificate" "root" {
 }
 
 resource "aws_apigatewayv2_domain_name" "service" {
-  domain_name = "${var.name}.${var.root-domain}"
+  domain_name = "api.${var.name}.${var.root-domain}"
 
   domain_name_configuration {
     certificate_arn = data.aws_acm_certificate.root.arn
