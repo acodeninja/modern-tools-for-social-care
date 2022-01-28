@@ -8,7 +8,7 @@ resource "aws_acm_certificate" "root" {
   validation_method         = "DNS"
 }
 
-resource "aws_route53_record" "example" {
+resource "aws_route53_record" "verify" {
   for_each = {
   for option in aws_acm_certificate.root.domain_validation_options : option.domain_name => {
     name   = option.resource_record_name
