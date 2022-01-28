@@ -31,6 +31,11 @@ variable "environment" {
   }
 }
 
+variable "root-domain" {
+  description = "The root domain all services run from."
+  type        = string
+}
+
 variable "service-config-search" {
   description = "The configuration object for this service."
   type = object({
@@ -123,6 +128,7 @@ module "service" {
   name        = "search"
   system      = var.system
   environment = var.environment
+  root-domain = var.root-domain
   config = {
     api = {
       cors = {
