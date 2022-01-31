@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: ${{ steps.node.outputs.version }}
       - run: npm ci
-      - run: npm test
+      - run: npm test -- .github/
       - uses: jitterbit/get-changed-files@v1
         id: files
         with:
