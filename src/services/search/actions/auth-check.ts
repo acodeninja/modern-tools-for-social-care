@@ -1,5 +1,5 @@
-import {ActionPayload, ActionResponse} from "../../../framework/service/types";
-import {LambdifyHandler} from "../lib/lambda";
+import {ActionPayload, ActionResponse} from "internals/types";
+import {LambdifyHandler} from "internals/lambda";
 import {inspect} from "util";
 
 export const Name = 'AuthCheck';

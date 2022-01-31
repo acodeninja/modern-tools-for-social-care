@@ -1,0 +1,32 @@
+{
+  "name": "@mtsc/internals",
+  "version": "1.0.0",
+  "description": "Internal helper libraries",
+  "scripts": {
+    "build": "webpack --mode production",
+    "test": "jest"
+  },
+  "exports": {
+    "./http": "./dist/http.js",
+    "./lambda": "./dist/lambda.js"
+  },
+  "devDependencies": {
+    "@aws-crypto/sha256-browser": "^2.0.1",
+    "@aws-sdk/credential-provider-node": "^3.49.0",
+    "@aws-sdk/node-http-handler": "^3.49.0",
+    "@aws-sdk/protocol-http": "^3.49.0",
+    "@aws-sdk/signature-v4": "^3.49.0",
+    "@babel/core": "^7.16.12",
+    "@babel/preset-env": "^7.16.11",
+    "@babel/preset-typescript": "^7.16.7",
+    "@sindresorhus/tsconfig": "^2.0.0",
+    "@types/aws-lambda": "^8.10.92",
+    "@types/jest": "^27.4.0",
+    "babel-jest": "^27.4.6",
+    "jest": "^27.4.7",
+    "ts-loader": "^9.2.6",
+    "typescript": "^4.5.5",
+    "webpack": "^5.67.0",
+    "webpack-cli": "^4.9.2"
+  }
+}

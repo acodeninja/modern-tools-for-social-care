@@ -1,6 +1,6 @@
-import {signedRequest} from "./http";
+import {signedRequest} from "internals/http";
+import {RequestError} from "internals/lambda";
 import {SearchResult} from "../domains";
-import {RequestError} from "./lambda";
 
 export interface AddItemInput {
   index: string;

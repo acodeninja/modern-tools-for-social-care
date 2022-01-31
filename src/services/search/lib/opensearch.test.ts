@@ -1,9 +1,9 @@
 import {beforeAll, beforeEach, describe, expect, jest, test} from '@jest/globals';
-import {signedRequest} from "./http";
+import {signedRequest} from "internals/http";
+import {RequestError} from "internals/lambda";
 import {dropIndex, getIndexes, put, search} from "./opensearch";
-import {RequestError} from "./lambda";
 
-jest.mock("./http");
+jest.mock("internals/http");
 process.env.AWS_OPENSEARCH_ENDPOINT = 'https://search-service';
 process.env.AWS_REGION = 'eu-west-2';
 

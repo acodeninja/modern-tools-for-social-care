@@ -1,7 +1,7 @@
-import {ActionPayload, ActionResponse} from "../../../framework/service/types";
+import {ActionPayload, ActionResponse} from "internals/types";
 import {search} from "../lib/opensearch";
 import {SearchResult} from "../domains";
-import {LambdifyHandler, RequestError} from "../lib/lambda";
+import {LambdifyHandler, RequestError} from "internals/lambda";
 import {inspect} from "util";
 
 export const Name = 'Search';

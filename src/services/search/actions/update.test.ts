@@ -3,7 +3,7 @@ import {Handler, Payload, Response} from "./update";
 import {HttpResponse} from "@aws-sdk/protocol-http";
 
 import {put} from "../lib/opensearch";
-import {RequestError} from "../lib/lambda";
+import {RequestError} from "internals/lambda";
 
 jest.mock('../lib/opensearch');
 

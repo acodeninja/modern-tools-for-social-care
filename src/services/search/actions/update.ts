@@ -1,5 +1,5 @@
-import {ActionPayload, ActionResponse} from "../../../framework/service/types";
-import {LambdifyHandler, RequestError} from "../lib/lambda";
+import {ActionPayload, ActionResponse} from "internals/types";
+import {LambdifyHandler, RequestError} from "internals/lambda";
 import {put} from "../lib/opensearch";
 import {inspect} from "util";
 

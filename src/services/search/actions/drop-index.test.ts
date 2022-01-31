@@ -2,7 +2,7 @@ import {beforeAll, describe, expect, jest, test} from '@jest/globals';
 import {Handler, Payload, Response} from "./drop-index";
 
 import {dropIndex} from "../lib/opensearch";
-import {RequestError} from "../lib/lambda";
+import {RequestError} from "internals/lambda";
 
 jest.mock('../lib/opensearch');
 

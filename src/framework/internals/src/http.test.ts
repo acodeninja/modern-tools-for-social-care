@@ -1,4 +1,4 @@
-import {beforeAll, describe, expect, jest, test} from '@jest/globals';
+import {afterAll, beforeAll, describe, expect, jest, test} from '@jest/globals';
 import {Readable} from 'stream';
 import {signedRequest} from "./http";
 import {SignatureV4} from "@aws-sdk/signature-v4";
@@ -32,6 +32,9 @@ const mockHandle = jest.fn().mockResolvedValue({
 });
 (NodeHttpHandler as jest.Mock).mockReturnValue({handle: mockHandle});
 
+const consoleError = console.error;
+console.error = jest.fn();
+
 describe('services/search/lib/http', () => {
   describe('making a signed http request', () => {
     let response: HttpResponse;
@@ -45,6 +48,10 @@ describe('services/search/lib/http', () => {
         service: 'es',
       });
     });
+
+    afterAll(() => {
+      console.error = consoleError;
+    })
 
     test('creates a new signing instance using the default credential provider', () => {
       expect(SignatureV4).toHaveBeenCalledWith({
