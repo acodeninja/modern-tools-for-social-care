@@ -426,11 +426,6 @@ describe('services/search/lib/opensearch.put', () => {
         body: [
           JSON.stringify({index: {_index: 'test-index'}}),
           JSON.stringify({
-            name: 'Chandler Bing',
-            address: {
-              address: "123 Somewhere Pl. Hackney",
-              postcode: "E8 0AA",
-            },
             _meta: {
               location: {
                 api: 'http://service-api/entity/1',
@@ -438,6 +433,11 @@ describe('services/search/lib/opensearch.put', () => {
               },
               domain: 'entity',
               compound: 'Chandler Bing'
+            },
+            name: 'Chandler Bing',
+            address: {
+              address: "123 Somewhere Pl. Hackney",
+              postcode: "E8 0AA",
             },
           }),
           '',
@@ -501,11 +501,6 @@ describe('services/search/lib/opensearch.put', () => {
         body: [
           JSON.stringify({index: {_index: 'test-index', _id: 'test-doc-id'}}),
           JSON.stringify({
-            name: 'Chandler Bing',
-            address: {
-              address: "123 Somewhere Pl. Hackney",
-              postcode: "E8 0AA",
-            },
             _meta: {
               location: {
                 api: 'http://service-api/entity/1',
@@ -513,6 +508,11 @@ describe('services/search/lib/opensearch.put', () => {
               },
               domain: 'entity',
               compound: 'Chandler Bing'
+            },
+            name: 'Chandler Bing',
+            address: {
+              address: "123 Somewhere Pl. Hackney",
+              postcode: "E8 0AA",
             },
           }),
           '',

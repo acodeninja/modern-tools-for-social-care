@@ -2,14 +2,15 @@ import {ActionPayload, ActionResponse} from "internals/types";
 import {dropIndex} from "../lib/opensearch";
 import {LambdifyHandler, RequestError} from "internals/lambda";
 import {inspect} from "util";
+import {APIGatewayProxyHandlerV2} from "aws-lambda";
 
 export const Name = 'DropIndex';
 
-export class Payload implements ActionPayload {
+export interface Payload extends ActionPayload {
   index: string;
 }
 
-export class Response implements ActionResponse {
+export interface Response extends ActionResponse {
   result: 'failure' | 'success';
   error?: unknown;
 }
@@ -23,7 +24,7 @@ export const Handler = async (payload: Payload) => {
     throw new RequestError(response.error);
   }
 
-  return Object.assign(new Response(), response);
+  return response;
 }
 
-export const LambdaHandler = LambdifyHandler(Handler);
+export const LambdaHandler: APIGatewayProxyHandlerV2 = LambdifyHandler(Handler);

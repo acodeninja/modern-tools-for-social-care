@@ -3,19 +3,20 @@ import {search} from "../lib/opensearch";
 import {SearchResult} from "../domains";
 import {LambdifyHandler, RequestError} from "internals/lambda";
 import {inspect} from "util";
+import {APIGatewayProxyHandlerV2} from "aws-lambda";
 
 export const Name = 'Search';
 
-export class Payload implements ActionPayload {
+export interface Payload extends ActionPayload {
   terms?: string;
   index?: string;
   highlight?: string;
-  [key: string]: string;
+  [key: string]: string | undefined;
 }
 
-export class Response implements ActionResponse {
+export interface Response extends ActionResponse {
   count: number;
-  results: Array<SearchResult> = [];
+  results: Array<SearchResult>;
 }
 
 export const Handler = async (payload: Payload) => {
@@ -23,22 +24,20 @@ export const Handler = async (payload: Payload) => {
 
   Validate(payload);
 
-  const searchResponse = await search(
+  return await search(
     payload.terms || without(payload, ['terms', 'index', 'highlight']),
     payload.index,
     payload.highlight ? payload.highlight.split(',') : undefined,
   );
-
-  return Object.assign(new Response(), searchResponse);
 }
 
-const without = (source, keys) => {
+const without = (source: any, keys: Array<string>) => {
   const destination = Object.assign({}, source);
-  keys.forEach(key => delete destination[key]);
+  keys.forEach((key: string) => delete destination[key]);
   return destination;
 }
 
-const Validate = (payload) => {
+const Validate = (payload: Payload) => {
   const otherTerms = without(payload, ['terms', 'index', 'highlight']);
   const highlights = !!payload.highlight ? payload.highlight.split(',') : null;
 
@@ -62,4 +61,4 @@ const Validate = (payload) => {
   }
 };
 
-export const LambdaHandler = LambdifyHandler(Handler);
+export const LambdaHandler: APIGatewayProxyHandlerV2 = LambdifyHandler(Handler);

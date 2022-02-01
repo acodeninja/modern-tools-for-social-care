@@ -28,12 +28,18 @@ describe('services/search/actions/update', () => {
       });
 
       test('a request where some items are missing api locations', async () => {
-        await expect(() => Handler({index: 'test', items: [{_meta: { domain: "test", location: {frontend: "frontend"}}}]} as Payload))
+        await expect(() => Handler({
+          index: 'test',
+          items: [{_meta: {domain: "test", location: {frontend: "frontend"}}}]
+        } as Payload))
           .rejects.toThrow(new RequestError('_meta.location.api must be set on item #0.'));
       });
 
       test('a request where some items are missing frontend locations', async () => {
-        await expect(() => Handler({index: 'test', items: [{_meta: { domain: "test", location: {api: "api"}}}]} as Payload))
+        await expect(() => Handler({
+          index: 'test',
+          items: [{_meta: {domain: "test", location: {api: "api"}}}]
+        } as Payload))
           .rejects.toThrow(new RequestError('_meta.location.frontend must be set on item #0.'));
       });
 
@@ -43,42 +49,40 @@ describe('services/search/actions/update', () => {
       let response: Response;
 
       beforeAll(async () => {
-        const payload = new Payload();
-
-        payload.index = "test-index";
-        payload.items = [{
-          _meta: {
-            location: {
-              api: "http://api/resident/12249",
-              frontend: "http://website/resident/12249",
+        response = await Handler({
+          index: "test-index",
+          items: [{
+            _meta: {
+              location: {
+                api: "http://api/resident/12249",
+                frontend: "http://website/resident/12249",
+              },
+              domain: "resident"
             },
-            domain: "resident"
-          },
-          mosaicId: 12249,
-          title: "Mr.",
-          firstName: "Juwan",
-          lastName: "Haag",
-          otherNames: [
-            {
-              firstName: "Juwan",
-              lastName: "Lebsack"
-            }
-          ],
-          dateOfBirth: "1984-05-21",
-          dateOfDeath: null,
-          nhsNumber: 72302,
-          emailAddress: "Juwan_Haag@example.com",
-          address: {
-            address: "51930 King Squares",
-            postcode: "E88 7IF"
-          },
-          phoneNumbers: [
-            {number: "07862024384"},
-            {number: "08958797953"}
-          ]
-        }];
-
-        response = await Handler(payload);
+            mosaicId: 12249,
+            title: "Mr.",
+            firstName: "Juwan",
+            lastName: "Haag",
+            otherNames: [
+              {
+                firstName: "Juwan",
+                lastName: "Lebsack"
+              }
+            ],
+            dateOfBirth: "1984-05-21",
+            dateOfDeath: null,
+            nhsNumber: 72302,
+            emailAddress: "Juwan_Haag@example.com",
+            address: {
+              address: "51930 King Squares",
+              postcode: "E88 7IF"
+            },
+            phoneNumbers: [
+              {number: "07862024384"},
+              {number: "08958797953"}
+            ]
+          }]
+        });
       });
 
       test('calls put with appropriate index name', () => {
