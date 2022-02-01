@@ -1,6 +1,7 @@
-import {ActionPayload, ActionResponse} from "../../../framework/service/types";
-import {LambdifyHandler} from "../lib/lambda";
+import {ActionPayload, ActionResponse} from "internals/types";
+import {LambdifyHandler} from "internals/lambda";
 import {inspect} from "util";
+import {APIGatewayProxyHandlerV2} from "aws-lambda";
 
 export const Name = 'AuthCheck';
 
@@ -17,4 +18,4 @@ export const Handler = async (payload: Payload) => {
   return {};
 }
 
-export const LambdaHandler = LambdifyHandler(Handler);
+export const LambdaHandler: APIGatewayProxyHandlerV2 = LambdifyHandler(Handler);

@@ -1,8 +1,7 @@
 import {beforeAll, describe, expect, jest, test} from '@jest/globals';
 import {Handler, Payload, Response} from "./search";
-
 import {search} from "../lib/opensearch";
-import {RequestError} from "../lib/lambda";
+import {RequestError} from "internals/lambda";
 
 jest.mock('../lib/opensearch');
 
@@ -16,10 +15,7 @@ describe('services/search/actions/search', () => {
     let response: Response;
 
     beforeAll(async () => {
-      const payload = new Payload();
-      payload.terms = "test";
-
-      response = await Handler(payload);
+      response = await Handler({terms: "test"});
     });
 
     test('calls the search function with the expected input', () => {
@@ -35,11 +31,7 @@ describe('services/search/actions/search', () => {
     let response: Response;
 
     beforeAll(async () => {
-      const payload = new Payload();
-      payload.terms = 'test-term';
-      payload.index = 'test-index'
-
-      response = await Handler(payload);
+      response = await Handler({terms: "test-term", index: "test-index"});
     });
 
     test('calls the search function with the expected input', () => {
@@ -55,10 +47,7 @@ describe('services/search/actions/search', () => {
     let response: Response;
 
     beforeAll(async () => {
-      const payload = new Payload();
-      payload['test.field'] = "test-term";
-
-      response = await Handler(payload);
+      response = await Handler({'test.field': 'test-term'});
     });
 
     test('calls the search function with the expected input', () => {

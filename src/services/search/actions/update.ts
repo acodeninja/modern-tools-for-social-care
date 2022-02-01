@@ -1,13 +1,14 @@
-import {ActionPayload, ActionResponse} from "../../../framework/service/types";
-import {LambdifyHandler, RequestError} from "../lib/lambda";
+import {ActionPayload, ActionResponse} from "internals/types";
+import {LambdifyHandler, RequestError} from "internals/lambda";
 import {put} from "../lib/opensearch";
 import {inspect} from "util";
+import {APIGatewayProxyHandlerV2} from "aws-lambda";
 
 export const Name = 'Update';
 
-export class Payload implements ActionPayload {
+export interface Payload extends ActionPayload {
   index: string;
-  items?: Array<{
+  items: Array<{
     _meta: {
       location: {
         api: string;
@@ -19,25 +20,22 @@ export class Payload implements ActionPayload {
   }>;
 }
 
-export class Response implements ActionResponse {
+export interface Response extends ActionResponse {
   result: 'failure' | 'success';
   error?: unknown;
 }
 
 export const Handler = async (payload: Payload): Promise<Response> => {
   console.log(`Running update with payload ${inspect(payload)}`);
-  const response = new Response();
 
   Validate(payload);
 
-  response.result =
-    await put({index: payload.index, items: payload.items}) ?
-      'success' : 'failure';
+  const success = await put({index: payload.index, items: payload.items});
 
-  return response;
+  return {result: success ? 'success' : 'failure'};
 }
 
-const Validate = (payload) => {
+const Validate = (payload: Payload) => {
   if (!payload.index) throw new RequestError('index must be specified.');
 
   payload.items.map((item, index) => {
@@ -47,4 +45,4 @@ const Validate = (payload) => {
   });
 };
 
-export const LambdaHandler = LambdifyHandler(Handler);
+export const LambdaHandler: APIGatewayProxyHandlerV2 = LambdifyHandler(Handler);

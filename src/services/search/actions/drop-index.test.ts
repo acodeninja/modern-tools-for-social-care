@@ -1,8 +1,7 @@
 import {beforeAll, describe, expect, jest, test} from '@jest/globals';
-import {Handler, Payload, Response} from "./drop-index";
-
+import {Handler, Response} from "./drop-index";
 import {dropIndex} from "../lib/opensearch";
-import {RequestError} from "../lib/lambda";
+import {RequestError} from "internals/lambda";
 
 jest.mock('../lib/opensearch');
 
@@ -12,9 +11,7 @@ describe('services/search/actions/drop-index', () => {
 
     beforeAll(async () => {
       (dropIndex as jest.Mock).mockResolvedValue({});
-      const payload = new Payload();
-      payload.index = "test";
-      response = await Handler(payload);
+      response = await Handler({index: 'test'});
     });
 
     test('calls delete with the test index', () => {

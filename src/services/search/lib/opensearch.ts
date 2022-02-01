@@ -1,10 +1,11 @@
-import {signedRequest} from "./http";
+import {signedRequest} from "internals/http";
+import {RequestError} from "internals/lambda";
 import {SearchResult} from "../domains";
-import {RequestError} from "./lambda";
+import {getVariable} from "./Environment";
 
 export interface AddItemInput {
   index: string;
-  items?: Array<{
+  items: Array<{
     _meta: {
       location: {
         api: string;
@@ -17,16 +18,17 @@ export interface AddItemInput {
   }>;
 }
 
+const without = (source: { [key: string]: unknown }, key: string) => {
+  const destination = Object.assign({}, source);
+  delete destination[key];
+  return destination;
+};
+
 export const put = async (input: AddItemInput) => {
   const updates = await Promise.all(input.items.map(item => (async () => {
-    const meta = Object.assign(item._meta);
-    delete item._meta;
-
-    meta.compound = Object.values(item)
-      .filter(i => i.toString() === i)
+    item._meta.compound = Object.values(without(item, '_meta'))
+      .filter(i => (i as string).toString() === i)
       .join(' ');
-
-    item._meta = meta;
 
     const indexInfo: { index: { _index: string, _id?: string } }
       = {index: {_index: input.index}};
@@ -41,11 +43,11 @@ export const put = async (input: AddItemInput) => {
   const body = updates.join('\n') + '\n';
 
   const response = await signedRequest({
-    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/_bulk`),
+    url: new URL(`${getVariable('AWS_OPENSEARCH_ENDPOINT')}/_bulk`),
     body,
     method: "POST",
     service: "es",
-    region: process.env.AWS_REGION,
+    region: getVariable('AWS_REGION'),
   });
 
   return response.statusCode === 200;
@@ -53,40 +55,43 @@ export const put = async (input: AddItemInput) => {
 
 export const getIndexes = async () => {
   const response = await signedRequest({
-    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/_cat/indices?v&h=i`),
+    url: new URL(`${getVariable('AWS_OPENSEARCH_ENDPOINT')}/_cat/indices?v&h=i`),
     method: "GET",
     service: "es",
-    region: process.env.AWS_REGION,
+    region: getVariable('AWS_REGION'),
   });
 
-  return response.body.split('\n').filter(index => !!index && index !== 'i' && index.indexOf('kibana') === -1);
+  return response.body.split('\n')
+    .filter((index: string) => !!index && index !== 'i' && index.indexOf('kibana') === -1);
 }
 
 export const getTextFieldsForIndex = async (index: string): Promise<Array<string>> => {
   const response = await signedRequest({
-    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}/_mapping`),
+    url: new URL(`${getVariable('AWS_OPENSEARCH_ENDPOINT')}/${index}/_mapping`),
     method: "GET",
     service: "es",
-    region: process.env.AWS_REGION,
+    region: getVariable('AWS_REGION'),
   });
 
-  return Object.entries(response.body[index].mappings.properties).map(([key, info]) => {
-    if (key === '_meta') return null;
-    if (info['type'] === 'text') return key;
-  }).filter(field => !!field);
+  return Object.entries(response.body[index].mappings.properties)
+    .map(([key, info]) => {
+      if (key === '_meta') return null;
+      if ((info as any)['type'] === 'text') return key;
+      return null;
+    })
+    .filter(field => !!field) as Array<string>;
 }
 
 export const search =
   async (
     terms: string | { [key: string]: string },
-    index: string = null,
-    highlight: Array<string> = [],
-    resultsCount: number = 20,
+    index?: string,
+    highlight?: Array<string>,
   ): Promise<{
     count: number;
     results: Array<SearchResult>;
   }> => {
-    let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`
+    let url = `${getVariable('AWS_OPENSEARCH_ENDPOINT')}`
     if (index) url += `/${index}`;
     url += '/_search';
 
@@ -131,7 +136,7 @@ export const search =
 
       }
     } else {
-      const osRequest = {
+      const request: any = {
         query: {
           bool: {
             should: Object.entries(terms).map(([field, value]) => ({
@@ -148,32 +153,32 @@ export const search =
       };
 
       if (Array.isArray(highlight) && highlight.length) {
-        osRequest['highlight'] = {
+        request.highlight = {
           pre_tags: ["<strong>"],
           post_tags: ["</strong>"],
           fields: Object.fromEntries(highlight.map(field => [field, {}])),
         };
       }
 
-      body = JSON.stringify(osRequest);
+      body = JSON.stringify(request);
     }
 
     const response = await signedRequest({
       url: new URL(url),
       method: "POST",
       service: "es",
-      region: process.env.AWS_REGION,
+      region: getVariable('AWS_REGION'),
       body,
     });
 
 
-    const results = response.body?.hits?.hits?.map(result => {
+    const results = response.body?.hits?.hits?.map((result: { _score: number, _source: { [key: string]: unknown }, highlight: any }) => {
       const computedResult = {score: result._score, data: result._source};
 
       if (result.highlight) {
         Object.entries(result.highlight)
           .forEach(([field, highlights]) => {
-            let position = computedResult.data;
+            let position: any = computedResult.data;
             const path = `${field}__highlights`.split('.');
 
             path.forEach((key, index) => {
@@ -200,10 +205,10 @@ export const dropIndex = async (index: string): Promise<{
   error?: string;
 }> => {
   const response = await signedRequest({
-    url: new URL(`${process.env.AWS_OPENSEARCH_ENDPOINT}/${index}`),
+    url: new URL(`${getVariable('AWS_OPENSEARCH_ENDPOINT')}/${index}`),
     method: "DELETE",
     service: "es",
-    region: process.env.AWS_REGION,
+    region: getVariable('AWS_REGION'),
   });
 
   if (response.statusCode !== 200) {
@@ -226,7 +231,7 @@ const findDocument = async (documentMeta: {
   id: string;
   index: string;
 } | null> => {
-  let url = `${process.env.AWS_OPENSEARCH_ENDPOINT}`;
+  let url = `${getVariable('AWS_OPENSEARCH_ENDPOINT')}`;
   if (index) url += `/${index}`;
   url += '/_search';
 
@@ -234,7 +239,7 @@ const findDocument = async (documentMeta: {
     url: new URL(url),
     method: "POST",
     service: "es",
-    region: process.env.AWS_REGION,
+    region: getVariable('AWS_REGION'),
     body: JSON.stringify({
       query: {
         bool: {

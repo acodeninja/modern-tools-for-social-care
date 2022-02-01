@@ -4,13 +4,9 @@
     "target": "es2015",
     "module": "commonjs",
     "moduleResolution": "node",
-    "declaration": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "jsx": "react",
-    "paths": {
-      "internals/*": ["../../framework/internals/src/*"]
-    }
+    "declaration": false
   },
   "exclude": ["**/*.test.ts"]
 }

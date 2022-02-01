@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: ${{ steps.node.outputs.version }}
       - run: npm ci
-      - run: npm test
+      - run: npm test -- .github/
       - uses: jitterbit/get-changed-files@v1
         id: files
         with:
@@ -43,6 +43,7 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).test }}
     steps:
       - uses: actions/checkout@v2
+      - run: make init
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
         id: node
         if: ${{ matrix.changes.hasNodeJS }}
@@ -74,6 +75,7 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).lint }}
     steps:
       - uses: actions/checkout@v2
+      - run: make init
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
         id: node
         if: ${{ matrix.changes.hasNodeJS }}
@@ -107,6 +109,7 @@ jobs:
         changes: ${{ fromJson(needs.compute-changes.outputs.runs).build }}
     steps:
       - uses: actions/checkout@v2
+      - run: make init
       - run: echo "::set-output name=version::$(cat package.json | jq -rc '.engines.node')"
         id: node
         if: ${{ matrix.changes.hasNodeJS }}
