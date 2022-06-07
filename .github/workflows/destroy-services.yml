@@ -2,18 +2,19 @@ name: Destroy Services
 
 on:
   workflow_dispatch:
-    confirmation:
-      description: 'Confirm destruction of the whole system'
-      required: true
-      type: boolean
-    environment:
-      description: 'The environment to destroy'
-      required: true
-      type: choice
-      options:
-        - Production
-        - Staging
-        - Testing
+    inputs:
+      confirmation:
+        description: 'Confirm destruction of the whole system'
+        required: true
+        type: boolean
+      environment:
+        description: 'The environment to destroy'
+        required: true
+        type: choice
+        options:
+          - Production
+          - Staging
+          - Testing
 
 jobs:
   get-services:
